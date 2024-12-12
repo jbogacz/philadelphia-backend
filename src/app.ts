@@ -16,7 +16,12 @@ const app: FastifyPluginAsync<AppOptions> = async (
   opts
 ): Promise<void> => {
   void fastify.register(mongodb, {
-    url: 'mongodb://localhost:27017/testdb',
+    url: 'mongodb://localhost:27017',
+    database: 'testdb',
+    auth: {
+      username: 'admin',
+      password: 'password123'
+    },
   });
 
   void fastify.register(swagger, {

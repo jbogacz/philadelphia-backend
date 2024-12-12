@@ -12,4 +12,6 @@ import { Profile } from './trace.types';
 
 export type ProfileDocument = Omit<Profile, 'id'> & {
   _id: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
