@@ -1,32 +1,31 @@
-import { ProfileRepository } from './profile.repository'; // @tslint: ignore
-import { Fingerprint, Profile, Trace, Visit } from './trace.types';
+import { ProfileRepository2 } from './profile.repository'; // @tslint: ignore
+import { Profile, Trace } from './trace.types';
 
 export class TraceService {
-  constructor(private profileRepository: ProfileRepository) {}
+  constructor(private profileRepository: ProfileRepository2) {}
 
-  capture(trace: Trace): Promise<Profile> {
+  async capture(trace: Trace): Promise<Profile> {
     const now = new Date();
-    
-    const fingerprint: Fingerprint = {
-      fingerprintId: trace.fingerprintId,
-      created: now,
-      lastSeen: now,
-    };
 
-    const visit: Visit = {
+    var profile = trace.email ? await this.profileRepository.findByEmail(trace.email) : null;
+    profile = profile ?? (await this.profileRepository.findByFingerprintId(trace.fingerprintId));
+    profile = profile ?? ({ fingerprints: [], emails: [], visits: [] } as Profile);
+
+    const fingerprint = profile.fingerprints.find(f => f.fingerprintId === trace.fingerprintId);
+    if (fingerprint) {
+      fingerprint.lastSeen = now;
+    } else {
+      profile.fingerprints.push({ fingerprintId: trace.fingerprintId, created: now, lastSeen: now });
+    }
+
+    profile.visits.push({
       created: now,
       domain: trace.domain,
       page: trace.page,
       title: trace.title,
-      referer: trace.referer,
-    } as Visit;
+      referer: trace.referer
+    });
 
-    const profile: Profile = {
-      fingerprints: [fingerprint],
-      visits: [visit],
-      emails: [],
-    };
-
-    return this.profileRepository.create(profile);
+    return this.profileRepository.save(profile as Profile);
   }
 }

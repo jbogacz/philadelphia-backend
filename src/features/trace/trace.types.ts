@@ -1,4 +1,14 @@
 import { Type, Static } from '@sinclair/typebox';
+import { ObjectId } from '@fastify/mongodb';
+
+/**
+ * SCHEMA
+ */
+export const BaseSchema = Type.Object({
+  _id: Type.Optional(Type.String()),
+  createdAt: Type.Optional(Type.Date()),
+  updatedAt: Type.Optional(Type.Date())
+});
 
 export const TraceSchema = Type.Object({
   fingerprintId: Type.String(),
@@ -7,49 +17,71 @@ export const TraceSchema = Type.Object({
   page: Type.String(),
   title: Type.String(),
   referer: Type.String(),
-  timestamp: Type.Date(),
+  timestamp: Type.Date()
 });
 
-export const CaptureTraceSchema = Type.Omit(TraceSchema, ['timestamp']);
+// export const CaptureTraceSchema = Type.Omit(TraceSchema, ['timestamp']);
+
+export const FingerprintSchema = Type.Object({
+  fingerprintId: Type.String(),
+  created: Type.Date(),
+  lastSeen: Type.Date()
+});
+
+export const EmailSchema = Type.Object({
+  value: Type.String(),
+  created: Type.Date(),
+  lastSeen: Type.Date()
+});
+
+export const VisitSchema = Type.Object({
+  created: Type.Date(),
+  domain: Type.String(),
+  page: Type.String(),
+  title: Type.String(),
+  referer: Type.String()
+});
+
+export const ProfileSchema = Type.Intersect([
+  BaseSchema,
+  Type.Object({
+    fingerprints: Type.Array(FingerprintSchema),
+    emails: Type.Array(EmailSchema),
+    visits: Type.Array(VisitSchema)
+  })
+]);
+
+/**
+ * MODEL
+ */
+export interface IEntity {
+  _id?: ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 export type Trace = Static<typeof TraceSchema>;
 
-export type CaptureTraceDto = Static<typeof CaptureTraceSchema>;
+export type Profile = Static<typeof ProfileSchema> & IEntity;
 
-// export type CaptureTraceDto = Omit<Trace, 'timestamp'>;
+export type Fingerprint = Static<typeof FingerprintSchema>;
 
-// export interface Trace {
-//   fingerprintId: string;
-//   email?: string;
-//   domain: string;
-//   page: string;
-//   title: string;
-//   referer: string;
-//   timestamp: Date;
-// }
+export type Email = Static<typeof EmailSchema>;
 
-export interface Profile {
-  fingerprints: Fingerprint[];
-  emails: Email[];
-  visits: Visit[];
-}
+export type Visit = Static<typeof VisitSchema>;
 
-export interface Fingerprint {
-  fingerprintId: string;
-  created: Date;
-  lastSeen: Date;
-}
+/**
+ * DTO
+ */
+export type CaptureTraceDto = Omit<Trace, 'timestamp'>;
 
-export interface Email {
-  value: string;
-  created: Date;
-  lastSeen: Date;
-}
+export type ProfileDto = Omit<Profile, 'id'>;
 
-export interface Visit {
-  created: Date;
-  domain: string;
-  page: string;
-  title: string;
-  referer: string;
-}
+// /**
+//  * DOCUMENT
+//  */
+// export type ProfileDocument = Omit<Profile, 'id'> & {
+//   _id?: string;
+//   createdAt: Date;
+//   updatedAt: Date;
+// };
