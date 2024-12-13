@@ -23,13 +23,11 @@ export class BaseRepository<T extends IEntity> {
 
   async create(data: T): Promise<T> {
     const now = new Date();
-
     const result = await this.collection.insertOne({ ...data, createdAt: now, updatedAt: now } as OptionalUnlessRequiredId<T>);
 
     if (!result.acknowledged) {
       throw new Error('Failed to insert document');
     }
-
     return data as T;
   }
 
