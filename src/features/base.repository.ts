@@ -1,7 +1,12 @@
 import { Collection, Filter, ObjectId, OptionalUnlessRequiredId, WithId } from 'mongodb';
-import { BaseModel } from './base.types';
 
-export class BaseRepository<T extends BaseModel> {
+export interface IEntity {
+  _id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export class BaseRepository<T extends IEntity> {
   constructor(protected collection: Collection<T>) {}
 
   async findById(id: ObjectId): Promise<WithId<T> | null> {

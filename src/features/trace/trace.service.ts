@@ -1,4 +1,4 @@
-import { ProfileRepository2 } from './profile.repository'; // @tslint: ignore
+import { ProfileRepository2 } from './trace.repository'; // @tslint: ignore
 import { Profile, Trace } from './trace.types';
 
 export class TraceService {

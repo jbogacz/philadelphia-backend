@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import { TraceService } from './trace.service';
-import { TraceController } from './trace.controller';
+import { TraceController } from './profile.controller';
 import { Type } from '@sinclair/typebox';
 
 export const traceRoutes: FastifyPluginAsync = async (fastify) => {

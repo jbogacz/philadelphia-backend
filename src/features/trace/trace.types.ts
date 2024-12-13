@@ -1,5 +1,5 @@
-import { Type, Static } from '@sinclair/typebox';
-import { ObjectId } from '@fastify/mongodb';
+import { Static, Type } from '@sinclair/typebox';
+import { IEntity } from '../base.repository';
 
 /**
  * SCHEMA
@@ -54,12 +54,6 @@ export const ProfileSchema = Type.Intersect([
 /**
  * MODEL
  */
-export interface IEntity {
-  _id?: ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
 export type Trace = Static<typeof TraceSchema>;
 
 export type Profile = Static<typeof ProfileSchema> & IEntity;
@@ -76,12 +70,3 @@ export type Visit = Static<typeof VisitSchema>;
 export type CaptureTraceDto = Omit<Trace, 'timestamp'>;
 
 export type ProfileDto = Omit<Profile, 'id'>;
-
-// /**
-//  * DOCUMENT
-//  */
-// export type ProfileDocument = Omit<Profile, 'id'> & {
-//   _id?: string;
-//   createdAt: Date;
-//   updatedAt: Date;
-// };
