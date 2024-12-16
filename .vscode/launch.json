@@ -24,38 +24,26 @@
       "name": "Philadelphia Tests",
       "skipFiles": ["<node_internals>/**"],
       "autoAttachChildProcesses": true,
-      "args": [
-        "--test",
-        "${workspaceFolder}/test/**/*.ts"
-      ],
+      "args": ["--test", "${workspaceFolder}/test/**/*.ts"],
       "runtimeArgs": ["-r", "ts-node/register"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/**",
-        "!**/node_modules/**"
-      ]
+      "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Philadelphia Test",
       "skipFiles": ["<node_internals>/**"],
-      "args": [
-        "--test",
-        "${workspaceFolder}/test/features/trace/trace.routes.test.ts"
-      ],
+      "args": ["--test", "${workspaceFolder}/test/features/trace/trace.routes.test.ts"],
       "runtimeArgs": ["-r", "ts-node/register"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/**",
-        "!**/node_modules/**"
-      ]
+      "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"]
     }
   ]
 }
