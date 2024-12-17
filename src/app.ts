@@ -5,40 +5,52 @@ import mongodb from '@fastify/mongodb';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
 
-export interface AppOptions
-  extends FastifyServerOptions,
-    Partial<AutoloadPluginOptions> {}
+export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
+  // Add MongoDB configuration options
+  mongodb?: {
+    url: string;
+    database: string;
+    auth?: {
+      username: string;
+      password: string;
+    }
+  }
+}
+
 // Pass --options via CLI arguments in command to enable these options.
 const options: AppOptions = {};
 
-const app: FastifyPluginAsync<AppOptions> = async (
-  fastify,
-  opts
-): Promise<void> => {
-  void fastify.register(mongodb, {
+
+const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void> => {
+  const mongoConfig = opts.mongodb || {
     url: 'mongodb://localhost:27017',
     database: 'testdb',
     auth: {
       username: 'admin',
       password: 'password123'
-    },
-  });
+    }
+  };
+
+  void fastify.register(mongodb, mongoConfig);
+
+  await fastify.after(); // Wait for mongodb plugin to register
+  console.log('MongoDB registered, fastify.mongo exists:', !!fastify.mongo);
 
   void fastify.register(swagger, {
     swagger: {
       info: {
         title: 'philadelphia-backend',
-        version: '0.1.0',
-      },
-    },
+        version: '0.1.0'
+      }
+    }
   });
 
   void fastify.register(swaggerUI, {
     routePrefix: '/documentation',
     uiConfig: {
       docExpansion: 'full',
-      deepLinking: false,
-    },
+      deepLinking: false
+    }
   });
 
   // Do not touch the following lines
@@ -48,7 +60,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
   // through your application
   void fastify.register(AutoLoad, {
     dir: join(__dirname, 'plugins'),
-    options: opts,
+    options: opts
   });
 
   // This loads all plugins defined in routes
@@ -61,7 +73,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
     dir: join(__dirname, 'features'),
     dirNameRoutePrefix: false, // Don't use directory names as prefixes
     indexPattern: /index\.ts$/, // Look for index.ts files
-    options: { prefix: '/api' },
+    options: { prefix: '/api' }
   });
 };
 
