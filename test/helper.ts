@@ -1,7 +1,16 @@
+// This file contains code that we reuse between our tests.
+const helper = require('fastify-cli/helper.js');
+import { FastifyMongoNestedObject, FastifyMongoObject } from '@fastify/mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as test from 'node:test';
 import * as path from 'path';
-const helper = require('fastify-cli/helper.js');
+
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    mongo: FastifyMongoObject & FastifyMongoNestedObject;
+  }
+}
 
 export type TestContext = {
   after: typeof test.after;
@@ -9,19 +18,31 @@ export type TestContext = {
 
 const AppPath = path.join(__dirname, '..', 'src', 'app.ts');
 
-let mongod: MongoMemoryServer;
+class MongoHelper {
+  private static instance: MongoMemoryServer | null = null;
+
+  static async getUri(): Promise<string> {
+    if (!this.instance) {
+      this.instance = await MongoMemoryServer.create();
+    }
+    return this.instance.getUri();
+  }
+
+  static async cleanup(): Promise<void> {
+    if (this.instance) {
+      await this.instance.stop();
+      this.instance = null;
+    }
+  }
+}
 
 // Fill in this config with all the configurations
 // needed for testing the application
 async function config() {
-  // Create new instance of MongoDB Memory Server
-  mongod = await MongoMemoryServer.create();
-  const uri = mongod.getUri();
-
+  const mongoUri = await MongoHelper.getUri();
   return {
-    // Pass MongoDB configuration to the app
     mongodb: {
-      url: uri,
+      url: mongoUri,
       database: 'testdb'
     },
     skipOverride: true
@@ -30,28 +51,28 @@ async function config() {
 
 // Automatically build and tear down our instance
 async function build(t: TestContext) {
-  // you can set all the options supported by the fastify CLI command
   const argv = [AppPath];
-
-  // fastify-plugin ensures that all decorators
-  // are exposed for testing purposes, this is
-  // different from the production setup
   const fastify = await helper.build(argv, await config());
 
-  // Tear down our app and MongoDB after we are done
+  await fastify.ready();
+
   t.after(async () => {
     await fastify.close();
-    if (mongod) {
-      await mongod.stop();
-    }
+    await MongoHelper.cleanup();
   });
 
   return fastify;
 }
 
-// Add utility function to get MongoDB instance (useful for test cleanup)
-async function getMongod() {
-  return mongod;
+// Add utility function to clear database between tests
+async function clearDatabase(app: any) {
+  const db = app.mongo.db;
+  if (db) {
+    const collections = await db.listCollections().toArray();
+    for (const collection of collections) {
+      await db.collection(collection.name).deleteMany({});
+    }
+  }
 }
 
-export { build, config, getMongod };
+export { build, clearDatabase, config, MongoHelper };

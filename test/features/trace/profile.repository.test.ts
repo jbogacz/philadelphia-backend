@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { build } from '../../helper';
+import { build, clearDatabase } from '../../helper';
 import { randomUUID } from 'node:crypto';
 import { Profile } from '../../../src/features/trace/trace.types';
 
