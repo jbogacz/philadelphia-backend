@@ -2,7 +2,7 @@ import { Collection } from 'mongodb';
 import { Profile } from './trace.types';
 import { BaseRepository } from '../base.repository';
 
-export class ProfileRepository2 extends BaseRepository<Profile> {
+export class ProfileRepository extends BaseRepository<Profile> {
   constructor(collection: Collection<Profile>) {
     super(collection);
   }

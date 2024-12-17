@@ -1,8 +1,8 @@
-import { ProfileRepository2 } from './trace.repository'; // @tslint: ignore
+import { ProfileRepository } from './trace.repository'; // @tslint: ignore
 import { Profile, Trace } from './trace.types';
 
 export class TraceService {
-  constructor(private profileRepository: ProfileRepository2) {}
+  constructor(private profileRepository: ProfileRepository) {}
 
   async capture(trace: Trace): Promise<Profile> {
     const now = new Date();
@@ -10,6 +10,15 @@ export class TraceService {
     var profile = trace.email ? await this.profileRepository.findByEmail(trace.email) : null;
     profile = profile ?? (await this.profileRepository.findByFingerprintId(trace.fingerprintId));
     profile = profile ?? ({ fingerprints: [], emails: [], visits: [] } as Profile);
+
+    if (trace.email) {
+      const email = profile.emails.find(e => e.value == trace.email);
+      if (email) {
+        email.lastSeen = now;
+      } else {
+        profile.emails.push({ value: trace.email, created: now, lastSeen: now });
+      }
+    }
 
     const fingerprint = profile.fingerprints.find(f => f.fingerprintId === trace.fingerprintId);
     if (fingerprint) {
