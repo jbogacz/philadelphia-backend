@@ -45,6 +45,8 @@ async function config() {
       url: mongoUri,
       database: 'testdb'
     },
+    
+    // This is the most important bit that provides configuration from app.ts
     skipOverride: true
   };
 }
