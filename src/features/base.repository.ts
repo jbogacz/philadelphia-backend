@@ -9,7 +9,7 @@ export interface IEntity {
 export class BaseRepository<T extends IEntity> {
   constructor(protected collection: Collection<T>) {}
 
-  async findById(id: ObjectId): Promise<WithId<T> | null> {
+  async findById(id: string): Promise<WithId<T> | null> {
     return this.collection.findOne({ _id: id } as Filter<T>);
   }
 
@@ -28,7 +28,11 @@ export class BaseRepository<T extends IEntity> {
     if (!result.acknowledged) {
       throw new Error('Failed to insert document');
     }
-    return data as T;
+
+    return {
+      _id: result.insertedId,
+      ...data
+    } as T;
   }
 
   private async update(data: T): Promise<T> {

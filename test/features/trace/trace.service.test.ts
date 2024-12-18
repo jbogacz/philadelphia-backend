@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { mock, instance, when, verify, anything, deepEqual, capture } from 'ts-mockito';
 import { TraceService } from '../../../src/features/trace/trace.service';
-import { ProfileRepository } from '../../../src/features/trace/trace.repository';
+import { ProfileRepository } from '../../../src/features/trace/profile.repository';
 import { Profile, Trace } from '../../../src/features/trace/trace.types';
 import { randomUUID } from 'crypto';
 import test from 'node:test';

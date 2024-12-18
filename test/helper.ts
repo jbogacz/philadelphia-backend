@@ -1,4 +1,3 @@
-// This file contains code that we reuse between our tests.
 const helper = require('fastify-cli/helper.js');
 import { FastifyMongoNestedObject, FastifyMongoObject } from '@fastify/mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -36,8 +35,7 @@ class MongoHelper {
   }
 }
 
-// Fill in this config with all the configurations
-// needed for testing the application
+// This config is used as AppOptions in Fastify and configures embedded Mongo
 async function config() {
   const mongoUri = await MongoHelper.getUri();
   return {
@@ -45,7 +43,6 @@ async function config() {
       url: mongoUri,
       database: 'testdb'
     },
-    
     // This is the most important bit that provides configuration from app.ts
     skipOverride: true
   };

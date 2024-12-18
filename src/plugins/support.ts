@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin';
-import { ProfileRepository } from '../features/trace/trace.repository';
+import { ProfileRepository } from '../features/trace/profile.repository';
 import type { Db } from 'mongodb';
 import { BaseRepository } from '../features/base.repository';
 import { Profile } from '../features/trace/trace.types';

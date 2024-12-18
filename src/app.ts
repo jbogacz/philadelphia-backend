@@ -13,13 +13,12 @@ export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPlugin
     auth?: {
       username: string;
       password: string;
-    }
-  }
+    };
+  };
 }
 
 // Pass --options via CLI arguments in command to enable these options.
 const options: AppOptions = {};
-
 
 const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void> => {
   const mongoConfig = opts.mongodb || {
@@ -34,7 +33,6 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
   void fastify.register(mongodb, mongoConfig);
 
   await fastify.after(); // Wait for mongodb plugin to register
-  console.log('MongoDB registered, fastify.mongo exists:', !!fastify.mongo);
 
   void fastify.register(swagger, {
     swagger: {
