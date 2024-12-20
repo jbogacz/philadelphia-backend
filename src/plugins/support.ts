@@ -1,8 +1,10 @@
 import fp from 'fastify-plugin';
-import { ProfileRepository } from '../features/trace/profile.repository';
 import type { Db } from 'mongodb';
-import { BaseRepository } from '../features/base.repository';
-import { Profile } from '../features/trace/trace.types';
+import { ProfileRepository } from '../features/trace/profile.repository';
+import { TraceService } from '../features/trace/trace.service';
+import { AdService } from '../features/ad/ad.service';
+import { AdController } from '../features/ad/ad.controller';
+import { TraceController } from '../features/trace/profile.controller';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here
@@ -14,8 +16,17 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
   const db: Db = fastify.mongo.db!;
 
   fastify.decorate('repository', {
-    profile: new ProfileRepository(db.collection('profiles')),
-    test: new BaseRepository<Profile>(db.collection('profiles'))
+    profile: new ProfileRepository(db.collection('profiles'))
+  });
+
+  fastify.decorate('service', {
+    trace: new TraceService(fastify.repository.profile),
+    ad: new AdService()
+  });
+
+  fastify.decorate('controller', {
+    ad: new AdController(fastify.service.ad),
+    trace: new TraceController(fastify.service.trace)
   });
 });
 
@@ -24,7 +35,14 @@ declare module 'fastify' {
   export interface FastifyInstance {
     repository: {
       profile: ProfileRepository;
-      test: BaseRepository<Profile>;
+    };
+    service: {
+      trace: TraceService;
+      ad: AdService;
+    };
+    controller: {
+      ad: AdController;
+      trace: TraceController;
     };
   }
 }

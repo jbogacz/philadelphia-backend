@@ -24,6 +24,7 @@
     "@fastify/swagger": "^9.4.0",
     "@fastify/swagger-ui": "^5.2.0",
     "@sinclair/typebox": "^0.34.11",
+    "esbuild": "^0.24.0",
     "fastify": "^5.0.0",
     "fastify-cli": "^7.1.0",
     "fastify-plugin": "^5.0.0",
