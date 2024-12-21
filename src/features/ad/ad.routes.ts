@@ -1,8 +1,12 @@
 import { FastifyPluginAsync } from 'fastify';
+import { AdRequestParams } from './ad.controller';
 
 export const adRoutes: FastifyPluginAsync = async fastify => {
+  const adController = fastify.controller.ad;
 
-  fastify.get(
+  fastify.get<{
+    Querystring: AdRequestParams;
+  }>(
     '/ad',
     {
       schema: {
@@ -11,6 +15,6 @@ export const adRoutes: FastifyPluginAsync = async fastify => {
         response: 200
       }
     },
-    (_, res) => fastify.controller.ad.getAdMarkup(_, res)
+    adController.serve.bind(adController)
   );
 };

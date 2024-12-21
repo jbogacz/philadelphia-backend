@@ -1,21 +1,12 @@
-import esbuild from 'esbuild';
-import { createAdMarkup } from './ad.markup.js';
+import { createAdMarkup } from './markup/ad.markup.js';
+import { AdConfig, AdRequest } from './markup/ad.markup.types.js';
 
 export class AdService {
-  async produceAdMarkup(): Promise<string> {
+  async createAdCode(adRequest: AdRequest): Promise<string> {
     try {
-      const adCode = createAdMarkup({
-        targetId: 'ad-container',
-        customUrl: 'https://example.com'
-      });
+      const adCode = await createAdMarkup(adRequest);
 
-      const result = await esbuild.transform(adCode, {
-        minify: true,
-        format: 'iife',
-        target: 'es2015'
-      });
-
-      return result.code;
+      return adCode;
     } catch (error) {
       console.error(error);
       throw error;

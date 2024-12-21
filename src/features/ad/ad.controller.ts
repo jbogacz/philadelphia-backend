@@ -1,12 +1,40 @@
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { AdService } from './ad.service';
-import * as esbuild from 'esbuild';
+import { AdRequest } from './markup/ad.markup.types';
+
+export interface AdRequestParams {
+  // Consumer info
+  fingerprintId: string;
+  deviceType?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  geo?: string;
+  countryCode?: string;
+  city?: string;
+
+  // Slot info
+  publisherId?: string; // Unique identifier for the publisher
+  placementId?: string; // Specific location/slot on the page
+  targetId: string; // ID of the container element
+  pageUrl?: string; // Current page URL
+}
 
 export class AdController {
   constructor(private adService: AdService) {}
 
-  //@ts-ignore
-  getAdMarkup = (request, reply) => {
-    const result = this.adService.produceAdMarkup();
-    return result;
-  };
+  async serve(
+    request: FastifyRequest<{
+      Querystring: AdRequestParams;
+    }>,
+    reply: FastifyReply,
+  ) {
+    const adRequest: AdRequest = { ...request.query };
+
+    const adCode = await this.adService.createAdCode(adRequest);
+
+    reply
+      .header('Content-Type', 'application/javascript')
+      .header('Cache-Control', 'no-cache')
+      .send(adCode);
+  }
 }
