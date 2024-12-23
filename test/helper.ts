@@ -50,8 +50,7 @@ async function config() {
 
 // Automatically build and tear down our instance
 async function build(t: TestContext) {
-  const argv = [AppPath];
-  const fastify = await helper.build(argv, await config());
+  const fastify = await helper.build([AppPath], await config());
 
   await fastify.ready();
 

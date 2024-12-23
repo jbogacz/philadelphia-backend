@@ -1,11 +1,12 @@
-import { LoggerService } from '../../common/logger.service.js';
-import { createAdMarkup } from './markup/ad.markup.js';
-import { AdRequest } from './markup/ad.markup.types.js';
+import { LoggerService } from '../../common';
+import { createAdMarkup } from './markup/ad.markup';
+import { AdRequest } from './markup/ad.markup.types';
 
 export class AdService {
   private logger = LoggerService.getLogger('AdService');
 
   async createAdCode(adRequest: AdRequest): Promise<string> {
+    this.logger.info('Creating ad code', adRequest);
     return createAdMarkup(adRequest);
   }
 }
