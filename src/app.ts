@@ -4,6 +4,7 @@ import { FastifyPluginAsync, FastifyServerOptions } from 'fastify';
 import mongodb from '@fastify/mongodb';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
+import { LoggerService } from './common/logger.service';
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
   // Add MongoDB configuration options
@@ -26,8 +27,8 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
     database: 'testdb',
     auth: {
       username: 'admin',
-      password: 'password123'
-    }
+      password: 'password123',
+    },
   };
 
   void fastify.register(mongodb, mongoConfig);
@@ -38,17 +39,21 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
     swagger: {
       info: {
         title: 'philadelphia-backend',
-        version: '0.1.0'
-      }
-    }
+        version: '0.1.0',
+      },
+    },
   });
 
   void fastify.register(swaggerUI, {
     routePrefix: '/documentation',
     uiConfig: {
       docExpansion: 'full',
-      deepLinking: false
-    }
+      deepLinking: false,
+    },
+  });
+
+  fastify.register(async server => {
+    LoggerService.initialize(server.log);
   });
 
   // Do not touch the following lines
@@ -58,7 +63,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
   // through your application
   void fastify.register(AutoLoad, {
     dir: join(__dirname, 'plugins'),
-    options: opts
+    options: opts,
   });
 
   // This loads all plugins defined in routes
@@ -71,7 +76,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
     dir: join(__dirname, 'features'),
     dirNameRoutePrefix: false, // Don't use directory names as prefixes
     indexPattern: /index\.ts$/, // Look for index.ts files
-    options: { prefix: '/api' }
+    options: { prefix: '/api' },
   });
 };
 

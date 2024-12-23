@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AdService } from './ad.service';
 import { AdRequest } from './markup/ad.markup.types';
+import { LoggerService } from '../../common/logger.service';
 
 export interface AdRequestParams {
   // Consumer info
@@ -20,6 +21,8 @@ export interface AdRequestParams {
 }
 
 export class AdController {
+  private logger = LoggerService.getLogger('feature.ad.AdController');
+
   constructor(private adService: AdService) {}
 
   async serve(
@@ -28,13 +31,18 @@ export class AdController {
     }>,
     reply: FastifyReply,
   ) {
-    const adRequest: AdRequest = { ...request.query };
+    try {
+      this.logger.info('Serving ad', { ...request.query });
 
-    const adCode = await this.adService.createAdCode(adRequest);
+      const adRequest: AdRequest = { ...request.query };
+      const adCode = await this.adService.createAdCode(adRequest);
 
-    reply
-      .header('Content-Type', 'application/javascript')
-      .header('Cache-Control', 'no-cache')
-      .send(adCode);
+      reply
+        .header('Content-Type', 'application/javascript')
+        .header('Cache-Control', 'no-cache')
+        .send(adCode);
+    } catch (error) {
+      this.logger.error('Failed to serve ad', error);
+    }
   }
 }
