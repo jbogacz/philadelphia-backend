@@ -4,7 +4,7 @@ import FingerprintJS from '../../fingerprint/fp.script';
 export async function initializeAd(adRequest: AdRequest): Promise<void> {
   const fp = await FingerprintJS.load();
   const result = await fp.get();
-  console.log('Fingerprint result2:', result.visitorId);
+  console.log('Fingerprint result:', result.visitorId);
 
   const container = document.getElementById(adRequest.targetId);
   if (!container) {
