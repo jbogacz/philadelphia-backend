@@ -1,6 +1,11 @@
 import { AdRequest } from './ad.markup.types';
+import FingerprintJS from './fp/fp'
 
-export function initializeAd(adRequest: AdRequest): void {
+export async function initializeAd(adRequest: AdRequest): Promise<void> {
+  const fp = await FingerprintJS.load();
+  const result = await fp.get();
+  console.log('Fingerprint result2:', result.visitorId);
+
   const container = document.getElementById(adRequest.targetId);
   if (!container) {
     console.error('Ad container not found:', adRequest.targetId);

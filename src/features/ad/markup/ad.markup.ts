@@ -1,8 +1,19 @@
 import * as esbuild from 'esbuild';
 import { join } from 'path';
-import { AdConfig, AdRequest } from './ad.markup.types';
+import { AdRequest } from './ad.markup.types';
+
+import FingerprintJS from './fp/fp'
 
 export async function createAdMarkup(adRequest: AdRequest): Promise<string> {
+  try {
+    const fp = await FingerprintJS.load();
+    const result = await fp.get();
+    console.log('Fingerprint result2:', result.visitorId);
+  }
+  catch (error) {
+    console.error('Failed to load fingerprint:', error);
+  }
+
   // Bundle the ad code
   const result = await esbuild.build({
     entryPoints: [join(__dirname, 'ad.markup.code.js')],
@@ -12,7 +23,7 @@ export async function createAdMarkup(adRequest: AdRequest): Promise<string> {
     globalName: 'AdInitializer',
     minify: false,
     target: ['es2015'],
-    platform: 'browser'
+    platform: 'browser',
   });
 
   if (!result.outputFiles?.[0]?.text) {
