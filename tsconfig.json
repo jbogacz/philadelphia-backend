@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "dist",
     "sourceMap": true,
-    "noUnusedLocals": false
+    "noUnusedLocals": false,
+    "allowJs": true
   },
   "include": ["src/**/*.ts", "src/**/*.js"]
 }

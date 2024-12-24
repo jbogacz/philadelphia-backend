@@ -1,5 +1,5 @@
 import { AdRequest } from './ad.markup.types';
-import FingerprintJS from './fp/fp'
+import FingerprintJS from '../../fingerprint/fp.script';
 
 export async function initializeAd(adRequest: AdRequest): Promise<void> {
   const fp = await FingerprintJS.load();
