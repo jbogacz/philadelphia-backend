@@ -4,7 +4,6 @@ import FingerprintJS from '../../fingerprint/fp.script';
 export async function initializeAd(adRequest: AdRequest): Promise<void> {
   const fp = await FingerprintJS.load();
   const result = await fp.get();
-  console.log('Fingerprint result:', result.visitorId);
 
   const container = document.getElementById(adRequest.targetId);
   if (!container) {
@@ -19,7 +18,7 @@ export async function initializeAd(adRequest: AdRequest): Promise<void> {
 
   // Add custom content based on URL
   const content = document.createElement('div');
-  content.textContent = 'Ad content for: ' + adRequest.fingerprintId;
+  content.textContent = 'Calculated fingerprintId: ' + result.visitorId;
   adFrame.appendChild(content);
 
   container.appendChild(adFrame);
