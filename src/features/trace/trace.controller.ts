@@ -16,3 +16,4 @@ export class TraceController {
     reply.code(201).send(profile);
   }
 }
+  

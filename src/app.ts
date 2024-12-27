@@ -1,9 +1,9 @@
-import { join } from 'path';
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload';
-import { FastifyPluginAsync, FastifyServerOptions } from 'fastify';
 import mongodb from '@fastify/mongodb';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
+import { FastifyPluginAsync, FastifyServerOptions } from 'fastify';
+import { join } from 'path';
 import { LoggerService } from './common/logger.service';
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
@@ -52,7 +52,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
     },
   });
 
-  fastify.register(async server => {
+  void fastify.register(async server => {
     LoggerService.initialize(server.log);
   });
 
