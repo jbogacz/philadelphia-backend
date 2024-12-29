@@ -6,6 +6,8 @@ import { Profile } from '../../../src/features/trace/trace.types';
 import { ProfileRepository } from '../../../src/features/trace/profile.repository';
 import { ObjectId, type Collection } from 'mongodb';
 
+import delay = require('delay');
+
 test('trace:repository', async t => {
   const fastify = await build(t);
   const collection: Collection = fastify.mongo.db.collection('profiles');
@@ -119,6 +121,8 @@ test('trace:repository', async t => {
 
     // when
     const saved = await profileRepository.save(profile);
+
+    await delay(1000);
 
     await profileRepository.save({
       _id: saved._id,
