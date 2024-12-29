@@ -1,14 +1,24 @@
-import { ProfileRepository } from './profile.repository'; // @tslint: ignore
+import { ProfileRepository } from './profile.repository';
+import { TraceRepository } from './trace.repository';
 import { Profile, Trace } from './trace.types';
 
 export class TraceService {
-  constructor(private profileRepository: ProfileRepository) {}
+  constructor(
+    private readonly traceRepository: TraceRepository,
+    private readonly profileRepository: ProfileRepository,
+  ) {}
 
   async capture(trace: Trace): Promise<Profile> {
+    // Save the trace
+    await this.traceRepository.save(trace);
+
+    // Update or create the profile
     const now = new Date();
 
     var profile = trace.email ? await this.profileRepository.findByEmail(trace.email) : null;
-    profile = profile ?? (await this.profileRepository.findByFingerprintId(trace.fingerprintId));
+    profile =
+      profile ??
+      (await this.profileRepository.findByFingerprintId(trace.fingerprint.fingerprintId));
     profile = profile ?? ({ fingerprints: [], emails: [], visits: [] } as Profile);
 
     if (trace.email) {
@@ -20,20 +30,18 @@ export class TraceService {
       }
     }
 
-    const fingerprint = profile.fingerprints.find(f => f.fingerprintId === trace.fingerprintId);
+    const fingerprint = profile.fingerprints.find(
+      f => f.fingerprintId === trace.fingerprint.fingerprintId,
+    );
     if (fingerprint) {
       fingerprint.lastSeen = now;
     } else {
-      profile.fingerprints.push({ fingerprintId: trace.fingerprintId, created: now, lastSeen: now });
+      profile.fingerprints.push({
+        fingerprintId: trace.fingerprint.fingerprintId,
+        created: now,
+        lastSeen: now,
+      });
     }
-
-    profile.visits.push({
-      created: now,
-      domain: trace.domain,
-      page: trace.page,
-      title: trace.title,
-      referer: trace.referer
-    });
 
     return this.profileRepository.save(profile as Profile);
   }

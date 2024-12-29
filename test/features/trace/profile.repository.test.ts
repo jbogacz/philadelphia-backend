@@ -4,7 +4,7 @@ import { build, clearDatabase } from '../../helper';
 import { randomUUID } from 'node:crypto';
 import { Profile } from '../../../src/features/trace/trace.types';
 import { ProfileRepository } from '../../../src/features/trace/profile.repository';
-import { ObjectId, type Collection, type Db } from 'mongodb';
+import { ObjectId, type Collection } from 'mongodb';
 
 test('trace:repository', async t => {
   const fastify = await build(t);
@@ -13,6 +13,10 @@ test('trace:repository', async t => {
 
   t.before(async () => {
     await clearDatabase(fastify);
+  });
+
+  t.after(async () => {
+    await fastify.close();
   });
 
   await t.test('should create new profile', async () => {
@@ -27,7 +31,6 @@ test('trace:repository', async t => {
           lastSeen: now
         }
       ],
-      visits: [],
       emails: []
     };
 
@@ -51,7 +54,6 @@ test('trace:repository', async t => {
           lastSeen: now
         }
       ],
-      visits: [],
       emails: []
     };
 
@@ -76,7 +78,6 @@ test('trace:repository', async t => {
           lastSeen: now
         }
       ],
-      visits: [],
       emails: [
         {
           value: 'test@test.pl',
@@ -107,7 +108,6 @@ test('trace:repository', async t => {
           lastSeen: now
         }
       ],
-      visits: [],
       emails: [
         {
           value: 'test@test.pl',

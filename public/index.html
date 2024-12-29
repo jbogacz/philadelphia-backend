@@ -11,6 +11,63 @@
       <h1>This is fingerprint demo2</h1>
     </div>
     <div id="ad-container" />
-    <script src="http://localhost:3000/api/ad?fingerprintId=dupa123&targetId=ad-container" crossorigin="use-credentials"></script>
+    <script src="http://localhost:3000/api/ad?fingerprintId=dupa123&targetId=ad-container"></script>
+    <script>
+      console.log(navigator.language);
+      async function getCountryFromIP() {
+        try {
+          const response = await fetch('http://ip-api.com/json/');
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error('Error getting country:', error);
+        }
+      }
+
+      getCountryFromIP().then(country => {
+        console.log('Country:', country);
+      });
+
+      async function getIP() {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data;
+      }
+
+      function getDeviceInfo() {
+        return {
+          // Browser info
+          userAgent: navigator.userAgent,
+          platform: navigator.platform,
+          vendor: navigator.vendor,
+
+          // Screen properties
+          screenWidth: window.screen.width,
+          screenHeight: window.screen.height,
+          pixelRatio: window.devicePixelRatio,
+
+          // Device type
+          isMobile: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent),
+
+          // OS details
+          os: navigator.platform || navigator.oscpu,
+
+          // Connection
+          connection: navigator.connection?.effectiveType,
+
+          // Memory
+          memory: navigator.deviceMemory,
+
+          // Hardware concurrency
+          cores: navigator.hardwareConcurrency,
+        };
+      }
+
+      console.log('Device info:', getDeviceInfo());
+
+      getIP().then(ip => {
+        console.log('IP:', ip);
+      });
+    </script>
   </body>
 </html>

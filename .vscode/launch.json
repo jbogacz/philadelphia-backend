@@ -26,7 +26,7 @@
       "autoAttachChildProcesses": true,
       "args": [
         "--enable-source-maps",
-        //"--test",
+        "--test",
         "--inspect-port=9229",
         "${workspaceFolder}/test/**/*.ts"
       ],
@@ -44,7 +44,7 @@
       "skipFiles": ["<node_internals>/**"],
       "args": [
         "--enable-source-maps",
-        // "--test",
+        "--test",
         "--inspect-port=9229",
         "${workspaceFolder}/test/features/ad/ad.routes.test.ts"
       ],

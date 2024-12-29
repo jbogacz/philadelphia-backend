@@ -5,6 +5,9 @@ import { TraceService } from '../features/trace/trace.service';
 import { AdService } from '../features/ad/ad.service';
 import { AdController } from '../features/ad/ad.controller';
 import { TraceController } from '../features/trace/trace.controller';
+import { ImpressionService } from '../features/impression/impression.service';
+import { ImpressionController } from '../features/impression/impression.controller';
+import { TraceRepository } from '../features/trace/trace.repository';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here
@@ -17,16 +20,19 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
 
   fastify.decorate('repository', {
     profile: new ProfileRepository(db.collection('profiles')),
+    trace: new TraceRepository(db.collection('traces')),
   });
 
   fastify.decorate('service', {
-    trace: new TraceService(fastify.repository.profile),
+    trace: new TraceService(fastify.repository.trace, fastify.repository.profile),
     ad: new AdService(),
+    impression: new ImpressionService(),
   });
 
   fastify.decorate('controller', {
     ad: new AdController(fastify.service.ad),
     trace: new TraceController(fastify.service.trace),
+    impression: new ImpressionController(fastify.service.impression),
   });
 });
 
@@ -35,14 +41,17 @@ declare module 'fastify' {
   export interface FastifyInstance {
     repository: {
       profile: ProfileRepository;
+      trace: TraceRepository;
     };
     service: {
       trace: TraceService;
       ad: AdService;
+      impression: ImpressionService;
     };
     controller: {
       ad: AdController;
       trace: TraceController;
+      impression: ImpressionController;
     };
   }
 }

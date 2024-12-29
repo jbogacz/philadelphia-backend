@@ -7,13 +7,9 @@ export class TraceController {
 
   async capture(
     request: FastifyRequest<{ Body: CaptureTraceDto }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ): Promise<void> {
-    const profile = await this.traceService.capture({
-      ...request.body,
-      timestamp: new Date(),
-    });
-    reply.code(201).send(profile);
+    await this.traceService.capture(request.body);
+    reply.code(201).send();
   }
 }
-  

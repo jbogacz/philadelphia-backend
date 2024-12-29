@@ -25,4 +25,14 @@ export async function initializeAd(adRequest: AdRequest): Promise<void> {
   container.onclick = () => {
     console.log('Ad clicked:', adRequest.fingerprintId);
   };
+
+  const impression = impressionPixel(result.visitorId);
+  container.appendChild(impression);
+}
+
+function impressionPixel(fingerprintId: string): HTMLElement {
+  const img = new Image();
+  img.src = `http://localhost:3000/impression?fp=${fingerprintId}`;
+  img.style.display = 'none';
+  return img;
 }
