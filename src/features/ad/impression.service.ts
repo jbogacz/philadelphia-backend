@@ -1,5 +1,5 @@
-import { LoggerService } from "../../common";
-import { ImpressionEvent } from "./impression.types";
+import { LoggerService } from '../../common';
+import { ImpressionEvent } from './ad.types';
 
 export class ImpressionService {
   private logger = LoggerService.getLogger('features.impression.ImpressionService');

@@ -1,23 +1,10 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AdService } from './ad.service';
-import { AdRequest } from './markup/ad.markup.types';
 import { LoggerService } from '../../common/logger.service';
 
 export interface AdRequestParams {
-  // Consumer info
-  fingerprintId: string;
-  deviceType?: string;
-  ipAddress?: string;
-  userAgent?: string;
-  geo?: string;
-  countryCode?: string;
-  city?: string;
-
-  // Slot info
-  publisherId?: string; // Unique identifier for the publisher
-  placementId?: string; // Specific location/slot on the page
-  targetId: string; // ID of the container element
-  pageUrl?: string; // Current page URL
+  targetId: string;
+  publisherId: string;
 }
 
 export class AdController {
@@ -34,8 +21,10 @@ export class AdController {
     try {
       this.logger.info('Serving ad', { ...request.query });
 
-      const adRequest: AdRequest = { ...request.query };
-      const adCode = await this.adService.createAdCode(adRequest);
+      const publisherId = request.query.publisherId;
+      const targetId = request.query.targetId;
+
+      const adCode = await this.adService.createAdCode(publisherId, targetId);
 
       reply
         .header('Content-Type', 'application/javascript')

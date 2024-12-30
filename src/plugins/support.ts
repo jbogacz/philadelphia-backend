@@ -5,8 +5,8 @@ import { TraceService } from '../features/trace/trace.service';
 import { AdService } from '../features/ad/ad.service';
 import { AdController } from '../features/ad/ad.controller';
 import { TraceController } from '../features/trace/trace.controller';
-import { ImpressionService } from '../features/impression/impression.service';
-import { ImpressionController } from '../features/impression/impression.controller';
+import { ImpressionService } from '../features/ad/impression.service';
+import { ImpressionController } from '../features/ad/impression.controller';
 import { TraceRepository } from '../features/trace/trace.repository';
 
 export interface SupportPluginOptions {

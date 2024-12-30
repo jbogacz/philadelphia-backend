@@ -1,7 +1,8 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ImpressionService } from './impression.service';
-import { ImpressionEvent } from './impression.types';
+
 import { LoggerService } from '../../common';
+import { ImpressionService } from './impression.service';
+import { ImpressionEvent } from './ad.types';
 
 export class ImpressionController {
   private logger = LoggerService.getLogger('features.impression.ImpressionController');

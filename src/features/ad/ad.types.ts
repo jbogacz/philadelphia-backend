@@ -1,3 +1,11 @@
+export interface AdRequest {
+  publisherId: string;
+  targetId: string;
+  advertiserId: string;
+  creativeId: string;
+  campaignId: string;
+}
+
 export enum ImpressionType {
   RENDERED = 'rendered', // Ad was delivered and rendered on page
   VIEWABLE = 'viewable',
@@ -7,7 +15,9 @@ export enum ImpressionType {
 }
 
 interface BaseImpressionData {
+  traceId: string;
   fingerprintId: string;
+  publisherId: string;
   campaignId?: string;
   advertiserId: string;
   creativeId: string;

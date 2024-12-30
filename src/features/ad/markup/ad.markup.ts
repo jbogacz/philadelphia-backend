@@ -1,7 +1,7 @@
 import * as esbuild from 'esbuild';
 import { join } from 'path';
-import { AdRequest } from './ad.markup.types';
 import { LoggerService } from '../../../common';
+import { AdRequest } from '../ad.types';
 
 export class MarkupBuilder {
   private logger = LoggerService.getLogger('features.ad.markup.MarkupBuilder');
@@ -25,12 +25,13 @@ export class MarkupBuilder {
       throw new Error('Failed to bundle ad code');
     }
 
+    const endpoint = process.env.AD_SERVER_ENDPOINT || 'http://localhost:3000';
+
     // Create the initialization code that will run the ad with the provided config
     const initCode = `
-      AdInitializer.initializeAd({
-        targetId: '${adRequest.targetId}',
-        fingerprintId: '${adRequest.fingerprintId}'
-      });
+      AdInitializer.initialize(
+        '${endpoint}',
+        ${JSON.stringify(adRequest)});
     `;
 
     // Combine the bundled ad code with the initialization

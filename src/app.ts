@@ -2,6 +2,7 @@ import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload';
 import mongodb from '@fastify/mongodb';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
+import cors from '@fastify/cors';
 import { FastifyPluginAsync, FastifyServerOptions } from 'fastify';
 import { join } from 'path';
 import { LoggerService } from './common/logger.service';
@@ -51,6 +52,21 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
       deepLinking: false,
     },
   });
+
+  void fastify.register(cors, {
+    origin: true, // or specify origins like ['http://localhost:8080']
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['Set-Cookie']
+  });
+
+  // void fastify.addHook('onRequest', (request, reply, done) => {
+  //   console.log('Request:', request.headers.origin);
+  //   reply.header('Access-Control-Allow-Origin', request.headers.origin);
+  //   reply.header('Access-Control-Allow-Credentials', 'true');
+  //   done();
+  // });
 
   void fastify.register(async server => {
     LoggerService.initialize(server.log);
