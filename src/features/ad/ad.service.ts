@@ -1,17 +1,17 @@
 import { LoggerService } from '../../common';
-import { AdRequest } from './ad.types';
-import { MarkupBuilder } from './markup/ad.markup';
+import { AdMarkupRequest } from './ad.types';
+import { AdMarkupBuilder } from './markup/ad.markup.builder';
 
 export class AdService {
   private logger = LoggerService.getLogger('features.ad.AdService');
 
-  private markupBuilder = new MarkupBuilder();
+  private adMarkupBuilder = new AdMarkupBuilder();
 
-  async createAdCode(publisherId: string, targetId: string): Promise<string> {
-    this.logger.info('Creating ad code', { publisherId, targetId });
+  async buildMarkupContent(publisherId: string, targetId: string): Promise<string> {
+    this.logger.info('Creating ad markup', { publisherId, targetId });
 
-    // TODO: Call endpoint to get ad configuration
-    const adRequest: AdRequest = {
+    // TODO: Call endpoint to get ad details
+    const adMarkupRequest: AdMarkupRequest = {
       publisherId,
       targetId,
       advertiserId: 'advertiser-1',
@@ -19,6 +19,6 @@ export class AdService {
       campaignId: 'campaign-1',
     };
 
-    return this.markupBuilder.build(adRequest);
+    return this.adMarkupBuilder.build(adMarkupRequest);
   }
 }

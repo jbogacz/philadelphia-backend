@@ -19,17 +19,17 @@ export class AdController {
     reply: FastifyReply,
   ) {
     try {
-      this.logger.info('Serving ad', { ...request.query });
+      this.logger.info('Serving ad', request.query);
 
       const publisherId = request.query.publisherId;
       const targetId = request.query.targetId;
 
-      const adCode = await this.adService.createAdCode(publisherId, targetId);
+      const markup = await this.adService.buildMarkupContent(publisherId, targetId);
 
       reply
         .header('Content-Type', 'application/javascript')
         .header('Cache-Control', 'no-cache')
-        .send(adCode);
+        .send(markup);
     } catch (error) {
       this.logger.error('Failed to serve ad', error);
     }

@@ -1,1 +1,1 @@
-export { MarkupBuilder } from './ad.markup';
+export { AdMarkupBuilder } from './ad.markup.builder';

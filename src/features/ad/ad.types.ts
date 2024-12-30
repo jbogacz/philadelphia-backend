@@ -1,4 +1,4 @@
-export interface AdRequest {
+export interface AdMarkupRequest {
   publisherId: string;
   targetId: string;
   advertiserId: string;

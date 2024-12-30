@@ -1,8 +1,8 @@
 import FingerprintJS, { GetResult } from '../../fingerprint/fp.script';
 import { CaptureTraceDto } from '../../trace';
-import { AdRequest, ImpressionEvent, ImpressionType } from '../ad.types';
+import { AdMarkupRequest, ImpressionEvent, ImpressionType } from '../ad.types';
 
-export async function initialize(backendUrl: string, adRequest: AdRequest): Promise<void> {
+export async function init(backendUrl: string, adCodeRequest: AdMarkupRequest): Promise<void> {
   const fingerprint = await calculateFingerprint();
   const traceId = crypto.randomUUID();
 
@@ -30,9 +30,9 @@ export async function initialize(backendUrl: string, adRequest: AdRequest): Prom
     const impression: ImpressionEvent = {
       traceId: traceId,
       fingerprintId: fingerprint.visitorId,
-      publisherId: adRequest.publisherId,
-      advertiserId: adRequest.advertiserId,
-      creativeId: adRequest.creativeId,
+      publisherId: adCodeRequest.publisherId,
+      advertiserId: adCodeRequest.advertiserId,
+      creativeId: adCodeRequest.creativeId,
       type: ImpressionType.RENDERED,
     };
     const renderedImpression = buildImpression(backendUrl, impression);
