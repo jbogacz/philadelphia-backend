@@ -8,7 +8,12 @@ import { join } from 'path';
 import { LoggerService } from './common/logger.service';
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
-  // Add MongoDB configuration options
+  traces?: {
+    apiUrl?: string;
+  };
+  impressions?: {
+    apiUrl?: string;
+  };
   mongodb?: {
     url: string;
     database: string;
@@ -19,20 +24,33 @@ export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPlugin
   };
 }
 
-// Pass --options via CLI arguments in command to enable these options.
-const options: AppOptions = {};
-
-const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void> => {
-  const mongoConfig = opts.mongodb || {
-    url: 'mongodb://localhost:27017',
-    database: 'testdb',
+const appOptions: AppOptions = {
+  traces: {
+    apiUrl: process.env.TRACES_API_URL,
+  },
+  impressions: {
+    apiUrl: process.env.IMPRESSIONS_API_URL,
+  },
+  mongodb: {
+    url: process.env.MONGODB_URL!,
+    database: process.env.MONGODB_DATABASE!,
     auth: {
-      username: 'admin',
-      password: 'password123',
+      username: process.env.MONGODB_AUTH_USERNAME!,
+      password: process.env.MONGODB_AUTH_PASSWORD!,
     },
-  };
+  },
+};
 
-  void fastify.register(mongodb, mongoConfig);
+// Pass --options via CLI arguments in command to enable these options.
+const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise<void> => {
+  const options = { ...appOptions, ...cliOptions };
+  console.log('Fastify options', options);
+
+  if (!options.mongodb) {
+    throw new Error('MongoDB options are required');
+  }
+
+  void fastify.register(mongodb, options.mongodb);
 
   await fastify.after(); // Wait for mongodb plugin to register
 
@@ -58,7 +76,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-    exposedHeaders: ['Set-Cookie']
+    exposedHeaders: ['Set-Cookie'],
   });
 
   // void fastify.addHook('onRequest', (request, reply, done) => {
@@ -79,7 +97,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
   // through your application
   void fastify.register(AutoLoad, {
     dir: join(__dirname, 'plugins'),
-    options: opts,
+    options: options,
   });
 
   // This loads all plugins defined in routes
@@ -97,4 +115,4 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
 };
 
 export default app;
-export { app, options };
+export { app, appOptions };
