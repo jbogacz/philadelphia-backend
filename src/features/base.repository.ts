@@ -28,7 +28,7 @@ export class BaseRepository<T extends IEntity> {
     }
   }
 
-  private async create(data: T): Promise<T> {
+  async create(data: T): Promise<T> {
     const now = new Date();
     const result = await this.collection.insertOne({ ...data, createdAt: now, updatedAt: now } as OptionalUnlessRequiredId<T>);
 
@@ -42,7 +42,7 @@ export class BaseRepository<T extends IEntity> {
     } as T;
   }
 
-  private async update(data: T): Promise<T> {
+  async update(data: T): Promise<T> {
     const result = await this.collection.updateOne({ _id: data._id } as Filter<T>, { $set: { ...data, updatedAt: new Date() } });
     if (!result.acknowledged) {
       throw new Error('Failed to update document._id: ' + data._id);

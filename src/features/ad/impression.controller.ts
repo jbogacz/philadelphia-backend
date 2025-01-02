@@ -19,13 +19,13 @@ export class ImpressionController {
     }>,
     reply: FastifyReply,
   ): Promise<void> {
-    const impressionData = request.query;
+    const impressionEvent = request.query;
 
-    this.impressionService.capture(impressionData);
+    this.impressionService.capture(impressionEvent);
 
     if (process.env.NODE_ENV === 'development') {
-      reply.header('X-Trace-Id', impressionData.traceId);
-      reply.header('X-Debug-Info', JSON.stringify(impressionData));
+      reply.header('X-Trace-Id', impressionEvent.traceId);
+      reply.header('X-Debug-Info', JSON.stringify(impressionEvent));
     }
 
     reply

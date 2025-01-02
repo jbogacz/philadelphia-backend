@@ -9,6 +9,7 @@ import { ImpressionService } from '../features/ad/impression.service';
 import { ImpressionController } from '../features/ad/impression.controller';
 import { TraceRepository } from '../features/trace/trace.repository';
 import { AppConfig } from '../app.types';
+import { ImpressionRepository } from '../features/ad/impression.repository';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here
@@ -24,12 +25,13 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
   fastify.decorate('repository', {
     profile: new ProfileRepository(db.collection('profiles')),
     trace: new TraceRepository(db.collection('traces')),
+    impression: new ImpressionRepository(db.collection('impressions')),
   });
 
   fastify.decorate('service', {
     trace: new TraceService(fastify.repository.trace, fastify.repository.profile),
     ad: new AdService(config),
-    impression: new ImpressionService(),
+    impression: new ImpressionService(fastify.repository.impression),
   });
 
   fastify.decorate('controller', {
@@ -45,6 +47,7 @@ declare module 'fastify' {
     repository: {
       profile: ProfileRepository;
       trace: TraceRepository;
+      impression: ImpressionRepository;
     };
     service: {
       trace: TraceService;

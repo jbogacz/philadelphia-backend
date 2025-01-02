@@ -12,12 +12,10 @@ export enum ImpressionType {
 /**
  * SCHEMA
  */
-const ImpressionTypeSchema = Type.Enum(ImpressionType);
-
 const ImpressionSchema = Type.Intersect([
   BaseSchema,
   Type.Object({
-    type: ImpressionTypeSchema,
+    type: Type.Enum(ImpressionType),
     traceId: Type.String(),
     fingerprintId: Type.String(),
     publisherId: Type.String(),

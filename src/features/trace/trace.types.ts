@@ -49,20 +49,11 @@ export const EmailSchema = Type.Object({
   lastSeen: Type.Date(),
 });
 
-// export const VisitSchema = Type.Object({
-//   created: Type.Date(),
-//   domain: Type.String(),
-//   page: Type.String(),
-//   title: Type.String(),
-//   referer: Type.String(),
-// });
-
 export const ProfileSchema = Type.Intersect([
   BaseSchema,
   Type.Object({
     fingerprints: Type.Array(FingerprintSchema),
     emails: Type.Array(EmailSchema),
-    // visits: Type.Array(VisitSchema),
   }),
 ]);
 
@@ -76,8 +67,6 @@ export type Profile = Static<typeof ProfileSchema> & IEntity;
 export type Fingerprint = Static<typeof FingerprintSchema>;
 
 export type Email = Static<typeof EmailSchema>;
-
-// export type Visit = Static<typeof VisitSchema>;
 
 /**
  * DTO
