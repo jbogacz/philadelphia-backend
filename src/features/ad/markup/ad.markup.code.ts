@@ -1,8 +1,11 @@
 import FingerprintJS, { GetResult } from '../../fingerprint/fp.script';
 import { CaptureTraceDto } from '../../trace';
-import { AdMarkupRequest, ImpressionEvent, ImpressionType } from '../ad.types';
+import { AdMarkupConfig, AdMarkupRequest, ImpressionEvent, ImpressionType } from '../ad.types';
 
-export async function init(backendUrl: string, adCodeRequest: AdMarkupRequest): Promise<void> {
+export async function load(
+  markupConfig: AdMarkupConfig,
+  markupRequest: AdMarkupRequest,
+): Promise<void> {
   const fingerprint = await calculateFingerprint();
   const traceId = crypto.randomUUID();
 
@@ -21,22 +24,23 @@ export async function init(backendUrl: string, adCodeRequest: AdMarkupRequest): 
       },
     };
 
-    await sendTrace(trace);
+    await sendTrace(markupConfig.traceApiUrl, trace);
   } catch (error) {
     console.error('Failed to send trace:', error);
   }
 
   try {
-    const impression: ImpressionEvent = {
+    const renderedImpression: ImpressionEvent = {
+      type: ImpressionType.RENDERED,
       traceId: traceId,
       fingerprintId: fingerprint.visitorId,
-      publisherId: adCodeRequest.publisherId,
-      advertiserId: adCodeRequest.advertiserId,
-      creativeId: adCodeRequest.creativeId,
-      type: ImpressionType.RENDERED,
+      publisherId: markupRequest.publisherId,
+      campaignId: markupRequest.campaignId,
+      advertiserId: markupRequest.advertiserId,
+      creativeId: markupRequest.creativeId,
     };
-    const renderedImpression = buildImpression(backendUrl, impression);
-    document.body.appendChild(renderedImpression);
+
+    trackImpression(markupConfig.impressionApiUrl, renderedImpression);
   } catch (error) {
     console.error('Failed to send impression:', error);
   }
@@ -61,9 +65,6 @@ export async function init(backendUrl: string, adCodeRequest: AdMarkupRequest): 
   container.onclick = () => {
     console.log('Ad clicked:', fingerprint.visitorId);
   };
-
-  // const impression = impressionPixel(fingerprint.visitorId);
-  // container.appendChild(impression);
 }
 
 async function calculateFingerprint(): Promise<GetResult> {
@@ -71,9 +72,9 @@ async function calculateFingerprint(): Promise<GetResult> {
   return fp.get();
 }
 
-async function sendTrace(trace: CaptureTraceDto): Promise<void> {
+async function sendTrace(traceApiUrl: string, trace: CaptureTraceDto): Promise<void> {
   console.log('Sending trace:', trace);
-  const result = await fetch('http://localhost:3000/api/traces', {
+  const result = await fetch(traceApiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -86,16 +87,16 @@ async function sendTrace(trace: CaptureTraceDto): Promise<void> {
   }
 }
 
-function buildImpression(backendUrl: string, impression: ImpressionEvent): HTMLElement {
+function trackImpression(impressionApiUrl: string, impression: ImpressionEvent): void {
   const params = new URLSearchParams(toRecord(impression));
-  const impressionUrl = backendUrl + '/api/impression?' + params.toString();
+  const impressionUrl = impressionApiUrl + '?' + params.toString();
 
   console.log('Sending impression:', impressionUrl);
 
   const img = new Image();
   img.src = impressionUrl;
   img.style.display = 'none';
-  return img;
+  document.body.appendChild(img);
 }
 
 function toRecord<T extends object>(data: T): Record<string, any> {

@@ -1,35 +1,22 @@
-import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload';
+import AutoLoad from '@fastify/autoload';
+import cors from '@fastify/cors';
 import mongodb from '@fastify/mongodb';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
-import cors from '@fastify/cors';
-import { FastifyPluginAsync, FastifyServerOptions } from 'fastify';
+import { FastifyPluginAsync } from 'fastify';
 import { join } from 'path';
+import { AppOptions } from './app.types';
 import { LoggerService } from './common/logger.service';
 
-export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
-  traces?: {
-    apiUrl?: string;
-  };
-  impressions?: {
-    apiUrl?: string;
-  };
-  mongodb?: {
-    url: string;
-    database: string;
-    auth?: {
-      username: string;
-      password: string;
-    };
-  };
-}
-
+// Load environment variables from .env file
 const appOptions: AppOptions = {
-  traces: {
-    apiUrl: process.env.TRACES_API_URL,
-  },
-  impressions: {
-    apiUrl: process.env.IMPRESSIONS_API_URL,
+  config: {
+    trace: {
+      apiUrl: process.env.TRACE_API_URL!,
+    },
+    impression: {
+      apiUrl: process.env.IMPRESSION_API_URL!,
+    },
   },
   mongodb: {
     url: process.env.MONGODB_URL!,

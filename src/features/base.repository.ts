@@ -1,4 +1,11 @@
-import { Collection, Filter, ObjectId, OptionalUnlessRequiredId, WithId } from 'mongodb';
+import { Type } from '@sinclair/typebox';
+import { Collection, Filter, OptionalUnlessRequiredId, WithId } from 'mongodb';
+
+export const BaseSchema = Type.Object({
+  _id: Type.Optional(Type.String()),
+  createdAt: Type.Optional(Type.Date()),
+  updatedAt: Type.Optional(Type.Date()),
+});
 
 export interface IEntity {
   _id?: string;

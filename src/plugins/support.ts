@@ -8,14 +8,17 @@ import { TraceController } from '../features/trace/trace.controller';
 import { ImpressionService } from '../features/ad/impression.service';
 import { ImpressionController } from '../features/ad/impression.controller';
 import { TraceRepository } from '../features/trace/trace.repository';
+import { AppConfig } from '../app.types';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here
+  config: AppConfig;
 }
 
 // The use of fastify-plugin is required to be able
 // to export the decorators to the outer scope
 export default fp<SupportPluginOptions>(async (fastify, opts) => {
+  const { config } = opts;
   const db: Db = fastify.mongo.db!;
 
   fastify.decorate('repository', {
@@ -25,7 +28,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
 
   fastify.decorate('service', {
     trace: new TraceService(fastify.repository.trace, fastify.repository.profile),
-    ad: new AdService(),
+    ad: new AdService(config),
     impression: new ImpressionService(),
   });
 

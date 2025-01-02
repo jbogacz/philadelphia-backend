@@ -33,7 +33,7 @@ export const traceRoutes: FastifyPluginAsync = async fastify => {
   });
 
   fastify.post(
-    '/traces',
+    '/trace',
     {
       schema: {
         description: 'Capture new trace',

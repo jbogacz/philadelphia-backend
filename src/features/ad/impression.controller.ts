@@ -1,12 +1,16 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 
-import { LoggerService } from '../../common';
-import { ImpressionService } from './impression.service';
 import { ImpressionEvent } from './ad.types';
+import { ImpressionService } from './impression.service';
+
+// 1x1 transparent GIF
+const TRANSPARENT_GIF_BUFFER = Buffer.from([
+  0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x00, 0x00, 0xff, 0xff, 0xff,
+  0x00, 0x00, 0x00, 0x21, 0xf9, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00, 0x00,
+  0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44, 0x01, 0x00, 0x3b,
+]);
 
 export class ImpressionController {
-  private logger = LoggerService.getLogger('features.impression.ImpressionController');
-
   constructor(private readonly impressionService: ImpressionService) {}
 
   async capture(
@@ -17,24 +21,19 @@ export class ImpressionController {
   ): Promise<void> {
     const impressionData = request.query;
 
-    this.logger.info('Impression:', {
-      ...impressionData,
-      ip: request.ip,
-      userAgent: request.headers['user-agent'],
-      referer: request.headers.referer,
-    });
-
     this.impressionService.capture(impressionData);
 
-    // Create 1x1 transparent GIF
-    const pixel = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+    if (process.env.NODE_ENV === 'development') {
+      reply.header('X-Trace-Id', impressionData.traceId);
+      reply.header('X-Debug-Info', JSON.stringify(impressionData));
+    }
 
     reply
       .header('Content-Type', 'image/gif')
-      .header('Content-Length', pixel.length)
+      .header('Content-Length', TRANSPARENT_GIF_BUFFER.length)
       .header('Cache-Control', 'no-cache, no-store, must-revalidate')
       .header('Pragma', 'no-cache')
       .header('Expires', '0')
-      .send(pixel);
+      .send(TRANSPARENT_GIF_BUFFER);
   }
 }

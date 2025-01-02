@@ -1,15 +1,9 @@
 import { Static, Type } from '@sinclair/typebox';
-import { IEntity } from '../base.repository';
+import { BaseSchema, IEntity } from '../base.repository';
 
 /**
  * SCHEMA
  */
-export const BaseSchema = Type.Object({
-  _id: Type.Optional(Type.String()),
-  createdAt: Type.Optional(Type.Date()),
-  updatedAt: Type.Optional(Type.Date()),
-});
-
 export const TraceSchema = Type.Intersect([
   BaseSchema,
   Type.Object({

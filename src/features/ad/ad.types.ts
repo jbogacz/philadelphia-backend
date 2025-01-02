@@ -1,3 +1,38 @@
+import { Static, Type } from '@sinclair/typebox';
+import { BaseSchema, IEntity } from '../base.repository';
+
+export enum ImpressionType {
+  RENDERED = 'rendered',
+  VIEWABLE = 'viewable',
+  VIEWED = 'viewed',
+  CLICK = 'click',
+  ERROR = 'error',
+}
+
+/**
+ * SCHEMA
+ */
+const ImpressionTypeSchema = Type.Enum(ImpressionType);
+
+const ImpressionSchema = Type.Intersect([
+  BaseSchema,
+  Type.Object({
+    type: ImpressionTypeSchema,
+    traceId: Type.String(),
+    fingerprintId: Type.String(),
+    publisherId: Type.String(),
+    campaignId: Type.String(),
+    advertiserId: Type.String(),
+    creativeId: Type.String(),
+    // customParams: Type.Optional(Type.Object(Type.String())),
+  }),
+]);
+
+/**
+ * MODEL
+ */
+export type Impression = Static<typeof ImpressionSchema> & IEntity;
+
 export interface AdMarkupRequest {
   publisherId: string;
   targetId: string;
@@ -6,28 +41,12 @@ export interface AdMarkupRequest {
   campaignId: string;
 }
 
-export enum ImpressionType {
-  RENDERED = 'rendered', // Ad was delivered and rendered on page
-  VIEWABLE = 'viewable',
-  VIEWED = 'viewed', // Ad was in viewport for >1 second
-  CLICK = 'click', // User clicked the ad
-  ERROR = 'error', // Ad failed to render or other error
+export interface AdMarkupConfig {
+  traceApiUrl: string;
+  impressionApiUrl: string;
 }
 
-interface BaseImpressionData {
-  traceId: string;
-  fingerprintId: string;
-  publisherId: string;
-  campaignId?: string;
-  advertiserId: string;
-  creativeId: string;
-  placementId?: string; // Specific location/slot on the page
-  viewportSize?: string; // Target container size
-  deviceType?: string;
-  customParams?: Record<string, string>;
-}
-
-export interface ImpressionEvent extends BaseImpressionData {
-  type: ImpressionType;
-  errorDetails?: string; // For error events
-}
+/**
+ * DTO
+ */
+export type ImpressionEvent = Omit<Impression, '_id' | 'createdAt' | 'updatedAt'>;

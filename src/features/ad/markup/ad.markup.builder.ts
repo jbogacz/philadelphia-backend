@@ -1,17 +1,17 @@
 import * as esbuild from 'esbuild';
 import { join } from 'path';
 import { LoggerService } from '../../../common';
-import { AdMarkupRequest } from '../ad.types';
+import { AdMarkupConfig, AdMarkupRequest } from '../ad.types';
 
 export class AdMarkupBuilder {
   private logger = LoggerService.getLogger('features.ad.markup.AdMarkupBuilder');
 
-  async build(markupRequest: AdMarkupRequest): Promise<string> {
-    this.logger.info('Building ad markup', markupRequest);
+  async build(markupConfig: AdMarkupConfig, markupRequest: AdMarkupRequest): Promise<string> {
+    this.logger.info('Building ad markup', { markupConfig, markupRequest });
 
     // Bundle the ad code
     const result = await esbuild.build({
-      entryPoints: [join(__dirname, 'ad.code.js')],
+      entryPoints: [join(__dirname, 'ad.markup.code.js')],
       bundle: true,
       write: false,
       format: 'iife',
@@ -25,13 +25,10 @@ export class AdMarkupBuilder {
       throw new Error('Failed to bundle ad code');
     }
 
-    // TODO: This should be injected from configuration
-    const endpoint = process.env.AD_SERVER_ENDPOINT || 'http://localhost:3000';
-
     // Create the initialization code that will run the ad with the provided config
     const initCode = `
-      AdMarkupCode.init(
-        '${endpoint}',
+      AdMarkupCode.load(
+        ${JSON.stringify(markupConfig)},
         ${JSON.stringify(markupRequest)}
       );
     `;

@@ -24,7 +24,7 @@ export class AdController {
       const publisherId = request.query.publisherId;
       const targetId = request.query.targetId;
 
-      const markup = await this.adService.buildMarkupContent(publisherId, targetId);
+      const markup = await this.adService.createMarkupCode(publisherId, targetId);
 
       reply
         .header('Content-Type', 'application/javascript')
