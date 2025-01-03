@@ -25,7 +25,7 @@ export class ImpressionController {
     const impressionEvent = request.query;
 
     try {
-      this.impressionService.capture(impressionEvent);
+      await this.impressionService.capture(impressionEvent);
     } catch (error) {
       this.log.error(
         'Failed to capture impression event: ' + JSON.stringify(impressionEvent),

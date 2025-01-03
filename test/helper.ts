@@ -57,6 +57,7 @@ async function build(t: TestContext) {
   t.after(async () => {
     await fastify.close();
     await MongoHelper.cleanup();
+    // await delay(2000);
   });
 
   return fastify;
