@@ -1,8 +1,7 @@
-import { test } from 'node:test';
-import * as assert from 'node:assert';
-import { build, clearDatabase, MongoHelper } from '../../helper';
-import { ImpressionRepository } from '../../../src/features/ad/impression.repository';
 import { Collection } from 'mongodb';
+import * as assert from 'node:assert';
+import { test } from 'node:test';
+import { build, clearDatabase } from '../../helper';
 
 test('ad:routes', async t => {
   const fastify = await build(t);
