@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { AdRequestParams } from './ad.controller';
+import { AdQuery } from './ad.controller';
 import { ImpressionEvent } from './ad.types';
 
 export const adRoutes: FastifyPluginAsync = async fastify => {
@@ -7,7 +7,7 @@ export const adRoutes: FastifyPluginAsync = async fastify => {
   const impressionController = fastify.controller.impression;
 
   fastify.get<{
-    Querystring: AdRequestParams;
+    Querystring: AdQuery;
   }>(
     '/ad',
     {

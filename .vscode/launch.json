@@ -46,7 +46,8 @@
         "--enable-source-maps",
         "--test",
         "--inspect-port=9229",
-        "${workspaceFolder}/test/features/ad/ad.routes.test.ts"
+        "${workspaceFolder}/test/features/ad/impression.repository.test.ts"
+        // "${workspaceFolder}/test/features/trace/profile.repository.test.ts"
       ],
       "runtimeArgs": ["-r", "ts-node/register"],
       "cwd": "${workspaceFolder}",

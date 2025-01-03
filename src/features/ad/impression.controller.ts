@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 
 import { ImpressionEvent } from './ad.types';
 import { ImpressionService } from './impression.service';
+import { LoggerService } from '../../common';
 
 // 1x1 transparent GIF
 const TRANSPARENT_GIF_BUFFER = Buffer.from([
@@ -11,6 +12,8 @@ const TRANSPARENT_GIF_BUFFER = Buffer.from([
 ]);
 
 export class ImpressionController {
+  private log = LoggerService.getLogger('feature.ad.ImpressionController');
+
   constructor(private readonly impressionService: ImpressionService) {}
 
   async capture(
@@ -21,7 +24,14 @@ export class ImpressionController {
   ): Promise<void> {
     const impressionEvent = request.query;
 
-    this.impressionService.capture(impressionEvent);
+    try {
+      this.impressionService.capture(impressionEvent);
+    } catch (error) {
+      this.log.error(
+        'Failed to capture impression event: ' + JSON.stringify(impressionEvent),
+        error,
+      );
+    }
 
     if (process.env.NODE_ENV === 'development') {
       reply.header('X-Trace-Id', impressionEvent.traceId);
