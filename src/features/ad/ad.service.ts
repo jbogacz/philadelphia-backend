@@ -8,7 +8,7 @@ export class AdService {
 
   constructor(
     private readonly config: AppConfig,
-    private readonly adMarkupBuilder = new AdMarkupBuilder(),
+    private readonly markupBuilder = new AdMarkupBuilder(),
   ) {}
 
   async createMarkupCode(publisherId: string, targetId: string): Promise<string> {
@@ -28,6 +28,6 @@ export class AdService {
       campaignId: 'campaign-1',
     };
 
-    return this.adMarkupBuilder.build(markupConfig, markupRequest);
+    return this.markupBuilder.build(markupConfig, markupRequest);
   }
 }

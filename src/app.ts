@@ -17,6 +17,9 @@ const appOptions: AppOptions = {
     impression: {
       apiUrl: process.env.IMPRESSION_API_URL!,
     },
+    fileStorage: {
+      bucket: process.env.FILE_STORAGE_BUCKET!,
+    },
   },
   mongodb: {
     url: process.env.MONGODB_URL!,
@@ -25,6 +28,13 @@ const appOptions: AppOptions = {
       username: process.env.MONGODB_AUTH_USERNAME!,
       password: process.env.MONGODB_AUTH_PASSWORD!,
     },
+  },
+  minio: {
+    endPoint: process.env.MINIO_ENDPOINT!,
+    port: parseInt(process.env.MINIO_PORT!),
+    useSSL: process.env.MINIO_USE_SSL === 'true',
+    accessKey: process.env.MINIO_ACCESS_KEY!,
+    secretKey: process.env.MINIO_SECRET_KEY!,
   },
 };
 
