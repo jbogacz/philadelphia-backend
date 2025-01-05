@@ -1,10 +1,10 @@
 import FingerprintJS, { GetResult } from '../../fingerprint/fp.script';
 import { CaptureTraceDto } from '../../trace';
-import { AdMarkupConfig, AdMarkupRequest, ImpressionEvent, ImpressionType } from '../ad.types';
+import { AdMarkupConfig, AdMarkupBlueprint, ImpressionEvent, ImpressionType } from '../ad.types';
 
 export async function load(
   markupConfig: AdMarkupConfig,
-  markupRequest: AdMarkupRequest,
+  markupRequest: AdMarkupBlueprint,
 ): Promise<void> {
   const fingerprint = await calculateFingerprint();
   const traceId = crypto.randomUUID();
@@ -45,16 +45,18 @@ export async function load(
     console.error('Failed to send impression:', error);
   }
 
-  const container = document.getElementById('ad-container');
+  const container = document.getElementById(markupRequest.targetId);
   if (!container) {
-    console.error('Ad container not found:', 'ad-container');
+    console.error('Ad container not found:', markupRequest.targetId);
     return;
   }
 
+  const creative = new Image();
+  creative.src = markupRequest.creativeUrl;
+  creative.style.width = '100%';
+
   const adFrame = document.createElement('div');
-  adFrame.style.width = '100%';
-  adFrame.style.height = '250px';
-  adFrame.style.border = '1px solid #ccc';
+  adFrame.appendChild(creative);
 
   // Add custom content based on URL
   const content = document.createElement('div');

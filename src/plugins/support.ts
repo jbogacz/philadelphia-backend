@@ -2,7 +2,7 @@ import fp from 'fastify-plugin';
 import type { Db } from 'mongodb';
 import { ProfileRepository } from '../features/trace/profile.repository';
 import { TraceService } from '../features/trace/trace.service';
-import { AdService } from '../features/ad/ad.service';
+import { AdMarkupService } from '../features/ad/ad.markup.service';
 import { AdController } from '../features/ad/ad.controller';
 import { TraceController } from '../features/trace/trace.controller';
 import { ImpressionService } from '../features/ad/impression.service';
@@ -10,6 +10,7 @@ import { ImpressionController } from '../features/ad/impression.controller';
 import { TraceRepository } from '../features/trace/trace.repository';
 import { AppConfig } from '../app.types';
 import { ImpressionRepository } from '../features/ad/impression.repository';
+import { CreativeService } from '../features/ad/creative.service';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here
@@ -28,14 +29,17 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     impression: new ImpressionRepository(db.collection('impressions')),
   });
 
+  const creativeService = new CreativeService(fastify.fileStorage);
+
   fastify.decorate('service', {
     trace: new TraceService(fastify.repository.trace, fastify.repository.profile),
-    ad: new AdService(config),
+    creative: creativeService,
+    markup: new AdMarkupService(creativeService, config),
     impression: new ImpressionService(fastify.repository.impression),
   });
 
   fastify.decorate('controller', {
-    ad: new AdController(fastify.service.ad),
+    ad: new AdController(fastify.service.markup),
     trace: new TraceController(fastify.service.trace),
     impression: new ImpressionController(fastify.service.impression),
   });
@@ -51,8 +55,9 @@ declare module 'fastify' {
     };
     service: {
       trace: TraceService;
-      ad: AdService;
+      markup: AdMarkupService;
       impression: ImpressionService;
+      creative: CreativeService;
     };
     controller: {
       ad: AdController;

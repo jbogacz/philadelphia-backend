@@ -4,7 +4,7 @@ import { AppConfig } from '../app.types';
 export class FileStorage {
   constructor(private readonly minio: Client, private readonly config: AppConfig) {}
 
-  async resolveByFilename(filename: string): Promise<string> {
+  async resolveFileUrl(filename: string): Promise<string> {
     return this.minio.presignedGetObject(this.config.fileStorage.bucket, filename);
   }
 

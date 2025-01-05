@@ -1,13 +1,13 @@
 import * as esbuild from 'esbuild';
 import { join } from 'path';
 import { LoggerService } from '../../../common';
-import { AdMarkupConfig, AdMarkupRequest } from '../ad.types';
+import { AdMarkupConfig, AdMarkupBlueprint } from '../ad.types';
 
 export class AdMarkupBuilder {
   private logger = LoggerService.getLogger('features.ad.markup.AdMarkupBuilder');
 
-  async build(markupConfig: AdMarkupConfig, markupRequest: AdMarkupRequest): Promise<string> {
-    this.logger.info('Building ad markup', { markupConfig, markupRequest });
+  async build(markupBlueprint: AdMarkupBlueprint, markupConfig: AdMarkupConfig): Promise<string> {
+    this.logger.info('Building ad markup', { config: markupConfig, blueprint: markupBlueprint });
 
     // Bundle the ad code
     const result = await esbuild.build({
@@ -29,7 +29,7 @@ export class AdMarkupBuilder {
     const initCode = `
       AdMarkupCode.load(
         ${JSON.stringify(markupConfig)},
-        ${JSON.stringify(markupRequest)}
+        ${JSON.stringify(markupBlueprint)}
       );
     `;
 

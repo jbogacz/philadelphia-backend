@@ -31,12 +31,20 @@ const ImpressionSchema = Type.Intersect([
  */
 export type Impression = Static<typeof ImpressionSchema> & IEntity;
 
-export interface AdMarkupRequest {
+export interface AdCreative {
+  creativeId: string;
+  creativeUrl: string;
+  campaignId: string;
+  advertiserId: string;
+}
+
+export interface AdMarkupBlueprint {
   publisherId: string;
   targetId: string;
   advertiserId: string;
-  creativeId: string;
   campaignId: string;
+  creativeId: string;
+  creativeUrl: string;
 }
 
 export interface AdMarkupConfig {
