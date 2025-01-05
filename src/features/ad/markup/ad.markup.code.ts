@@ -51,19 +51,24 @@ export async function load(
     return;
   }
 
-  const creative = new Image();
-  creative.src = markupRequest.creativeUrl;
-  creative.style.width = '100%';
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = `
+    height: 300px;
+    position: relative;
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+  `;
 
-  const adFrame = document.createElement('div');
-  adFrame.appendChild(creative);
+  const image = new Image();
+  image.src = markupRequest.creativeUrl;
+  image.style.width = '100%';
 
-  // Add custom content based on URL
-  const content = document.createElement('div');
-  content.textContent = 'Calculated fingerprintId: ' + fingerprint.visitorId;
-  adFrame.appendChild(content);
+  wrapper.appendChild(image);
+  container.appendChild(wrapper);
 
-  container.appendChild(adFrame);
   container.onclick = () => {
     console.log('Ad clicked:', fingerprint.visitorId);
   };
