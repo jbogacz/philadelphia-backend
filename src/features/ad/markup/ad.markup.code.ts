@@ -71,6 +71,21 @@ export async function load(
 
   container.onclick = () => {
     console.log('Ad clicked:', fingerprint.visitorId);
+    try {
+      const renderedImpression: ImpressionEvent = {
+        type: ImpressionType.CLICKED,
+        traceId: traceId,
+        fingerprintId: fingerprint.visitorId,
+        publisherId: markupRequest.publisherId,
+        campaignId: markupRequest.campaignId,
+        advertiserId: markupRequest.advertiserId,
+        creativeId: markupRequest.creativeId,
+      };
+
+      trackImpression(markupConfig.impressionApiUrl, renderedImpression);
+    } catch (error) {
+      console.error('Failed to send impression:', error);
+    }
   };
 }
 

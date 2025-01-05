@@ -5,7 +5,7 @@ export enum ImpressionType {
   RENDERED = 'rendered',
   VIEWABLE = 'viewable',
   VIEWED = 'viewed',
-  CLICK = 'click',
+  CLICKED = 'clicked',
   ERROR = 'error',
 }
 
