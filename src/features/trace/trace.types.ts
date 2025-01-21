@@ -16,7 +16,7 @@ export const TraceSchema = Type.Intersect([
       Type.Object({
         language: Type.Optional(Type.String()),
         country: Type.Optional(Type.String()),
-        city: Type.Optional(Type.String()),
+        city: Type.Optional(Type.String()), // TODO: Change to region
         timezone: Type.Optional(Type.String()),
       }),
     ),
@@ -39,13 +39,13 @@ export const TraceSchema = Type.Intersect([
 
 export const FingerprintSchema = Type.Object({
   fingerprintId: Type.String(),
-  created: Type.Date(),
+  created: Type.Date(), // TODO: Change to firstSeen
   lastSeen: Type.Date(),
 });
 
 export const EmailSchema = Type.Object({
   value: Type.String(),
-  created: Type.Date(),
+  created: Type.Date(), // TODO: Change to firstSeen
   lastSeen: Type.Date(),
 });
 
@@ -55,6 +55,7 @@ export const ProfileSchema = Type.Intersect([
     fingerprints: Type.Array(FingerprintSchema),
     emails: Type.Array(EmailSchema),
   }),
+  // TODO: Add firstSeen and lastSeen
 ]);
 
 /**
