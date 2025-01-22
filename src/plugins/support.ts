@@ -11,6 +11,7 @@ import { TraceRepository } from '../features/trace/trace.repository';
 import { AppConfig } from '../app.types';
 import { ImpressionRepository } from '../features/ad/impression.repository';
 import { CreativeService } from '../features/ad/creative.service';
+import { FlowController } from '../features/trace/flow.controller';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here
@@ -41,6 +42,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
   fastify.decorate('controller', {
     ad: new AdController(fastify.service.markup),
     trace: new TraceController(fastify.service.trace),
+    flow: new FlowController(),
     impression: new ImpressionController(fastify.service.impression),
   });
 });
@@ -62,6 +64,7 @@ declare module 'fastify' {
     controller: {
       ad: AdController;
       trace: TraceController;
+      flow: FlowController;
       impression: ImpressionController;
     };
   }
