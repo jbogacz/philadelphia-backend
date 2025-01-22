@@ -1,3 +1,14 @@
+# Technical Requirements
+
+- Node.js version: 22.11.x
+- npm version: 10.9.x
+
+## Docker Environment
+
+Required containers from docker-compose:
+- MongoDB latest
+- MINIO latest
+
 # Ad Creative Asset Management System Documentation
 
 ## Directory Structure
