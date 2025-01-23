@@ -1,15 +1,18 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { FlowDto } from './flow.types';
-import { LoggerService } from '../../common';
+import { LoggerService } from '../../../common';
+import { FlowService } from './flow.service';
 
 export class FlowController {
   private logger = LoggerService.getLogger('feature.trace.FlowController');
+
+  constructor(private readonly flowService: FlowService) {}
 
   async capture(
     request: FastifyRequest<{ Querystring: FlowDto }>,
     reply: FastifyReply,
   ): Promise<void> {
-    this.logger.info('Flow captured', request.query);
+    const flowCode = await this.flowService.generate(request.query);
 
     const html = `
       <!DOCTYPE html>
@@ -28,6 +31,9 @@ export class FlowController {
 
           // Immediate redirect
           // window.location.href = 'http://localhost:3000/documentation';
+
+          // Dynamic code  
+          ${flowCode}
           </script>
         </body>
       </html>

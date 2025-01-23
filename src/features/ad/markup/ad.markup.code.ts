@@ -3,8 +3,8 @@ import { CaptureTraceDto } from '../../trace';
 import { AdMarkupConfig, AdMarkupBlueprint, ImpressionEvent, ImpressionType } from '../ad.types';
 
 export async function load(
-  markupConfig: AdMarkupConfig,
-  markupRequest: AdMarkupBlueprint,
+  blueprint: AdMarkupBlueprint,
+  config: AdMarkupConfig
 ): Promise<void> {
   const fingerprint = await calculateFingerprint();
   const traceId = crypto.randomUUID();
@@ -24,7 +24,7 @@ export async function load(
       },
     };
 
-    await sendTrace(markupConfig.traceApiUrl, trace);
+    await sendTrace(config.traceApiUrl, trace);
   } catch (error) {
     console.error('Failed to send trace:', error);
   }
@@ -34,20 +34,20 @@ export async function load(
       type: ImpressionType.RENDERED,
       traceId: traceId,
       fingerprintId: fingerprint.visitorId,
-      publisherId: markupRequest.publisherId,
-      campaignId: markupRequest.campaignId,
-      advertiserId: markupRequest.advertiserId,
-      creativeId: markupRequest.creativeId,
+      publisherId: blueprint.publisherId,
+      campaignId: blueprint.campaignId,
+      advertiserId: blueprint.advertiserId,
+      creativeId: blueprint.creativeId,
     };
 
-    trackImpression(markupConfig.impressionApiUrl, renderedImpression);
+    trackImpression(config.impressionApiUrl, renderedImpression);
   } catch (error) {
     console.error('Failed to send impression:', error);
   }
 
-  const container = document.getElementById(markupRequest.targetId);
+  const container = document.getElementById(blueprint.targetId);
   if (!container) {
-    console.error('Ad container not found:', markupRequest.targetId);
+    console.error('Ad container not found:', blueprint.targetId);
     return;
   }
 
@@ -63,7 +63,7 @@ export async function load(
   `;
 
   const image = new Image();
-  image.src = markupRequest.creativeUrl;
+  image.src = blueprint.creativeUrl;
   image.style.width = '100%';
 
   wrapper.appendChild(image);
@@ -76,13 +76,13 @@ export async function load(
         type: ImpressionType.CLICKED,
         traceId: traceId,
         fingerprintId: fingerprint.visitorId,
-        publisherId: markupRequest.publisherId,
-        campaignId: markupRequest.campaignId,
-        advertiserId: markupRequest.advertiserId,
-        creativeId: markupRequest.creativeId,
+        publisherId: blueprint.publisherId,
+        campaignId: blueprint.campaignId,
+        advertiserId: blueprint.advertiserId,
+        creativeId: blueprint.creativeId,
       };
 
-      trackImpression(markupConfig.impressionApiUrl, renderedImpression);
+      trackImpression(config.impressionApiUrl, renderedImpression);
     } catch (error) {
       console.error('Failed to send impression:', error);
     }

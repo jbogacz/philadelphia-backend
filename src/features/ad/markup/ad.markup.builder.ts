@@ -22,18 +22,18 @@ export class AdMarkupBuilder {
     });
 
     if (!result.outputFiles?.[0]?.text) {
-      throw new Error('Failed to bundle ad code');
+      throw new Error('Failed to bundle dynamic code');
     }
 
     // Create the initialization code that will run the ad with the provided config
-    const initCode = `
+    const code = `
       AdMarkupCode.load(
-        ${JSON.stringify(markupConfig)},
-        ${JSON.stringify(markupBlueprint)}
+        ${JSON.stringify(markupBlueprint)},
+        ${JSON.stringify(markupConfig)}
       );
     `;
 
     // Combine the bundled ad code with the initialization
-    return result.outputFiles[0].text + initCode;
+    return result.outputFiles[0].text + code;
   }
 }
