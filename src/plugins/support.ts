@@ -11,8 +11,8 @@ import { TraceRepository } from '../features/trace/trace.repository';
 import { AppConfig } from '../app.types';
 import { ImpressionRepository } from '../features/ad/impression.repository';
 import { CreativeService } from '../features/ad/creative.service';
-import { FlowController } from '../features/trace/flow/flow.controller';
-import { FlowService } from '../features/trace/flow/flow.service';
+import { FlowController } from '../features/flow/flow.controller';
+import { FlowService } from '../features/flow/flow.service';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here

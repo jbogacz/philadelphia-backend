@@ -63,6 +63,6 @@ export const traceRoutes: FastifyPluginAsync = async fastify => {
         tags: ['flow'],
       },
     },
-    fastify.controller.flow.capture.bind(fastify.controller.flow),
+    fastify.controller.flow.serveCode.bind(fastify.controller.flow),
   );
 };

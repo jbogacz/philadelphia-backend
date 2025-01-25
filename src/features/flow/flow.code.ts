@@ -1,10 +1,11 @@
-import FingerprintJS, { GetResult } from '../../fingerprint/fp.script';
+import FingerprintJS, { GetResult } from '../fingerprint/fp.script';
 import { FlowBlueprint, FlowConfig } from './flow.types';
 
 export async function load(blueprint: FlowBlueprint, config: FlowConfig) {
   const fingerprint = await calculateFingerprint();
+  const traceId = crypto.randomUUID();
 
-  console.log('Calculated finterprint:', fingerprint.visitorId);
+  // TODO: Collect publisherId, campaignId, source
 
   window.location.href = 'https://en.wikipedia.org/wiki/Philadelphia';
 }

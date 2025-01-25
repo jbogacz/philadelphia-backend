@@ -12,6 +12,7 @@ export async function load(
   try {
     const trace: CaptureTraceDto = {
       traceId: traceId,
+      type: 'page',
       fingerprint: {
         fingerprintId: fingerprint.visitorId,
       },

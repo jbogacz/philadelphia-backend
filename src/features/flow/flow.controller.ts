@@ -1,14 +1,14 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { FlowDto } from './flow.types';
-import { LoggerService } from '../../../common';
 import { FlowService } from './flow.service';
+import { LoggerService } from '../../common';
 
 export class FlowController {
   private logger = LoggerService.getLogger('feature.trace.FlowController');
 
   constructor(private readonly flowService: FlowService) {}
 
-  async capture(
+  async serveCode(
     request: FastifyRequest<{ Querystring: FlowDto }>,
     reply: FastifyReply,
   ): Promise<void> {
@@ -37,7 +37,7 @@ export class FlowController {
           </script>
         </body>
       </html>
-  `;
+    `;
     reply.code(200).type('text/html').send(html);
   }
 }

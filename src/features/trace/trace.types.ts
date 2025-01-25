@@ -8,6 +8,7 @@ export const TraceSchema = Type.Intersect([
   BaseSchema,
   Type.Object({
     traceId: Type.String(),
+    type: Type.String({ enum: ['flow', 'page'] }),
     email: Type.Optional(Type.String({ format: 'email' })),
     fingerprint: Type.Object({
       fingerprintId: Type.String(),
@@ -28,10 +29,10 @@ export const TraceSchema = Type.Intersect([
       }),
     ),
     page: Type.Object({
-      domain: Type.String(),
-      path: Type.String(),
-      search: Type.String(),
-      title: Type.String(),
+      domain: Type.Optional(Type.String()),
+      path: Type.Optional(Type.String()),
+      search: Type.Optional(Type.String()),
+      title: Type.Optional(Type.String()),
       referer: Type.String(),
     }),
   }),
