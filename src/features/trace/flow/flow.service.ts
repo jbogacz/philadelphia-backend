@@ -6,6 +6,6 @@ export class FlowService {
 
   async generate(flow: FlowDto) {
     const { utmCampaign, utmSource, utmContent } = flow;
-    return this.flowBuilder.build({}, {});
+    return this.flowBuilder.build({}, { name: 'flow' });
   }
 }

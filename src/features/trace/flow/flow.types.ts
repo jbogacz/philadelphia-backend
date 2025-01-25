@@ -1,11 +1,13 @@
+import { DynamicBlueprint, DynamicConfig } from "../../../dynamic/types";
+
 /**
  * MODEL
  */
-export interface FlowBlueprint {
+export interface FlowBlueprint extends DynamicBlueprint {
 
 }
 
-export interface FlowConfig {
+export interface FlowConfig extends DynamicConfig{
 
 }
 

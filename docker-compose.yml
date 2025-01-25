@@ -4,7 +4,7 @@ services:
   mongodb:
     image: mongo:latest
     container_name: mongodb
-    restart: always
+    restart: 'no'
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password123
@@ -24,7 +24,7 @@ services:
   mongo-express:
     image: mongo-express:latest
     container_name: mongo-express
-    restart: always
+    restart: 'no'
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: admin
       ME_CONFIG_MONGODB_ADMINPASSWORD: password123
@@ -43,6 +43,7 @@ services:
   minio:
     image: quay.io/minio/minio:latest
     container_name: minio-google-file-storage
+    restart: 'no'
     ports:
       - '9000:9000' # API port
       - '9001:9001' # Console port

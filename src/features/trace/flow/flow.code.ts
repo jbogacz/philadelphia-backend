@@ -6,7 +6,7 @@ export async function load(blueprint: FlowBlueprint, config: FlowConfig) {
 
   console.log('Calculated finterprint:', fingerprint.visitorId);
 
-  window.location.href = 'http://localhost:3000/documentation';
+  window.location.href = 'https://en.wikipedia.org/wiki/Philadelphia';
 }
 
 async function calculateFingerprint(): Promise<GetResult> {
