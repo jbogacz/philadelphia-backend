@@ -1,10 +1,6 @@
 import { Type } from '@sinclair/typebox';
 import { Collection, Filter, OptionalUnlessRequiredId, WithId } from 'mongodb';
 
-const MongoDate = Type.Object({
-  $date: Type.String({ format: 'date-time' })
-})
-
 export const BaseSchema = Type.Object({
   _id: Type.Optional(Type.String()),
   createdAt: Type.Optional(Type.Date()),
