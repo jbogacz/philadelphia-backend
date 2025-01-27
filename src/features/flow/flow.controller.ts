@@ -12,7 +12,7 @@ export class FlowController {
     request: FastifyRequest<{ Querystring: FlowDto }>,
     reply: FastifyReply,
   ): Promise<void> {
-    const flowCode = await this.flowService.generate(request.query);
+    const flowCode = await this.flowService.generateCode(request.query);
 
     const html = `
       <!DOCTYPE html>
@@ -32,7 +32,7 @@ export class FlowController {
           // Immediate redirect
           // window.location.href = 'http://localhost:3000/documentation';
 
-          // Dynamic code  
+          // Dynamic code
           ${flowCode}
           </script>
         </body>

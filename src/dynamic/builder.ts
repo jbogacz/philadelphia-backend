@@ -7,20 +7,18 @@ import { join } from 'path';
 export class DynamicBuilder<T extends DynamicBlueprint, U extends DynamicConfig> {
   private logger = LoggerService.getLogger('dynamic.DynamicCodeBuilder');
 
-  constructor(private readonly dynamicDirname: string) {}
+  constructor(private readonly dynamicCodeName: string, private readonly dynamicDirname: string) {}
 
   async build(blueprint: T, config: U): Promise<string> {
-    this.logger.info('Building dynamic code: ' + config.name);
-
-    const dynamicCodeName = config.name;
+    this.logger.info('Building dynamic code: ' + this.dynamicCodeName);
 
     // Bundle the ad code
     const result = await esbuild.build({
-      entryPoints: [join(this.dynamicDirname, dynamicCodeName + '.code.js')],
+      entryPoints: [join(this.dynamicDirname, this.dynamicCodeName + '.code.js')],
       bundle: true,
       write: false,
       format: 'iife',
-      globalName: dynamicCodeName + 'DynamicCode',
+      globalName: this.dynamicCodeName + 'DynamicCode',
       minify: false,
       target: ['es2015'],
       platform: 'browser',
@@ -31,7 +29,7 @@ export class DynamicBuilder<T extends DynamicBlueprint, U extends DynamicConfig>
     }
 
     const code = `
-      ${dynamicCodeName + 'DynamicCode'}.load(
+      ${this.dynamicCodeName + 'DynamicCode'}.load(
         ${JSON.stringify(blueprint)},
         ${JSON.stringify(config)}
       );

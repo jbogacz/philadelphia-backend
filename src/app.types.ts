@@ -9,12 +9,16 @@ export interface AppConfig {
   impression: {
     apiUrl: string;
   };
+  flow: {
+    apiUrl: string;
+  };
   fileStorage: {
     bucket: string;
   };
 }
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
+  env?: string;
   config: AppConfig;
   mongodb: {
     url: string;

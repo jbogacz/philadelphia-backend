@@ -1,7 +1,3 @@
-export interface DynamicBlueprint {
+export interface DynamicBlueprint {}
 
-}
-
-export interface DynamicConfig {
-  name: string
-}
+export interface DynamicConfig {}

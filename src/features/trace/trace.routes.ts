@@ -24,11 +24,11 @@ export const traceRoutes: FastifyPluginAsync = async fastify => {
       }),
     ),
     page: Type.Object({
-      domain: Type.String(),
-      path: Type.String(),
-      search: Type.String(),
-      title: Type.String(),
-      referer: Type.String(),
+      domain: Type.Optional(Type.String()),
+      path: Type.Optional(Type.String()),
+      search: Type.Optional(Type.String()),
+      title: Type.Optional(Type.String()),
+      referer: Type.Optional(Type.String()),
     }),
   });
 

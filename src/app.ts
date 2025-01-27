@@ -6,16 +6,21 @@ import swaggerUI from '@fastify/swagger-ui';
 import { FastifyPluginAsync } from 'fastify';
 import { join } from 'path';
 import { AppOptions } from './app.types';
+import { seed } from './app.utils';
 import { LoggerService } from './common/logger.service';
 
 // Load environment variables from .env file
 const appOptions: AppOptions = {
+  env: process.env.NODE_ENV,
   config: {
     trace: {
       apiUrl: process.env.TRACE_API_URL!,
     },
     impression: {
       apiUrl: process.env.IMPRESSION_API_URL!,
+    },
+    flow: {
+      apiUrl: process.env.FLOW_API_URL!,
     },
     fileStorage: {
       bucket: process.env.FILE_STORAGE_BUCKET!,
@@ -50,6 +55,12 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
   void fastify.register(mongodb, options.mongodb);
 
   await fastify.after(); // Wait for mongodb plugin to register
+
+  void fastify.register(async fastify => {
+    if (process.env.NODE_ENV === 'development') {
+      await seed(fastify);
+    }
+  });
 
   void fastify.register(swagger, {
     swagger: {
