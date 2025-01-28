@@ -32,3 +32,5 @@ export const CampaignSchema = Type.Intersect([
  * MODEL
  */
 export type Campaign = Static<typeof CampaignSchema> & IEntity;
+
+export type CampaignTrace = Static<typeof CampaignTraceSchema>;
