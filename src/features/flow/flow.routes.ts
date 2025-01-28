@@ -38,7 +38,7 @@ export const flowRoutes: FastifyPluginAsync = async fastify => {
             publishedId: { type: 'string', default: 'publisher-1' },
             campaignId: { type: 'string', default: 'campaign-1' },
             source: { type: 'string', default: 'instagram' },
-            referer: { type: 'string', default: 'https://www.instagram.com/'},
+            referer: { type: 'string', default: 'https://www.instagram.com/publisher-1'},
           },
         },
         response: 204,

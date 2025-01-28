@@ -2,7 +2,7 @@ import { AppConfig } from '../../app.types';
 import { CampaignService } from '../campaign/campaign.service';
 import { PublisherService } from '../publisher/publisher.service';
 import { FlowBuilder } from './flow.builder';
-import { FlowBlueprint, FlowConfig, FlowDto, valueOfSource } from './flow.types';
+import { FlowBlueprint, FlowConfig, FlowDto, FlowEventDto, valueOfSource } from './flow.types';
 
 export class FlowService {
   private flowBuilder: FlowBuilder = new FlowBuilder();
@@ -31,5 +31,9 @@ export class FlowService {
     };
 
     return this.flowBuilder.build(flowBlueprint, flowConfig);
+  }
+
+  async captureEvent(event: FlowEventDto): Promise<void> {
+    console.log('Capturing flow event:', event);
   }
 }

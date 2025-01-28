@@ -45,6 +45,7 @@ export class FlowController {
     request: FastifyRequest<{ Body: FlowEventDto }>,
     reply: FastifyReply,
   ): Promise<void> {
+    await this.flowService.captureEvent(request.body);
     reply.code(204).send();
   }
 }
