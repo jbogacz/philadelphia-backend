@@ -1,4 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
+import { randomId } from '../../common/utils';
 
 export const flowRoutes: FastifyPluginAsync = async fastify => {
   fastify.get(
@@ -18,5 +19,32 @@ export const flowRoutes: FastifyPluginAsync = async fastify => {
       },
     },
     fastify.controller.flow.serveCode.bind(fastify.controller.flow),
+  );
+
+  fastify.post(
+    '/flow',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['traceId', 'fingerprint', 'publishedId', 'campaignId', 'source'],
+          properties: {
+            traceId: { type: 'string', default: 'trace-' + randomId() },
+            fingerprint: {
+              type: 'object',
+              required: ['fingerprintId'],
+              properties: { fingerprintId: { type: 'string', default: 'fingerprint-' + randomId() } },
+            },
+            publishedId: { type: 'string', default: 'publisher-1' },
+            campaignId: { type: 'string', default: 'campaign-1' },
+            source: { type: 'string', default: 'instagram' },
+            referer: { type: 'string', default: 'https://www.instagram.com/'},
+          },
+        },
+        response: 204,
+        tags: ['flow'],
+      },
+    },
+    fastify.controller.flow.capture.bind(fastify.controller.flow),
   );
 };

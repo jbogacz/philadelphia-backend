@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { FlowDto } from './flow.types';
+import { FlowDto, FlowEventDto } from './flow.types';
 import { FlowService } from './flow.service';
 import { LoggerService } from '../../common';
 
@@ -39,5 +39,12 @@ export class FlowController {
       </html>
     `;
     reply.code(200).type('text/html').send(html);
+  }
+
+  async capture(
+    request: FastifyRequest<{ Body: FlowEventDto }>,
+    reply: FastifyReply,
+  ): Promise<void> {
+    reply.code(204).send();
   }
 }

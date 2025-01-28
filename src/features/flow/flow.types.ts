@@ -34,3 +34,14 @@ export type FlowDto = {
   utmSource: string;
   utmContent: string;
 };
+
+export type FlowEventDto = {
+  traceId: string;
+  fingerprint: {
+    fingerprintId: string;
+  }
+  publisherId: string;
+  campaignId: string;
+  source: FlowSource;
+  referer: string;
+};

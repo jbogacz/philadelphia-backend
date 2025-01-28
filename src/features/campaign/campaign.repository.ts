@@ -17,7 +17,7 @@ export class CampaignRepository extends BaseRepository<Campaign> {
       : await this.collection.findOne({ campaignId: campaignId });
 
     if (!campaign) {
-      throw new Error(`Missing campaign with campaignId: ${campaignId}`);
+      throw new MongoError(`Missing campaign with campaignId: ${campaignId}`);
     }
     return campaign;
   }
@@ -27,6 +27,7 @@ export class CampaignRepository extends BaseRepository<Campaign> {
       { campaignId: campaignId },
       { $push: { traces: trace } },
     );
+
     if (result.modifiedCount === 0) {
       throw new MongoError(`Missing campaign with campaignId: ${campaignId}`);
     }
