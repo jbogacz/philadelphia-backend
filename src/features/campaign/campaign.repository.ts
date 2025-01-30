@@ -8,7 +8,7 @@ export class CampaignRepository extends BaseRepository<Campaign> {
     super(collection);
   }
 
-  async findByCampaignId(campaignId: string, limitTraces?: number): Promise<Campaign | null> {
+  async findByCampaignId(campaignId: string, limitTraces?: number): Promise<Campaign> {
     const campaign = limitTraces
       ? await this.collection.findOne(
           { campaignId: campaignId },

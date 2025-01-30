@@ -98,6 +98,8 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     LoggerService.initialize(server.log);
   });
 
+  void fastify.register
+
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins

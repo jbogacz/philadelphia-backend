@@ -47,7 +47,7 @@
         "--test",
         "--inspect-port=9229",
         // "${workspaceFolder}/test/common/file.storage.test.ts"
-        "${workspaceFolder}/test/features/campaign/campaign.repository.test.ts"
+        "${workspaceFolder}/test/features/flow/flow.routes.test.ts"
         // "${workspaceFolder}/test/features/trace/profile.repository.test.ts"
       ],
       "runtimeArgs": ["-r", "ts-node/register"],

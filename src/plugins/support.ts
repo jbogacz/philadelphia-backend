@@ -37,7 +37,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
 
   const creativeService = new CreativeService(fastify.fileStorage);
   const publisherService = new PublisherService();
-  const campaignService = new CampaignService();
+  const campaignService = new CampaignService(fastify.repository.campaign);
 
   fastify.decorate('service', {
     trace: new TraceService(fastify.repository.trace, fastify.repository.profile),

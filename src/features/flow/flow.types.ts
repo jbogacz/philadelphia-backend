@@ -30,9 +30,9 @@ export interface FlowConfig extends DynamicConfig {
  * DTO
  */
 export type FlowDto = {
-  utmCampaign: string;
-  utmSource: string;
-  utmContent: string;
+  utm_campaign: string;
+  utm_source: string;
+  utm_content: string;
 };
 
 export type FlowEventDto = {
@@ -43,5 +43,4 @@ export type FlowEventDto = {
   publisherId: string;
   campaignId: string;
   source: FlowSource;
-  referer: string;
 };
