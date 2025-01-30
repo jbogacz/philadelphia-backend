@@ -16,6 +16,7 @@ import { FlowService } from '../features/flow/flow.service';
 import { PublisherService } from '../features/publisher/publisher.service';
 import { CampaignService } from '../features/campaign/campaign.service';
 import { CampaignRepository } from '../features/campaign/campaign.repository';
+import { PublisherRepository } from '../features/publisher/publisher.repository';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here
@@ -32,11 +33,12 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     profile: new ProfileRepository(db.collection('profiles')),
     trace: new TraceRepository(db.collection('traces')),
     impression: new ImpressionRepository(db.collection('impressions')),
+    publisher: new PublisherRepository(db.collection('publishers')),
     campaign: new CampaignRepository(db.collection('campaigns')),
   });
 
   const creativeService = new CreativeService(fastify.fileStorage);
-  const publisherService = new PublisherService();
+  const publisherService = new PublisherService(fastify.repository.publisher);
   const campaignService = new CampaignService(fastify.repository.campaign);
 
   fastify.decorate('service', {
@@ -64,6 +66,7 @@ declare module 'fastify' {
       profile: ProfileRepository;
       trace: TraceRepository;
       impression: ImpressionRepository;
+      publisher: PublisherRepository;
       campaign: CampaignRepository;
     };
     service: {

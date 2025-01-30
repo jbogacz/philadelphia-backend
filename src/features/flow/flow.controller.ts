@@ -1,11 +1,8 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { FlowDto, FlowEventDto } from './flow.types';
 import { FlowService } from './flow.service';
-import { LoggerService } from '../../common';
 
 export class FlowController {
-  private logger = LoggerService.getLogger('feature.trace.FlowController');
-
   constructor(private readonly flowService: FlowService) {}
 
   async serveCode(

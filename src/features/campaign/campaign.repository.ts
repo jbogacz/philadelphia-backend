@@ -1,7 +1,6 @@
 import { BaseRepository } from '../base.repository';
-import { Collection } from 'mongodb';
+import { Collection, MongoError } from 'mongodb';
 import { Campaign, CampaignTrace } from './campaign.types';
-import { MongoError } from '../../common/errors';
 
 export class CampaignRepository extends BaseRepository<Campaign> {
   constructor(collection: Collection<Campaign>) {

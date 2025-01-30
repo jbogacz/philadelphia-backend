@@ -16,7 +16,7 @@ export class FlowService {
 
   async generateCode(flow: FlowDto) {
     const { utm_campaign: campaignId, utm_content: publishedId, utm_source: source } = flow;
-    
+
     const campaign = await this.campaignService.findById(campaignId);
     const publisher = await this.publisherService.findById(publishedId);
 

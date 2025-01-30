@@ -4,12 +4,15 @@ import { test } from 'node:test';
 import { CampaignRepository } from '../../../src/features/campaign/campaign.repository';
 import { Campaign, CampaignStatus } from '../../../src/features/campaign/campaign.types';
 import { FlowEventDto, FlowSource } from '../../../src/features/flow/flow.types';
+import { PublisherRepository } from '../../../src/features/publisher/publisher.repository';
 
 test('flow:routes', async t => {
   const fastify = await build(t);
   const campaignRepository: CampaignRepository = fastify.repository.campaign;
+  const publisherRepository: PublisherRepository = fastify.repository.publisher;
 
   const CAMPAIGN_ID = 'campaign-1';
+  const PUBLISHER_ID = 'publisher-1';
 
   t.before(async () => {
     await clearDatabase(fastify);
@@ -22,12 +25,17 @@ test('flow:routes', async t => {
       traces: [],
     };
     await campaignRepository.save(campaign);
+
+    const publisher = {
+      publisherId: PUBLISHER_ID,
+    };
+    await publisherRepository.save(publisher);
   });
 
   await t.test('should return dynamic code', async () => {
     const response = await fastify.inject({
       method: 'GET',
-      url: `/api/flow?utm_campaign=${CAMPAIGN_ID}&utm_source=instagram&utm_content=content-1`,
+      url: `/api/flow?utm_campaign=${CAMPAIGN_ID}&utm_source=instagram&utm_content=${PUBLISHER_ID}`,
     });
 
     assert.equal(response.statusCode, 200);
