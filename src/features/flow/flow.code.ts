@@ -1,4 +1,4 @@
-import FingerprintJS, { GetResult } from '../fingerprint/fp.script';
+import PhiladelphiaJS, { GetResult } from '../fingerprint/fp.script';
 import { CaptureTraceDto } from '../trace';
 import { FlowBlueprint, FlowConfig } from './flow.types';
 
@@ -31,7 +31,7 @@ export async function load(blueprint: FlowBlueprint, config: FlowConfig) {
 }
 
 async function calculateFingerprint(): Promise<GetResult> {
-  const fp = await FingerprintJS.load();
+  const fp = await PhiladelphiaJS.load();
   return fp.get();
 }
 
