@@ -22,6 +22,7 @@ export class FlowService {
 
     const flowBlueprint: FlowBlueprint = {
       campaignId: campaign.campaignId,
+      landingPage: campaign.landingPage,
       publisherId: publisher.publisherId,
       source: valueOfSource(source),
     };

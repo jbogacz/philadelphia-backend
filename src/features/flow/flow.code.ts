@@ -1,33 +1,32 @@
 import PhiladelphiaJS, { GetResult } from '../fingerprint/fp.script';
-import { CaptureTraceDto } from '../trace';
-import { FlowBlueprint, FlowConfig } from './flow.types';
+import { FlowBlueprint, FlowConfig, FlowEventDto } from './flow.types';
 
 export async function load(blueprint: FlowBlueprint, config: FlowConfig) {
   const fingerprint = await calculateFingerprint();
   const traceId = crypto.randomUUID();
 
-  console.log('flow.code', 'Calculated fingerprint:', fingerprint.visitorId);
+  console.log('flow.code', 'Fingerprint:', fingerprint);
 
   try {
-    const trace: CaptureTraceDto = {
+    const event: FlowEventDto = {
       traceId: traceId,
-      type: 'flow',
       fingerprint: {
         fingerprintId: fingerprint.visitorId,
       },
-      page: {
-        referer: document.referrer,
-      },
+      publisherId: blueprint.publisherId,
+      campaignId: blueprint.campaignId,
+      source: blueprint.source,
     };
-
-    await sendTrace(config.traceApiUrl, trace);
+    await captureFlowEvent(config.flowApiUrl, event);
   } catch (error) {
-    console.error('flow.code', 'Failed to send trace:', error);
+    console.error('flow.code', 'Failed to capture flow event:', error);
   }
 
-  // TODO: Collect publisherId, campaignId, source
-
-  // window.location.href = 'https://en.wikipedia.org/wiki/Philadelphia';
+  if (blueprint.landingPage) {
+    window.location.href = blueprint.landingPage;
+  } else {
+    console.error('flow.code', 'Missing landingPage');
+  }
 }
 
 async function calculateFingerprint(): Promise<GetResult> {
@@ -35,17 +34,16 @@ async function calculateFingerprint(): Promise<GetResult> {
   return fp.get();
 }
 
-async function sendTrace(traceApiUrl: string, trace: CaptureTraceDto): Promise<void> {
-  console.log('flow.code', 'Sending trace:', trace);
-  const result = await fetch(traceApiUrl, {
+async function captureFlowEvent(flowApiUrl: string, flowEvent: FlowEventDto): Promise<void> {
+  console.log('flow.code', 'Capturing flow event:', flowEvent);
+  const result = await fetch(flowApiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(trace),
+    body: JSON.stringify(flowEvent),
   });
-
   if (!result.ok) {
-    throw new Error(`Failed to send trace: ${result.status} ${result.statusText}`);
+    throw new Error(`Failed to capture flow event: ${result.status} ${result.statusText}`);
   }
 }

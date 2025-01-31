@@ -17,7 +17,7 @@ export const valueOfSource = (value: string): FlowSource => {
 export interface FlowBlueprint extends DynamicBlueprint {
   publisherId: string;
   campaignId: string;
-
+  landingPage: string;
   source: FlowSource;
 }
 
