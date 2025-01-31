@@ -6,6 +6,8 @@ export async function load(blueprint: FlowBlueprint, config: FlowConfig) {
   const fingerprint = await calculateFingerprint();
   const traceId = crypto.randomUUID();
 
+  console.log('flow.code', 'Calculated fingerprint:', fingerprint.visitorId);
+
   try {
     const trace: CaptureTraceDto = {
       traceId: traceId,
@@ -20,7 +22,7 @@ export async function load(blueprint: FlowBlueprint, config: FlowConfig) {
 
     await sendTrace(config.traceApiUrl, trace);
   } catch (error) {
-    console.error('Failed to send trace:', error);
+    console.error('flow.code', 'Failed to send trace:', error);
   }
 
   // TODO: Collect publisherId, campaignId, source
@@ -34,7 +36,7 @@ async function calculateFingerprint(): Promise<GetResult> {
 }
 
 async function sendTrace(traceApiUrl: string, trace: CaptureTraceDto): Promise<void> {
-  console.log('Sending trace:', trace);
+  console.log('flow.code', 'Sending trace:', trace);
   const result = await fetch(traceApiUrl, {
     method: 'POST',
     headers: {
