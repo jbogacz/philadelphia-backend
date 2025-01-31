@@ -7,9 +7,9 @@ import { readFile } from 'fs/promises';
  **/
 export async function seed(fastify: FastifyInstance): Promise<void> {
   try {
-    const file = JSON.parse(await readFile('./src/campaign_data.json', 'utf-8'));
+    const campaigns = JSON.parse(await readFile('./src/campaign_data.json', 'utf-8'));
     await fastify.mongo.db?.collection('campaigns').bulkWrite(
-      file.map((item: any) => ({
+      campaigns.map((item: any) => ({
         updateOne: {
           filter: { campaignId: item.campaignId },
           update: {
@@ -19,6 +19,22 @@ export async function seed(fastify: FastifyInstance): Promise<void> {
         },
       })),
     );
+    fastify.log.info('Seeded campaigns: ' + campaigns.length);
+
+    const publishers = JSON.parse(await readFile('./src/publisher_data.json', 'utf-8'));
+    await fastify.mongo.db?.collection('publishers').bulkWrite(
+      publishers.map((item: any) => ({
+        updateOne: {
+          filter: { publisherId: item.publisherId },
+          update: {
+            $set: item,
+          },
+          upsert: true,
+        },
+      })),
+    );
+    fastify.log.info('Seeded publishers: ' + publishers.length);
+
   } catch (error) {
     console.error('Failed to seed database:', error);
   }
