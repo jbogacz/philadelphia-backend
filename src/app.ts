@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import AutoLoad from '@fastify/autoload';
 import cors from '@fastify/cors';
 import mongodb from '@fastify/mongodb';
@@ -8,6 +9,14 @@ import { join } from 'path';
 import { AppOptions } from './app.types';
 import { seed } from './app.utils';
 import { LoggerService } from './common/logger.service';
+
+const clearEnvCache = () => {
+  Object.keys(process.env).forEach((key) => {
+    delete process.env[key];
+  });
+  require('dotenv').config(); // Reload .env
+};
+clearEnvCache();
 
 // Load environment variables from .env file
 const appOptions: AppOptions = {
@@ -47,6 +56,9 @@ const appOptions: AppOptions = {
 const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise<void> => {
   const options = { ...appOptions, ...cliOptions };
   console.log('Fastify options', options);
+
+  // Set the listen options for the server
+  // fastify.server.listen({ port: 5002, host: '1' });
 
   if (!options.mongodb) {
     throw new Error('MongoDB options are required');
@@ -97,8 +109,6 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
   void fastify.register(async server => {
     LoggerService.initialize(server.log);
   });
-
-  void fastify.register
 
   // Do not touch the following lines
 

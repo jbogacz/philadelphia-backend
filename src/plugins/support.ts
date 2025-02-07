@@ -17,6 +17,7 @@ import { PublisherService } from '../features/publisher/publisher.service';
 import { CampaignService } from '../features/campaign/campaign.service';
 import { CampaignRepository } from '../features/campaign/campaign.repository';
 import { PublisherRepository } from '../features/publisher/publisher.repository';
+import { UserController } from '../features/user/user.controller';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here
@@ -56,6 +57,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     trace: new TraceController(fastify.service.trace),
     flow: new FlowController(fastify.service.flow),
     impression: new ImpressionController(fastify.service.impression),
+    user: new UserController(),
   });
 });
 
@@ -81,6 +83,7 @@ declare module 'fastify' {
       trace: TraceController;
       flow: FlowController;
       impression: ImpressionController;
+      user: UserController;
     };
   }
 }
