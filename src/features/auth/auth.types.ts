@@ -2,7 +2,7 @@
  * DTO
  */
 export type AuthRequest = {
-  login: string;
+  email: string;
   password: string;
 };
 

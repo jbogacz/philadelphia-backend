@@ -1,8 +1,17 @@
 import { FastifyPluginAsync } from 'fastify';
 
-export const traceRoutes: FastifyPluginAsync = async fastify => {
+/**
+ /auth
+  POST /auth/login         // Login user
+  POST /auth/register      // Register new user
+  POST /auth/logout        // Logout user
+  POST /auth/refresh-token // Refresh JWT token
+  POST /auth/forgot-password
+  POST /auth/reset-password
+ */
+export const authRoutes: FastifyPluginAsync = async fastify => {
   fastify.post(
-    '/login',
+    '/auth/login',
     {
       schema: {
         body: {
@@ -21,9 +30,11 @@ export const traceRoutes: FastifyPluginAsync = async fastify => {
               token: { type: 'string', default: 'token' },
             },
           },
-          401: {},
+          401: {
+            type: 'null',
+          },
         },
-        tags: ['user'],
+        tags: ['auth'],
       },
     },
     fastify.controller.user.login.bind(fastify.controller.user),
