@@ -9,12 +9,12 @@ const server = fastify({
 const start = async () => {
   try {
     // Add debugging logs
-    console.log('All environment variables:', process.env)
-    console.log('PORT environment variable:', process.env.PORT)
-    console.log('Type of PORT:', typeof process.env.PORT)
-
-    const port = parseInt(process.env.PORT || '3000')
-    console.log('Parsed port number:', port)
+    const port = parseInt(process.env.PORT || process.env.RENDER_SERVICE_PORT || '3000')
+    console.log('Environment variables:', {
+      PORT: process.env.PORT,
+      RENDER_SERVICE_PORT: process.env.RENDER_SERVICE_PORT,
+      RENDER_INTERNAL_PORT: process.env.RENDER_INTERNAL_PORT
+    })
 
     await server.register(app, appOptions)
     await server.listen({
