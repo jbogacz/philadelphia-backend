@@ -1,6 +1,6 @@
 import { fastify } from 'fastify'
-import app from './app'
-import { appOptions } from './app'
+import app from './app'  // adjust path if needed
+import { appOptions } from './app'  // adjust path if needed
 
 const server = fastify({
   logger: true
@@ -8,20 +8,17 @@ const server = fastify({
 
 const start = async () => {
   try {
-    // Add debugging logs
-    const port = parseInt(process.env.PORT || process.env.RENDER_SERVICE_PORT || '3000')
-    console.log('Environment variables:', {
-      PORT: process.env.PORT,
-      RENDER_SERVICE_PORT: process.env.RENDER_SERVICE_PORT,
-      RENDER_INTERNAL_PORT: process.env.RENDER_INTERNAL_PORT
-    })
+
+    if (!process.env.PORT){
+      throw new Error('Missing PORT environment variable')
+    }
 
     await server.register(app, appOptions)
     await server.listen({
-      port: port,
+      port: parseInt(process.env.PORT),
       host: '0.0.0.0'
     })
-    console.log(`Server is running on port ${port}`)
+    console.log(`Server is running on port ${process.env.PORT}`)
   } catch (err) {
     server.log.error(err)
     process.exit(1)
