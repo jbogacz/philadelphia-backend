@@ -38,10 +38,6 @@ const appOptions: AppOptions = {
   mongodb: {
     url: process.env.MONGODB_URL!,
     database: process.env.MONGODB_DATABASE!,
-    auth: {
-      username: process.env.MONGODB_AUTH_USERNAME!,
-      password: process.env.MONGODB_AUTH_PASSWORD!,
-    },
   },
   minio: {
     endPoint: process.env.MINIO_ENDPOINT!,
@@ -132,6 +128,10 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     indexPattern: /index\.ts$/, // Look for index.ts files
     options: { prefix: '/api' },
   });
+
+  fastify.get('/health', async (request, reply) => {
+    return { status: 'ok' }
+  })
 };
 
 export default app;
