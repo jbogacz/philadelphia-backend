@@ -11,7 +11,7 @@ import { seed } from './app.utils';
 import { LoggerService } from './common/logger.service';
 
 const clearEnvCache = () => {
-  Object.keys(process.env).forEach((key) => {
+  Object.keys(process.env).forEach(key => {
     delete process.env[key];
   });
   require('dotenv').config(); // Reload .env
@@ -53,9 +53,6 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
   const options = { ...appOptions, ...cliOptions };
   console.log('Fastify options', options);
 
-  // Set the listen options for the server
-  // fastify.server.listen({ port: 5002, host: '1' });
-
   if (!options.mongodb) {
     throw new Error('MongoDB options are required');
   }
@@ -95,13 +92,6 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     exposedHeaders: ['Set-Cookie'],
   });
 
-  // void fastify.addHook('onRequest', (request, reply, done) => {
-  //   console.log('Request:', request.headers.origin);
-  //   reply.header('Access-Control-Allow-Origin', request.headers.origin);
-  //   reply.header('Access-Control-Allow-Credentials', 'true');
-  //   done();
-  // });
-
   void fastify.register(async server => {
     LoggerService.initialize(server.log);
   });
@@ -129,9 +119,9 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     options: { prefix: '/api' },
   });
 
-  fastify.get('/health', async (request, reply) => {
-    return { status: 'ok' }
-  })
+  fastify.get('/health', { logLevel: 'silent' }, async (request, reply) => {
+    return { status: 'ok' };
+  });
 };
 
 export default app;
