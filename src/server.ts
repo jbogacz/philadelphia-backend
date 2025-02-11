@@ -39,7 +39,8 @@ const start = async () => {
     // Register auth plugin and protect all routes
     await server.register(basicAuth, { validate, authenticate });
     server.addHook('onRequest', (request, reply, done) => {
-      if (['/', '/health'].indexOf(request.url)) {
+      const isPublic = ['/', '/health'].indexOf(request.url) !== -1
+      if (isPublic) {
         return done();
       }
       server.basicAuth(request, reply, done);
