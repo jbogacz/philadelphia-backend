@@ -96,10 +96,6 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     LoggerService.initialize(server.log);
   });
 
-  // Health check routes
-  fastify.get('/health', { logLevel: 'silent' }, () => 'ok');
-  fastify.get('/', { logLevel: 'silent' }, () => 'ok');
-
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins

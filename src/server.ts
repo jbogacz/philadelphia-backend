@@ -16,6 +16,10 @@ const server = fastify({
   },
 });
 
+// Health check routes
+server.get('/health', { logLevel: 'silent' }, () => 'ok');
+server.get('/', { logLevel: 'silent' }, () => 'ok');
+
 const start = async () => {
   try {
     if (!process.env.PORT) {
