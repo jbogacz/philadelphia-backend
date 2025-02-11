@@ -35,9 +35,8 @@ const start = async () => {
       throw new Error('Missing PORT environment variable');
     }
 
-    // Register auth plugin
+    // Register auth plugin and protect all routes
     await server.register(basicAuth, { validate, authenticate });
-    // Protect all routes
     server.addHook('onRequest', server.basicAuth);
 
     await server.register(app, appOptions);
@@ -45,6 +44,7 @@ const start = async () => {
       port: parseInt(process.env.PORT),
       host: '0.0.0.0',
     });
+
     console.log(`Server is running on port ${process.env.PORT}`);
   } catch (err) {
     server.log.error(err);

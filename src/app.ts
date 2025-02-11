@@ -79,7 +79,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
   void fastify.register(swaggerUI, {
     routePrefix: '/documentation',
     uiConfig: {
-      docExpansion: 'full',
+      docExpansion: 'list',
       deepLinking: false,
     },
   });
