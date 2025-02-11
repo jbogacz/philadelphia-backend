@@ -37,8 +37,13 @@ const start = async () => {
     }
 
     // Register auth plugin and protect all routes
-    // await server.register(basicAuth, { validate, authenticate });
-    // server.addHook('onRequest', server.basicAuth);
+    await server.register(basicAuth, { validate, authenticate });
+    server.addHook('onRequest', (request, reply, done) => {
+      if (['/', '/health'].indexOf(request.url)) {
+        return done();
+      }
+      server.basicAuth(request, reply, done);
+    });
 
     await server.register(app, appOptions);
     await server.listen({
