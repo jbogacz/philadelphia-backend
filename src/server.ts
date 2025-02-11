@@ -24,6 +24,7 @@ server.get('/', { logLevel: 'silent' }, () => 'ok');
 // Authorization
 const authenticate = { realm: 'philadelphia-backend-api' };
 const validate = async (username: string, password: string) => {
+  console.log('username', username, 'password', password);
   if (username !== process.env.API_USERNAME || password !== process.env.API_PASSWORD) {
     throw new Error('Invalid credentials');
   }
