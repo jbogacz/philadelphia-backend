@@ -119,9 +119,9 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     options: { prefix: '/api' },
   });
 
-  fastify.get('/health', { logLevel: 'silent' }, async (request, reply) => {
-    return { status: 'ok' };
-  });
+  // Health check routes
+  fastify.get('/health', { logLevel: 'silent' }, () => 'ok');
+  fastify.get('/', { logLevel: 'silent' }, () => 'ok');
 };
 
 export default app;
