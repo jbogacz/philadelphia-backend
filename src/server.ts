@@ -9,6 +9,7 @@ const server = fastify({
       options: {
         translateTime: 'HH:MM:ss Z',
         ignore: 'pid,hostname',
+        messageFormat: '{className} : {msg}',
         colorize: true,
       },
     },
