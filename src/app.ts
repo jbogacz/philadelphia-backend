@@ -96,6 +96,10 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     LoggerService.initialize(server.log);
   });
 
+  // Health check routes
+  fastify.get('/health', { logLevel: 'silent' }, () => 'ok');
+  fastify.get('/', { logLevel: 'silent' }, () => 'ok');
+
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins
@@ -118,10 +122,6 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     indexPattern: /index\.ts$/, // Look for index.ts files
     options: { prefix: '/api' },
   });
-
-  // Health check routes
-  fastify.get('/health', { logLevel: 'silent' }, () => 'ok');
-  fastify.get('/', { logLevel: 'silent' }, () => 'ok');
 };
 
 export default app;
