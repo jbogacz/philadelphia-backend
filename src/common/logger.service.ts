@@ -22,7 +22,7 @@ export class LoggerService {
   }
 
   info(message: string, data?: object) {
-    console.log('LoggerService.info1111', message, data);
+    console.log('LoggerService.from.console.log', message, data);
     LoggerService.logger.info(data, `${chalk.blue(`(${this.className})`)} : ${message}`);
   }
 

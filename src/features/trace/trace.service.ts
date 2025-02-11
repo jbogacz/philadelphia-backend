@@ -1,3 +1,4 @@
+import { LoggerService } from '../../common';
 import { ProfileRepository } from './profile.repository';
 import { TraceRepository } from './trace.repository';
 import { Profile, Trace } from './trace.types';
@@ -8,7 +9,11 @@ export class TraceService {
     private readonly profileRepository: ProfileRepository,
   ) {}
 
+  private logger = LoggerService.getLogger('feature.trace.TraceService');
+
   async capture(trace: Trace): Promise<Profile> {
+    this.logger.info('Capturing trace', { trace });
+    
     // Save the trace
     await this.traceRepository.save(trace);
 
