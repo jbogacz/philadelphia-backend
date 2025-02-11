@@ -24,7 +24,6 @@ server.get('/', { logLevel: 'silent' }, () => 'ok');
 // Authorization
 const authenticate = { realm: 'philadelphia-backend-api' };
 const validate = async (username: string, password: string) => {
-  console.log('username', username, 'password', password);
   if (username !== process.env.API_USERNAME || password !== process.env.API_PASSWORD) {
     throw new Error('Invalid credentials');
   }
@@ -39,7 +38,7 @@ const start = async () => {
     // Register auth plugin and protect all routes
     await server.register(basicAuth, { validate, authenticate });
     server.addHook('onRequest', (request, reply, done) => {
-      const isPublic = ['/', '/health'].indexOf(request.url) !== -1
+      const isPublic = ['/', '/health'].indexOf(request.url) !== -1;
       if (isPublic) {
         return done();
       }
