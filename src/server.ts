@@ -37,8 +37,8 @@ const start = async () => {
     }
 
     // Register auth plugin and protect all routes
-    await server.register(basicAuth, { validate, authenticate });
-    server.addHook('onRequest', server.basicAuth);
+    // await server.register(basicAuth, { validate, authenticate });
+    // server.addHook('onRequest', server.basicAuth);
 
     await server.register(app, appOptions);
     await server.listen({
