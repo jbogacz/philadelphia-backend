@@ -9,7 +9,7 @@ import { FastifyPluginAsync } from 'fastify';
   POST /auth/forgot-password
   POST /auth/reset-password
  */
-export const authRoutes: FastifyPluginAsync = async fastify => {
+export const authRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post(
     '/auth/login',
     {
@@ -28,6 +28,14 @@ export const authRoutes: FastifyPluginAsync = async fastify => {
             required: ['token'],
             properties: {
               token: { type: 'string', default: 'token' },
+              user: {
+                type: 'object',
+                properties: {
+                  userId: { type: 'string' },
+                  email: { type: 'string' },
+                  role: { type: 'string' },
+                },
+              },
             },
           },
           401: {
@@ -37,6 +45,6 @@ export const authRoutes: FastifyPluginAsync = async fastify => {
         tags: ['auth'],
       },
     },
-    fastify.controller.user.login.bind(fastify.controller.user),
+    fastify.controller.user.login.bind(fastify.controller.user)
   );
 };
