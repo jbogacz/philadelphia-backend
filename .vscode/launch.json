@@ -24,12 +24,7 @@
       "name": "Philadelphia Tests",
       "skipFiles": ["<node_internals>/**"],
       "autoAttachChildProcesses": true,
-      "args": [
-        "--enable-source-maps",
-        "--test",
-        "--inspect-port=9229",
-        "${workspaceFolder}/test/**/*.ts"
-      ],
+      "args": ["--enable-source-maps", "--test", "--inspect-port=9229", "${workspaceFolder}/test/**/*.ts"],
       "runtimeArgs": ["-r", "ts-node/register"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
