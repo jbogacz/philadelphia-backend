@@ -20,42 +20,27 @@ export class LoggerService {
   }
 
   info(message: string, data?: object) {
+    // Include only data if provided
     LoggerService.logger.info(
-      {
-        // className: this.className,
-        ...(data || {}),
-      },
-      message,
+      data || {}, // Just pass data or empty object
+      `[${this.className}] ${message}` // Prefix message with className
     );
   }
 
   warn(message: string, data?: object) {
-    LoggerService.logger.warn(
-      {
-        className: this.className,
-        ...(data || {}),
-      },
-      message,
-    );
+    LoggerService.logger.warn(data || {}, `[${this.className}] ${message}`);
   }
 
   debug(message: string, data?: object) {
-    LoggerService.logger.debug(
-      {
-        className: this.className,
-        ...(data || {}),
-      },
-      message,
-    );
+    LoggerService.logger.debug(data || {}, `[${this.className}] ${message}`);
   }
 
   error(message: string, error?: unknown) {
     LoggerService.logger.error(
       {
-        className: this.className,
         error: error || undefined,
       },
-      message,
+      `[${this.className}] ${message}`
     );
   }
 }
