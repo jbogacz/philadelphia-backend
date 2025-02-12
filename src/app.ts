@@ -11,7 +11,7 @@ import { seed } from './app.utils';
 import { LoggerService } from './common/logger.service';
 
 const clearEnvCache = () => {
-  Object.keys(process.env).forEach(key => {
+  Object.keys(process.env).forEach((key) => {
     delete process.env[key];
   });
   require('dotenv').config(); // Reload .env
@@ -61,7 +61,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
 
   await fastify.after(); // Wait for mongodb plugin to register
 
-  void fastify.register(async fastify => {
+  void fastify.register(async (fastify) => {
     if (process.env.NODE_ENV === 'development') {
       await seed(fastify);
     }
@@ -85,14 +85,14 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
   });
 
   void fastify.register(cors, {
-    origin: true, // or specify origins like ['http://localhost:8080']
+    origin: ['https://philadelphia-web.vercel.app'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
     exposedHeaders: ['Set-Cookie'],
   });
 
-  void fastify.register(async server => {
+  void fastify.register(async (server) => {
     LoggerService.initialize(server.log);
   });
 
