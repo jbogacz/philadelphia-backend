@@ -22,7 +22,7 @@ export class LoggerService {
   info(message: string, data?: object) {
     LoggerService.logger.info(
       {
-        className: this.className,
+        // className: this.className,
         ...(data || {}),
       },
       message,
