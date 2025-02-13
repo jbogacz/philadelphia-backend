@@ -18,6 +18,8 @@ import { CampaignService } from '../features/campaign/campaign.service';
 import { CampaignRepository } from '../features/campaign/campaign.repository';
 import { PublisherRepository } from '../features/publisher/publisher.repository';
 import { AuthController } from '../features/auth/auth.controller';
+import { UserRepository } from '../features/auth/user.repository';
+import { AuthService } from '../features/auth/auth.service';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here
@@ -36,6 +38,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     impression: new ImpressionRepository(db.collection('impressions')),
     publisher: new PublisherRepository(db.collection('publishers')),
     campaign: new CampaignRepository(db.collection('campaigns')),
+    user: new UserRepository(db.collection('users')),
   });
 
   const creativeService = new CreativeService(fastify.fileStorage);
@@ -50,6 +53,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     creative: creativeService,
     markup: new AdMarkupService(creativeService, config),
     impression: new ImpressionService(fastify.repository.impression),
+    auth: new AuthService(fastify.repository.user),
   });
 
   fastify.decorate('controller', {
@@ -57,7 +61,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     trace: new TraceController(fastify.service.trace),
     flow: new FlowController(fastify.service.flow),
     impression: new ImpressionController(fastify.service.impression),
-    user: new AuthController(),
+    user: new AuthController(fastify.service.auth),
   });
 });
 
@@ -70,6 +74,7 @@ declare module 'fastify' {
       impression: ImpressionRepository;
       publisher: PublisherRepository;
       campaign: CampaignRepository;
+      user: UserRepository;
     };
     service: {
       trace: TraceService;
@@ -77,6 +82,7 @@ declare module 'fastify' {
       markup: AdMarkupService;
       impression: ImpressionService;
       creative: CreativeService;
+      auth: AuthService;
     };
     controller: {
       ad: AdController;

@@ -7,8 +7,8 @@ import swaggerUI from '@fastify/swagger-ui';
 import { FastifyPluginAsync } from 'fastify';
 import { join } from 'path';
 import { AppOptions } from './app.types';
-import { seed } from './app.utils';
 import { LoggerService } from './common/logger.service';
+import { seed } from './maintenance/maintenance.utils';
 
 const clearEnvCache = () => {
   Object.keys(process.env).forEach((key) => {

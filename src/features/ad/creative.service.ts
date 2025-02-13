@@ -5,10 +5,10 @@ export class CreativeService {
   constructor(private readonly fileStorage: FileStorage) {}
 
   async findCreative(publisherId: string): Promise<AdCreative> {
-    const fileUrl = await this.fileStorage.resolveFileUrl('istockphoto-92330978-2048x2048.jpg');
+    // const fileUrl = await this.fileStorage.resolveFileUrl('istockphoto-92330978-2048x2048.jpg');
     const creative = {
       creativeId: 'creative-1',
-      creativeUrl: fileUrl,
+      creativeUrl: "fileUrl",
       campaignId: 'campaign-1',
       advertiserId: 'advertiser-1',
     };
