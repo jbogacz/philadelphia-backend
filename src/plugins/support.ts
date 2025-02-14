@@ -20,6 +20,7 @@ import { PublisherRepository } from '../features/publisher/publisher.repository'
 import { AuthController } from '../features/auth/auth.controller';
 import { UserRepository } from '../features/auth/user.repository';
 import { AuthService } from '../features/auth/auth.service';
+import { ListingController } from '../features/listing/listing.controller';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here
@@ -62,6 +63,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     flow: new FlowController(fastify.service.flow),
     impression: new ImpressionController(fastify.service.impression),
     user: new AuthController(fastify.service.auth),
+    listing: new ListingController(),
   });
 });
 
@@ -90,6 +92,7 @@ declare module 'fastify' {
       flow: FlowController;
       impression: ImpressionController;
       user: AuthController;
+      listing: ListingController;
     };
   }
 }
