@@ -7,5 +7,4 @@ const featurePlugin: FastifyPluginAsync = async (fastify) => {
   await fastify.register(userRoutes);
 };
 
-
 export default featurePlugin;
