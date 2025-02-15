@@ -2,7 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 
 export const userRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get(
-    '/user/:id',
+    '/users/:id',
     {
       schema: {
         params: {
@@ -13,7 +13,7 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
           required: ['id'],
         },
         description: 'Find user by ID',
-        tags: ['user'],
+        tags: ['users'],
         response: {
           200: {
             properties: {
