@@ -1,4 +1,10 @@
+import { FastifyPluginAsync } from 'fastify';
 import { authRoutes } from './auth.routes';
+import { userRoutes } from './user.routes';
 
-// This export is what @fastify/autoload will pick up
-export default authRoutes;
+const featurePlugin: FastifyPluginAsync = async (fastify) => {
+  await fastify.register(authRoutes);
+  await fastify.register(userRoutes);
+};
+
+export default featurePlugin;

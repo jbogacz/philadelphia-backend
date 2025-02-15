@@ -21,6 +21,8 @@ import { AuthController } from '../features/auth/auth.controller';
 import { UserRepository } from '../features/auth/user.repository';
 import { AuthService } from '../features/auth/auth.service';
 import { ListingController } from '../features/listing/listing.controller';
+import { UserController } from '../features/auth/user.controller';
+import { UserService } from '../features/auth/user.service';
 
 export interface SupportPluginOptions {
   // Specify Support plugin options here
@@ -55,6 +57,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     markup: new AdMarkupService(creativeService, config),
     impression: new ImpressionService(fastify.repository.impression),
     auth: new AuthService(fastify.repository.user),
+    user: new UserService(fastify.repository.user),
   });
 
   fastify.decorate('controller', {
@@ -62,7 +65,8 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     trace: new TraceController(fastify.service.trace),
     flow: new FlowController(fastify.service.flow),
     impression: new ImpressionController(fastify.service.impression),
-    user: new AuthController(fastify.service.auth),
+    auth: new AuthController(fastify.service.auth),
+    user: new UserController(fastify.service.user),
     listing: new ListingController(),
   });
 });
@@ -84,6 +88,7 @@ declare module 'fastify' {
       markup: AdMarkupService;
       impression: ImpressionService;
       creative: CreativeService;
+      user: UserService;
       auth: AuthService;
     };
     controller: {
@@ -91,7 +96,8 @@ declare module 'fastify' {
       trace: TraceController;
       flow: FlowController;
       impression: ImpressionController;
-      user: AuthController;
+      auth: AuthController;
+      user: UserController;
       listing: ListingController;
     };
   }

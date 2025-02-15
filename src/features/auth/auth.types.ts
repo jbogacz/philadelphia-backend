@@ -12,8 +12,8 @@ export enum UserRole {
 export const UserSchema = Type.Intersect([
   BaseSchema,
   Type.Object({
+    id: Type.String(),
     email: Type.String(),
-    password: Type.String(),
     role: Type.Enum(UserRole),
   }),
 ]);
@@ -30,6 +30,8 @@ export type AuthRequest = {
   email: string;
   password: string;
 };
+
+export type UserDto = Omit<User, '_id' | 'createdAt' | 'updatedAt'>;
 
 export type AuthResponse = {
   token: string;

@@ -16,7 +16,7 @@ export interface IEntity {
 export class BaseRepository<T extends IEntity> {
   constructor(protected collection: Collection<T>) {}
 
-  async findById(id: string): Promise<WithId<T> | null> {
+  async findByPrimaryId(id: string): Promise<WithId<T> | null> {
     return this.collection.findOne({ _id: id } as Filter<T>);
   }
 

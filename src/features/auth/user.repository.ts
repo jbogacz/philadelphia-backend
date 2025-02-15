@@ -10,4 +10,8 @@ export class UserRepository extends BaseRepository<User> {
   async findByEmailAndPassword(email: string, password: string): Promise<User | null> {
     return this.collection.findOne({ email, password });
   }
+
+  async findById(id: string): Promise<User | null> {
+    return this.collection.findOne({ id: id });
+  }
 }

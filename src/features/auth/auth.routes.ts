@@ -45,6 +45,6 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
         tags: ['auth'],
       },
     },
-    fastify.controller.user.login.bind(fastify.controller.user)
+    fastify.controller.auth.login.bind(fastify.controller.user)
   );
 };
