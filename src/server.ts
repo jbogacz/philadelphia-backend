@@ -1,7 +1,7 @@
-import { fastify } from 'fastify';
-import basicAuth from '@fastify/basic-auth';
-import app from './app';
-import { appOptions } from './app';
+import { clerkPlugin, getAuth } from '@clerk/fastify';
+
+import { fastify, FastifyReply, FastifyRequest } from 'fastify';
+import app, { appOptions } from './app';
 
 const server = fastify({
   logger: {
@@ -18,16 +18,8 @@ const server = fastify({
 });
 
 // Health check routes
-server.get('/health', { logLevel: 'silent' }, () => 'ok');
 server.get('/', { logLevel: 'silent' }, () => 'ok');
-
-// Authorization
-const authenticate = { realm: 'philadelphia-backend-api' };
-const validate = async (username: string, password: string) => {
-  if (username !== process.env.API_USERNAME || password !== process.env.API_PASSWORD) {
-    throw new Error('Invalid credentials');
-  }
-};
+server.get('/health', { logLevel: 'silent' }, () => 'ok');
 
 const start = async () => {
   try {
@@ -35,17 +27,31 @@ const start = async () => {
       throw new Error('Missing PORT environment variable');
     }
 
-    // Register auth plugin and protect all routes
-    await server.register(basicAuth, { validate, authenticate });
-    server.addHook('onRequest', (request, reply, done) => {
-      const isPublic = ['/', '/health'].indexOf(request.url) !== -1;
-      if (isPublic) {
-        return done();
-      }
-      server.basicAuth(request, reply, done);
+    // Register Clerk plugin
+    await server.register(clerkPlugin, {
+      publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+      secretKey: process.env.CLERK_SECRET_KEY,
     });
 
+    // Add preHandler hook to check for authentication on all /api routes
+    await server.addHook('preHandler', async (request: FastifyRequest, reply: FastifyReply) => {
+      if (request.url.startsWith('/api')) {
+        try {
+          const { userId } = getAuth(request);
+          if (!userId) {
+            reply.code(401).send({ message: 'Unauthorized' });
+          }
+        } catch (error) {
+          console.error('Authentication failed', error);
+          reply.code(401).send({ error: 'Authentication failed' });
+        }
+      }
+    });
+
+    // Register your app routes
     await server.register(app, appOptions);
+
+    // Start the server
     await server.listen({
       port: parseInt(process.env.PORT),
       host: '0.0.0.0',
@@ -57,5 +63,11 @@ const start = async () => {
     process.exit(1);
   }
 };
+
+// Add proper error handling
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled rejection:', err);
+  // process.exit(1);
+});
 
 start();
