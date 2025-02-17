@@ -7,11 +7,9 @@ import { CreativeService } from '../features/ad/creative.service';
 import { ImpressionController } from '../features/ad/impression.controller';
 import { ImpressionRepository } from '../features/ad/impression.repository';
 import { ImpressionService } from '../features/ad/impression.service';
-import { AuthController } from '../features/auth/auth.controller';
-import { AuthService } from '../features/auth/auth.service';
-import { UserController } from '../features/auth/user.controller';
-import { UserRepository } from '../features/auth/user.repository';
-import { UserService } from '../features/auth/user.service';
+import { UserController } from '../features/user/user.controller';
+import { UserRepository } from '../features/user/user.repository';
+import { UserService } from '../features/user/user.service';
 import { CampaignRepository } from '../features/campaign/campaign.repository';
 import { CampaignService } from '../features/campaign/campaign.service';
 import { FlowController } from '../features/flow/flow.controller';
@@ -53,7 +51,6 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     creative: creativeService,
     markup: new AdMarkupService(creativeService, config),
     impression: new ImpressionService(fastify.repository.impression),
-    auth: new AuthService(fastify.repository.user),
     user: new UserService(fastify.repository.user),
   });
 
@@ -62,13 +59,11 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     trace: new TraceController(fastify.service.trace),
     flow: new FlowController(fastify.service.flow),
     impression: new ImpressionController(fastify.service.impression),
-    auth: new AuthController(fastify.service.auth),
     user: new UserController(fastify.service.user),
     listing: new ListingController(),
   });
 });
 
-// When using .decorate you have to specify added properties for Typescript
 declare module 'fastify' {
   export interface FastifyInstance {
     repository: {
@@ -86,14 +81,12 @@ declare module 'fastify' {
       impression: ImpressionService;
       creative: CreativeService;
       user: UserService;
-      auth: AuthService;
     };
     controller: {
       ad: AdController;
       trace: TraceController;
       flow: FlowController;
       impression: ImpressionController;
-      auth: AuthController;
       user: UserController;
       listing: ListingController;
     };

@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { UserDto } from './auth.types';
+import { UserDto } from './user.types';
 import { UserService } from './user.service';
 
 export class UserController {

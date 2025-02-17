@@ -1,5 +1,5 @@
 import { BaseRepository } from '../base.repository';
-import { User } from './auth.types';
+import { User } from './user.types';
 import { Collection } from 'mongodb';
 
 export class UserRepository extends BaseRepository<User> {

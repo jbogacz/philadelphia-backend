@@ -26,20 +26,7 @@ export type User = Static<typeof UserSchema> & IEntity;
 /**
  * DTO
  */
-export type AuthRequest = {
-  email: string;
-  password: string;
-};
-
 export type UserDto = Omit<User, '_id' | 'createdAt' | 'updatedAt'>;
-
-export type AuthResponse = {
-  token: string;
-  user: {
-    email: string;
-    role: UserRole;
-  };
-};
 
 /**
  * ERROR
