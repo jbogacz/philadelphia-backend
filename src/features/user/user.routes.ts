@@ -1,6 +1,16 @@
 import { FastifyPluginAsync } from 'fastify';
 
 export const userRoutes: FastifyPluginAsync = async (fastify) => {
+  const userDtoSchema = {
+    type: 'object',
+    required: ['id', 'email'],
+    properties: {
+      id: { type: 'string' },
+      email: { type: 'string' },
+      role: { type: 'string' },
+    },
+  };
+
   fastify.get(
     '/users/:id',
     {
@@ -15,16 +25,40 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
         description: 'Find user by ID',
         tags: ['users'],
         response: {
-          200: {
-            properties: {
-              id: { type: 'string' },
-              email: { type: 'string' },
-              role: { type: 'string' },
-            },
-          },
+          200: userDtoSchema,
         },
       },
     },
     fastify.controller.user.findById.bind(fastify.controller.user)
+  );
+
+  fastify.post(
+    '/users',
+    {
+      schema: {
+        description: 'Capture new trace',
+        tags: ['users'],
+        body: userDtoSchema,
+        response: {
+          201: userDtoSchema,
+        },
+      },
+    },
+    fastify.controller.user.register.bind(fastify.controller.user)
+  );
+
+  fastify.put(
+    '/users',
+    {
+      schema: {
+        description: 'Capture new trace',
+        tags: ['users'],
+        body: userDtoSchema,
+        response: {
+          200: userDtoSchema,
+        },
+      },
+    },
+    fastify.controller.user.update.bind(fastify.controller.user)
   );
 };

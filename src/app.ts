@@ -8,7 +8,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { join } from 'path';
 import { AppOptions } from './app.types';
 import { LoggerService } from './common/logger.service';
-import { seed } from './maintenance/maintenance.utils';
+import { createIndexes, seed } from './maintenance/maintenance.utils';
 
 const clearEnvCache = () => {
   Object.keys(process.env).forEach((key) => {
@@ -30,12 +30,12 @@ const appOptions: AppOptions = {
     },
     flow: {
       apiUrl: process.env.FLOW_API_URL!,
-    }
+    },
   },
   mongodb: {
     url: process.env.MONGODB_URL!,
     database: process.env.MONGODB_DATABASE!,
-  }
+  },
 };
 
 // Pass --options via CLI arguments in command to enable these options.
@@ -54,6 +54,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
   void fastify.register(async (fastify) => {
     if (process.env.NODE_ENV === 'development') {
       await seed(fastify);
+      await createIndexes(fastify);
     }
   });
 
