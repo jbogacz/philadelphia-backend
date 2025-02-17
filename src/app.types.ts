@@ -12,9 +12,6 @@ export interface AppConfig {
   flow: {
     apiUrl: string;
   };
-  fileStorage: {
-    bucket: string;
-  };
 }
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
@@ -28,5 +25,4 @@ export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPlugin
       password: string;
     };
   };
-  minio: ClientOptions;
 }

@@ -1,36 +1,33 @@
 import fp from 'fastify-plugin';
 import type { Db } from 'mongodb';
-import { ProfileRepository } from '../features/trace/profile.repository';
-import { TraceService } from '../features/trace/trace.service';
-import { AdMarkupService } from '../features/ad/ad.markup.service';
-import { AdController } from '../features/ad/ad.controller';
-import { TraceController } from '../features/trace/trace.controller';
-import { ImpressionService } from '../features/ad/impression.service';
-import { ImpressionController } from '../features/ad/impression.controller';
-import { TraceRepository } from '../features/trace/trace.repository';
 import { AppConfig } from '../app.types';
-import { ImpressionRepository } from '../features/ad/impression.repository';
+import { AdController } from '../features/ad/ad.controller';
+import { AdMarkupService } from '../features/ad/ad.markup.service';
 import { CreativeService } from '../features/ad/creative.service';
+import { ImpressionController } from '../features/ad/impression.controller';
+import { ImpressionRepository } from '../features/ad/impression.repository';
+import { ImpressionService } from '../features/ad/impression.service';
+import { AuthController } from '../features/auth/auth.controller';
+import { AuthService } from '../features/auth/auth.service';
+import { UserController } from '../features/auth/user.controller';
+import { UserRepository } from '../features/auth/user.repository';
+import { UserService } from '../features/auth/user.service';
+import { CampaignRepository } from '../features/campaign/campaign.repository';
+import { CampaignService } from '../features/campaign/campaign.service';
 import { FlowController } from '../features/flow/flow.controller';
 import { FlowService } from '../features/flow/flow.service';
-import { PublisherService } from '../features/publisher/publisher.service';
-import { CampaignService } from '../features/campaign/campaign.service';
-import { CampaignRepository } from '../features/campaign/campaign.repository';
-import { PublisherRepository } from '../features/publisher/publisher.repository';
-import { AuthController } from '../features/auth/auth.controller';
-import { UserRepository } from '../features/auth/user.repository';
-import { AuthService } from '../features/auth/auth.service';
 import { ListingController } from '../features/listing/listing.controller';
-import { UserController } from '../features/auth/user.controller';
-import { UserService } from '../features/auth/user.service';
+import { PublisherRepository } from '../features/publisher/publisher.repository';
+import { PublisherService } from '../features/publisher/publisher.service';
+import { ProfileRepository } from '../features/trace/profile.repository';
+import { TraceController } from '../features/trace/trace.controller';
+import { TraceRepository } from '../features/trace/trace.repository';
+import { TraceService } from '../features/trace/trace.service';
 
 export interface SupportPluginOptions {
-  // Specify Support plugin options here
   config: AppConfig;
 }
 
-// The use of fastify-plugin is required to be able
-// to export the decorators to the outer scope
 export default fp<SupportPluginOptions>(async (fastify, opts) => {
   const { config } = opts;
   const db: Db = fastify.mongo.db!;
@@ -44,7 +41,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     user: new UserRepository(db.collection('users')),
   });
 
-  const creativeService = new CreativeService(fastify.fileStorage);
+  const creativeService = new CreativeService();
   const publisherService = new PublisherService(fastify.repository.publisher);
   const campaignService = new CampaignService(fastify.repository.campaign);
 
