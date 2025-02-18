@@ -18,6 +18,15 @@ export const UserSchema = Type.Intersect([
   }),
 ]);
 
+// export const UserDtoSchema = Type.Omit(UserSchema, ['_id', 'createdAt', 'updatedAt']);
+
+export const UserDtoSchema = Type.Composite([
+  Type.Omit(UserSchema, ['_id', 'createdAt', 'updatedAt', 'role']),
+  Type.Object({
+    role: Type.Optional(Type.Enum(UserRole))
+  })
+])
+
 /**
  * MODEL
  */
@@ -26,7 +35,7 @@ export type User = Static<typeof UserSchema> & IEntity;
 /**
  * DTO
  */
-export type UserDto = Omit<User, '_id' | 'createdAt' | 'updatedAt'>;
+export type UserDto = Static<typeof UserDtoSchema>;
 
 /**
  * ERROR

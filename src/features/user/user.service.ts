@@ -1,6 +1,6 @@
 import { LoggerService } from '../../common';
 import { UserRepository } from './user.repository';
-import { UserDto, UserRole } from './user.types';
+import { User, UserDto, UserRole } from './user.types';
 
 export class UserService {
   private logger = LoggerService.getLogger('feature.user.UserService');
@@ -11,13 +11,13 @@ export class UserService {
     return this.userRepository.findById(id);
   }
 
-  async register(user: UserDto) {
+  async register(user: UserDto): Promise<UserDto> {
     this.logger.info('Register user:', user);
     return this.userRepository.create({ ...user, role: UserRole.USER });
   }
 
-  async update(user: UserDto) {
+  async update(user: UserDto): Promise<UserDto> {
     this.logger.info('Update user:', user);
-    return this.userRepository.update(user);
+    return this.userRepository.update({ ...user, role: UserRole.USER });
   }
 }
