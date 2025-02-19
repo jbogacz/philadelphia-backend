@@ -1,6 +1,5 @@
 import { AutoloadPluginOptions } from "@fastify/autoload";
 import { FastifyServerOptions } from "fastify";
-import { ClientOptions } from "minio";
 
 export interface AppConfig {
   trace: {
@@ -12,6 +11,8 @@ export interface AppConfig {
   flow: {
     apiUrl: string;
   };
+  isProduction: () => boolean;
+  isDevelopment: () => boolean;
 }
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {

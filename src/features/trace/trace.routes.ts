@@ -1,4 +1,3 @@
-import { getAuth } from '@clerk/fastify';
 import { Type } from '@sinclair/typebox';
 import { FastifyPluginAsync } from 'fastify';
 
@@ -47,7 +46,6 @@ export const traceRoutes: FastifyPluginAsync = async (fastify) => {
   );
 
   fastify.get('/hello', (request, res) => {
-    const { userId } = getAuth(request);
     return res.send({ message: 'Hello, World!' });
   });
 };

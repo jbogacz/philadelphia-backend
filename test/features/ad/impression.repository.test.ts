@@ -27,10 +27,10 @@ test('impression:repository', async t => {
     };
 
     // when
-    var saved: Impression = await impressionRepository.save(impression);
+    var saved: Impression | null = await impressionRepository.save(impression);
 
     // then
-    assert.ok(saved._id);
+    assert.ok(saved?._id);
     assert.ok(await collection.findOne({ _id: new ObjectId(saved._id) }));
   });
 });

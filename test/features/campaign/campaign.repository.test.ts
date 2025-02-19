@@ -42,10 +42,10 @@ test('campaign:repository', async t => {
     const campaign: Campaign = randomCampaign();
 
     // when
-    var saved: Campaign = await campaignRepository.save(campaign);
+    var saved: Campaign | null = await campaignRepository.save(campaign);
 
     // then
-    assert.ok(saved._id);
+    assert.ok(saved?._id);
     assert.ok(await collection.findOne({ _id: new ObjectId(saved._id) }));
   });
 

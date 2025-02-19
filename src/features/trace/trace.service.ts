@@ -11,9 +11,9 @@ export class TraceService {
 
   private logger = LoggerService.getLogger('feature.trace.TraceService');
 
-  async capture(trace: Trace): Promise<Profile> {
+  async capture(trace: Trace): Promise<Profile | null> {
     this.logger.info('Capturing trace', { trace });
-    
+
     // Save the trace
     await this.traceRepository.save(trace);
 

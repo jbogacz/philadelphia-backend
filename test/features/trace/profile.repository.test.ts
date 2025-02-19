@@ -8,7 +8,7 @@ import { ObjectId, type Collection } from 'mongodb';
 
 import delay = require('delay');
 
-test('trace:repository', async t => {
+test('trace:repository', async (t) => {
   const fastify = await build(t);
   const collection: Collection = fastify.mongo.db.collection('profiles');
   const profileRepository: ProfileRepository = fastify.repository.profile;
@@ -30,17 +30,17 @@ test('trace:repository', async t => {
         {
           fingerprintId: randomUUID().toString(),
           created: now,
-          lastSeen: now
-        }
+          lastSeen: now,
+        },
       ],
-      emails: []
+      emails: [],
     };
 
     // when
-    var saved: Profile = await profileRepository.save(profile);
+    var saved: Profile | null = await profileRepository.save(profile);
 
     // then
-    assert.ok(saved._id);
+    assert.ok(saved?._id);
     assert.ok(await collection.findOne({ _id: new ObjectId(saved._id) }));
   });
 
@@ -53,10 +53,10 @@ test('trace:repository', async t => {
         {
           fingerprintId: randomUUID().toString(),
           created: now,
-          lastSeen: now
-        }
+          lastSeen: now,
+        },
       ],
-      emails: []
+      emails: [],
     };
 
     await profileRepository.save(profile);
@@ -77,16 +77,16 @@ test('trace:repository', async t => {
         {
           fingerprintId: randomUUID().toString(),
           created: now,
-          lastSeen: now
-        }
+          lastSeen: now,
+        },
       ],
       emails: [
         {
           value: 'test@test.pl',
           created: now,
-          lastSeen: now
-        }
-      ]
+          lastSeen: now,
+        },
+      ],
     };
 
     await profileRepository.save(profile);
@@ -107,16 +107,16 @@ test('trace:repository', async t => {
         {
           fingerprintId: randomUUID().toString(),
           created: now,
-          lastSeen: now
-        }
+          lastSeen: now,
+        },
       ],
       emails: [
         {
           value: 'test@test.pl',
           created: now,
-          lastSeen: now
-        }
-      ]
+          lastSeen: now,
+        },
+      ],
     };
 
     // when
@@ -125,8 +125,8 @@ test('trace:repository', async t => {
     await delay(1000);
 
     await profileRepository.save({
-      _id: saved._id,
-      ...profile
+      _id: saved?._id,
+      ...profile,
     });
 
     // when

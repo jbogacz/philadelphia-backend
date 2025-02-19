@@ -6,7 +6,7 @@ import { Campaign, CampaignStatus } from '../../../src/features/campaign/campaig
 import { FlowEventDto, FlowSource } from '../../../src/features/flow/flow.types';
 import { PublisherRepository } from '../../../src/features/publisher/publisher.repository';
 
-test('flow:routes', async t => {
+test('flow:routes', async (t) => {
   const fastify = await build(t);
   const campaignRepository: CampaignRepository = fastify.repository.campaign;
   const publisherRepository: PublisherRepository = fastify.repository.publisher;
@@ -85,7 +85,7 @@ test('flow:routes', async t => {
 
     assert.equal(response.statusCode, 400);
     assert.deepEqual(JSON.parse(response.body), {
-      statusCode: 400,
+      code: 400,
       error: 'MongoError',
       message: 'Missing campaign with campaignId: unknown-campaign',
     });
@@ -100,7 +100,7 @@ test('flow:routes', async t => {
 
     assert.equal(response.statusCode, 400);
     assert.deepEqual(JSON.parse(response.body), {
-      statusCode: 400,
+      code: 400,
       error: 'Error',
       message: "body must have required property 'fingerprint'",
     });

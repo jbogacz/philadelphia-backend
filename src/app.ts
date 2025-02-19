@@ -31,11 +31,13 @@ const appOptions: AppOptions = {
     flow: {
       apiUrl: process.env.FLOW_API_URL!,
     },
+    isProduction: () => process.env.NODE_ENV === 'production',
+    isDevelopment: () => process.env.NODE_ENV === 'development',
   },
   mongodb: {
     url: process.env.MONGODB_URL!,
     database: process.env.MONGODB_DATABASE!,
-  },
+  }
 };
 
 // Pass --options via CLI arguments in command to enable these options.
@@ -52,7 +54,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
   await fastify.after(); // Wait for mongodb plugin to register
 
   void fastify.register(async (fastify) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (options.config.isDevelopment()) {
       await seed(fastify);
       await createIndexes(fastify);
     }

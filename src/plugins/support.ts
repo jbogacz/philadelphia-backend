@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
 import type { Db } from 'mongodb';
-import { AppConfig } from '../app.types';
+import { AppConfig, AppOptions } from '../app.types';
 import { AdController } from '../features/ad/ad.controller';
 import { AdMarkupService } from '../features/ad/ad.markup.service';
 import { CreativeService } from '../features/ad/creative.service';
@@ -21,12 +21,11 @@ import { ProfileRepository } from '../features/trace/profile.repository';
 import { TraceController } from '../features/trace/trace.controller';
 import { TraceRepository } from '../features/trace/trace.repository';
 import { TraceService } from '../features/trace/trace.service';
+import { HookController } from '../features/hook/hook.controller';
+import { HookService } from '../features/hook/hook.service';
+import { HookRepository } from '../features/hook/hook.repository';
 
-export interface SupportPluginOptions {
-  config: AppConfig;
-}
-
-export default fp<SupportPluginOptions>(async (fastify, opts) => {
+export default fp<AppOptions>(async (fastify, opts) => {
   const { config } = opts;
   const db: Db = fastify.mongo.db!;
 
@@ -37,6 +36,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     publisher: new PublisherRepository(db.collection('publishers')),
     campaign: new CampaignRepository(db.collection('campaigns')),
     user: new UserRepository(db.collection('users')),
+    hook: new HookRepository(db.collection('hooks')),
   });
 
   const creativeService = new CreativeService();
@@ -52,6 +52,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     markup: new AdMarkupService(creativeService, config),
     impression: new ImpressionService(fastify.repository.impression),
     user: new UserService(fastify.repository.user),
+    hook: new HookService(fastify.repository.hook, fastify.repository.user),
   });
 
   fastify.decorate('controller', {
@@ -61,6 +62,7 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
     impression: new ImpressionController(fastify.service.impression),
     user: new UserController(fastify.service.user),
     listing: new ListingController(),
+    hook: new HookController(fastify.service.hook, config),
   });
 });
 
@@ -73,6 +75,7 @@ declare module 'fastify' {
       publisher: PublisherRepository;
       campaign: CampaignRepository;
       user: UserRepository;
+      hook: HookRepository;
     };
     service: {
       trace: TraceService;
@@ -81,6 +84,7 @@ declare module 'fastify' {
       impression: ImpressionService;
       creative: CreativeService;
       user: UserService;
+      hook: HookService;
     };
     controller: {
       ad: AdController;
@@ -89,6 +93,7 @@ declare module 'fastify' {
       impression: ImpressionController;
       user: UserController;
       listing: ListingController;
+      hook: HookController;
     };
   }
 }
