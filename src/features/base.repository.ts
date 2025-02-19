@@ -1,5 +1,6 @@
 import { Type } from '@sinclair/typebox';
-import { Collection, Filter, ObjectId, OptionalUnlessRequiredId, WithId } from 'mongodb';
+import { Collection, Filter, MongoError, ObjectId, OptionalUnlessRequiredId, WithId } from 'mongodb';
+import { LoggerService } from '../common';
 
 export const BaseSchema = Type.Object({
   _id: Type.Optional(Type.String()),
@@ -14,6 +15,8 @@ export interface IEntity {
 }
 
 export class BaseRepository<T extends IEntity> {
+  private logger = LoggerService.getLogger('feature.base.BaseRepository');
+
   constructor(protected collection: Collection<T>) {}
 
   async findByPrimaryId(id: string): Promise<WithId<T> | null> {
@@ -30,16 +33,22 @@ export class BaseRepository<T extends IEntity> {
 
   async create(data: T): Promise<T> {
     const now = new Date();
-    const result = await this.collection.insertOne({ ...data, createdAt: now, updatedAt: now } as OptionalUnlessRequiredId<T>);
 
-    if (!result.acknowledged || !result.insertedId) {
-      throw new Error('Failed to insert document');
+    const upsert = await this.collection.findOneAndUpdate(
+      { _id: new ObjectId() } as Filter<T>,
+      { $setOnInsert: { ...data, createdAt: now, updatedAt: now } },
+      {
+        upsert: true,
+        returnDocument: 'after',
+      }
+    );
+
+    if (!upsert) {
+      this.logger.error('Failed to insert document:', data);
+      throw new MongoError('Failed to insert document: ' + JSON.stringify(data));
     }
 
-    return {
-      _id: result.insertedId,
-      ...data,
-    } as T;
+    return upsert as T;
   }
 
   async update(data: T): Promise<T | null> {

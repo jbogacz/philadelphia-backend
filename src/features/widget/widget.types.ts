@@ -1,0 +1,46 @@
+import { Static, Type } from '@sinclair/typebox';
+import { BaseSchema, IEntity } from '../base.repository';
+
+export enum WidgetStatus {
+  PENDING = 'pending',
+  REGISTERED = 'registered',
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+}
+
+/**
+ * SCHEMA
+ */
+export const WidgetSchema = Type.Intersect([
+  BaseSchema,
+  Type.Object({
+    status: Type.Enum(WidgetStatus),
+    userId: Type.String(),
+    hookId: Type.Optional(Type.String()),
+    code: Type.String(),
+  }),
+]);
+
+export const WidgetQuerySchema = Type.Object({
+  userId: Type.String(),
+  hookId: Type.String(),
+});
+
+export const WidgetDtoSchema = Type.Composite([
+  Type.Omit(WidgetSchema, ['_id', 'createdAt', 'updatedAt']),
+  Type.Object({
+    id: Type.Optional(Type.String()),
+  }),
+]);
+
+/**
+ * MODEL
+ */
+export type Widget = Static<typeof WidgetSchema> & IEntity;
+
+/**
+ * DTO
+ */
+export type WidgetDto = Static<typeof WidgetDtoSchema>;
+
+export type WidgetQueryDto = Static<typeof WidgetQuerySchema>;

@@ -24,6 +24,9 @@ import { TraceService } from '../features/trace/trace.service';
 import { HookController } from '../features/hook/hook.controller';
 import { HookService } from '../features/hook/hook.service';
 import { HookRepository } from '../features/hook/hook.repository';
+import { WidgetRepository } from '../features/widget/widget.repository';
+import { WidgetService } from '../features/widget/widget.service';
+import { WidgetController } from '../features/widget/widget.controller';
 
 export default fp<AppOptions>(async (fastify, opts) => {
   const { config } = opts;
@@ -37,6 +40,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     campaign: new CampaignRepository(db.collection('campaigns')),
     user: new UserRepository(db.collection('users')),
     hook: new HookRepository(db.collection('hooks')),
+    widget: new WidgetRepository(db.collection('widgets')),
   });
 
   const creativeService = new CreativeService();
@@ -53,6 +57,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     impression: new ImpressionService(fastify.repository.impression),
     user: new UserService(fastify.repository.user),
     hook: new HookService(fastify.repository.hook, fastify.repository.user),
+    widget: new WidgetService(fastify.repository.widget),
   });
 
   fastify.decorate('controller', {
@@ -63,6 +68,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     user: new UserController(fastify.service.user),
     listing: new ListingController(),
     hook: new HookController(fastify.service.hook, config),
+    widget: new WidgetController(fastify.service.widget, config),
   });
 });
 
@@ -76,6 +82,7 @@ declare module 'fastify' {
       campaign: CampaignRepository;
       user: UserRepository;
       hook: HookRepository;
+      widget: WidgetRepository;
     };
     service: {
       trace: TraceService;
@@ -85,6 +92,7 @@ declare module 'fastify' {
       creative: CreativeService;
       user: UserService;
       hook: HookService;
+      widget: WidgetService;
     };
     controller: {
       ad: AdController;
@@ -94,6 +102,7 @@ declare module 'fastify' {
       user: UserController;
       listing: ListingController;
       hook: HookController;
+      widget: WidgetController;
     };
   }
 }

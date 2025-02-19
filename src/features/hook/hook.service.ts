@@ -2,7 +2,7 @@ import { LoggerService } from '../../common';
 import { NotFoundError } from '../../common/errors';
 import { UserRepository } from '../user/user.repository';
 import { HookRepository } from './hook.repository';
-import { Hook, HookDto, HookQueryDto, HookStatus } from './hook.types';
+import { Hook, HookDto, HookQueryDto } from './hook.types';
 
 export class HookService {
   private logger = LoggerService.getLogger('feature.hook.HookService');
@@ -26,7 +26,7 @@ export class HookService {
       throw new NotFoundError('User not found: ' + hook.userId);
     }
 
-    const created = await this.hookRepository.create({ ...hook, status: HookStatus.ACTIVE });
+    const created = await this.hookRepository.create(hook);
     this.logger.info('Created hook:', created);
     return { id: created._id, ...created };
   }
