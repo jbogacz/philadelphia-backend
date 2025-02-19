@@ -37,7 +37,7 @@ const appOptions: AppOptions = {
   mongodb: {
     url: process.env.MONGODB_URL!,
     database: process.env.MONGODB_DATABASE!,
-  }
+  },
 };
 
 // Pass --options via CLI arguments in command to enable these options.
@@ -60,22 +60,24 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     }
   });
 
-  void fastify.register(swagger, {
-    swagger: {
-      info: {
-        title: 'philadelphia-backend',
-        version: '0.1.0',
+  if (options.config.isDevelopment()) {
+    void fastify.register(swagger, {
+      swagger: {
+        info: {
+          title: 'philadelphia-backend',
+          version: '0.1.0',
+        },
       },
-    },
-  });
+    });
 
-  void fastify.register(swaggerUI, {
-    routePrefix: '/documentation',
-    uiConfig: {
-      docExpansion: 'list',
-      deepLinking: false,
-    },
-  });
+    void fastify.register(swaggerUI, {
+      routePrefix: '/documentation',
+      uiConfig: {
+        docExpansion: 'list',
+        deepLinking: false,
+      },
+    });
+  }
 
   void fastify.register(cors, {
     origin: ['https://philadelphia-web.vercel.app'],
