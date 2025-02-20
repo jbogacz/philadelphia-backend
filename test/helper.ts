@@ -4,7 +4,6 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as test from 'node:test';
 import * as path from 'path';
 
-
 declare module 'fastify' {
   interface FastifyInstance {
     mongo: FastifyMongoObject & FastifyMongoNestedObject;
@@ -36,28 +35,40 @@ class MongoHelper {
 }
 
 // This config is used as AppOptions in Fastify and configures embedded Mongo
-async function config() {
+async function createTestConfig() {
   const mongoUri = await MongoHelper.getUri();
   return {
     mongodb: {
       url: mongoUri,
-      database: 'testdb'
+      database: 'testdb',
+    },
+    config: {
+      trace: {
+        apiUrl: process.env.TRACE_API_URL!,
+      },
+      impression: {
+        apiUrl: process.env.IMPRESSION_API_URL!,
+      },
+      flow: {
+        apiUrl: process.env.FLOW_API_URL!,
+      },
+      isProduction: () => false,
+      isDevelopment: () => true,
     },
     // This is the most important bit that provides configuration from app.ts
-    skipOverride: true
+    skipOverride: true,
   };
 }
 
 // Automatically build and tear down our instance
 async function build(t: TestContext) {
-  const fastify = await helper.build([AppPath], await config());
+  const fastify = await helper.build([AppPath], await createTestConfig());
 
   await fastify.ready();
 
   t.after(async () => {
     await fastify.close();
     await MongoHelper.cleanup();
-    // await delay(2000);
   });
 
   return fastify;
@@ -74,4 +85,4 @@ async function clearDatabase(app: any) {
   }
 }
 
-export { build, clearDatabase, config, MongoHelper };
+export { build, clearDatabase, createTestConfig as config, MongoHelper };

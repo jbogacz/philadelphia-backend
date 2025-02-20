@@ -7,7 +7,6 @@ export const widgetRoutes: FastifyPluginAsync = async (fastify) => {
     '/widgets',
     {
       schema: {
-        body: WidgetDtoSchema,
         description: 'Register a new widget',
         tags: ['widgets'],
         response: {

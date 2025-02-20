@@ -2,8 +2,8 @@ import { Static, Type } from '@sinclair/typebox';
 
 export const ErrorDtoSchema = Type.Object({
   code: Type.Number(),
-  error: Type.String(),
-  message: Type.String(),
+  error: Type.Optional(Type.String()),
+  message: Type.Optional(Type.String()),
 });
 
 export type ErrorDto = Static<typeof ErrorDtoSchema>;

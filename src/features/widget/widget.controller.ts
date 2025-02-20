@@ -21,6 +21,7 @@ export class WidgetController {
       return reply.code(401).send({ error: 'Unauthorized', code: 401 });
     }
 
-    return reply.code(201).send({ id: '123', name: 'Widget' });
+    const widget = await this.widgetService.register(userId as string);
+    return reply.code(200).send(widget);
   }
 }

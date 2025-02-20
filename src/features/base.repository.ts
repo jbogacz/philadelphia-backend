@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox';
-import { Collection, Filter, MongoError, ObjectId, OptionalUnlessRequiredId, WithId } from 'mongodb';
+import { Collection, Filter, MongoError, ObjectId, WithId } from 'mongodb';
 import { LoggerService } from '../common';
 
 export const BaseSchema = Type.Object({
@@ -60,5 +60,9 @@ export class BaseRepository<T extends IEntity> {
       { returnDocument: 'after' }
     );
     return result && (result as T);
+  }
+
+  async query(query: Filter<T>): Promise<WithId<T>[]> {
+    return this.collection.find(query).toArray();
   }
 }

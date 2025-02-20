@@ -57,7 +57,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     impression: new ImpressionService(fastify.repository.impression),
     user: new UserService(fastify.repository.user),
     hook: new HookService(fastify.repository.hook, fastify.repository.user),
-    widget: new WidgetService(fastify.repository.widget),
+    widget: new WidgetService(fastify.repository.widget, fastify.repository.user),
   });
 
   fastify.decorate('controller', {
