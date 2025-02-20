@@ -27,7 +27,7 @@ export const WidgetQuerySchema = Type.Object({
 });
 
 export const WidgetDtoSchema = Type.Composite([
-  Type.Omit(WidgetSchema, ['_id', 'createdAt', 'updatedAt']),
+  Type.Partial(Type.Omit(WidgetSchema, ['_id', 'createdAt', 'updatedAt'])),
   Type.Object({
     id: Type.Optional(Type.String()),
   }),

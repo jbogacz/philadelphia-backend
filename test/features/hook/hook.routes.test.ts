@@ -88,7 +88,7 @@ test('hook:routes', async (t) => {
 
     const response = await fastify.inject({
       method: 'PUT',
-      url: '/api/hooks',
+      url: '/api/hooks/' + hook.id,
       payload: updatedHook,
     });
 
@@ -111,7 +111,7 @@ test('hook:routes', async (t) => {
 
     const response = await fastify.inject({
       method: 'PUT',
-      url: '/api/hooks',
+      url: '/api/hooks/' + updatedHook.id,
       payload: updatedHook,
     });
 

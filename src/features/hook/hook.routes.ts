@@ -61,7 +61,7 @@ export const hookRoutes: FastifyPluginAsync = async (fastify) => {
   );
 
   fastify.put(
-    '/hooks',
+    '/hooks/:id',
     {
       schema: {
         body: HookDtoSchema,

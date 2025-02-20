@@ -24,4 +24,16 @@ export class WidgetController {
     const widget = await this.widgetService.register(userId as string);
     return reply.code(200).send(widget);
   }
+
+  async update(
+    request: FastifyRequest<{ Body: WidgetDto; Params: { id: string } }>,
+    reply: FastifyReply
+  ): Promise<
+    FastifyReply<{
+      Reply: WidgetDto | ErrorDto;
+    }>
+  > {
+    const widget = await this.widgetService.update(request.params.id, request.body);
+    return widget ? reply.code(200).send(widget) : reply.code(404).send({ error: 'Widget not found', code: 404 });
+  }
 }

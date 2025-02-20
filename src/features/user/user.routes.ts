@@ -39,7 +39,7 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
   );
 
   fastify.put(
-    '/users',
+    '/users/:id',
     {
       schema: {
         description: 'Capture new trace',

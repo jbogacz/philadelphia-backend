@@ -16,7 +16,7 @@ export class HookController {
     }>
   > {
     const hook: HookDto | null = await this.hookService.findById(request.params.id);
-    return hook ? reply.code(200).send(hook) : reply.code(404).send({ error: 'Hook not found', code: 404 });
+    return hook ? reply.code(200).send(hook) : reply.code(404).send({ error: 'NotFoundError', code: 404 });
   }
 
   async query(
@@ -44,14 +44,14 @@ export class HookController {
   }
 
   async update(
-    request: FastifyRequest<{ Body: HookDto }>,
+    request: FastifyRequest<{ Body: HookDto, Params: { id: string } }>,
     reply: FastifyReply
   ): Promise<
     FastifyReply<{
       Reply: HookDto | ErrorDto;
     }>
   > {
-    const hook = await this.hookService.update(request.body);
-    return hook ? reply.code(200).send(hook) : reply.code(404).send({ error: 'Hook not found', code: 404 });
+    const hook = await this.hookService.update(request.params.id, request.body);
+    return hook ? reply.code(200).send(hook) : reply.code(404).send({ error: 'NotFoundError', code: 404 });
   }
 }

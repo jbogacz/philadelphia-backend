@@ -31,14 +31,16 @@ export class HookService {
     return { id: created._id, ...created };
   }
 
-  async update(hook: HookDto): Promise<HookDto | null> {
+  async update(id: string, hook: HookDto): Promise<HookDto | null> {
     // Update of userId is not allowed
-    const { userId, ...toUpdate } = { _id: hook.id, ...hook };
-    const updated = await this.hookRepository.update(toUpdate as Hook);
+    const { userId, ...toUpdate } = { ...hook };
+
+    const updated = await this.hookRepository.update(id, toUpdate as Hook);
     if (!updated) {
-      this.logger.error('Hook not found:', hook.id);
-      throw new NotFoundError('Hook not found: ' + hook.id);
+      this.logger.error('Hook not found:', id);
+      throw new NotFoundError('Hook not found: ' + id);
     }
+
     this.logger.info('Updated hook:', updated);
     return { id: updated._id, ...updated };
   }

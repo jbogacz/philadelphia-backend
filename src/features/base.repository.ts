@@ -25,7 +25,7 @@ export class BaseRepository<T extends IEntity> {
 
   async save(data: T): Promise<T | null> {
     if (data._id) {
-      return this.update(data);
+      return this.update(data._id, data);
     } else {
       return this.create(data);
     }
@@ -51,11 +51,11 @@ export class BaseRepository<T extends IEntity> {
     return upsert as T;
   }
 
-  async update(data: T): Promise<T | null> {
+  async update(id: string, data: T): Promise<T | null> {
     const result = await this.collection.findOneAndUpdate(
-      { _id: new ObjectId(data._id) } as Filter<T>,
+      { _id: new ObjectId(id) } as Filter<T>,
       {
-        $set: { ...data, _id: new ObjectId(data._id), updatedAt: new Date() },
+        $set: { ...data, _id: new ObjectId(id), updatedAt: new Date() },
       },
       { returnDocument: 'after' }
     );

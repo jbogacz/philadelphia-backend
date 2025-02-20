@@ -17,4 +17,20 @@ export const widgetRoutes: FastifyPluginAsync = async (fastify) => {
     },
     fastify.controller.widget.register.bind(fastify.controller.widget)
   );
+
+  fastify.put(
+    '/widgets/:id',
+    {
+      schema: {
+        body: WidgetDtoSchema,
+        description: 'Update widget',
+        tags: ['widgets'],
+        response: {
+          200: WidgetDtoSchema,
+          404: ErrorDtoSchema,
+        },
+      },
+    },
+    fastify.controller.widget.update.bind(fastify.controller.widget)
+  );
 };
