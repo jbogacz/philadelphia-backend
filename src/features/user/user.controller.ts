@@ -13,7 +13,7 @@ export class UserController {
       Reply: UserDto | { error: 'User not found'; code: 404 };
     }>
   > {
-    const user = await this.userService.findById(request.params.id);
+    const user = await this.userService.findByUserId(request.params.id);
     return user ? reply.code(200).send(user as UserDto) : reply.code(404).send();
   }
 
@@ -30,7 +30,7 @@ export class UserController {
   }
 
   async update(
-    request: FastifyRequest<{ Body: UserDto, Params: { id: string } }>,
+    request: FastifyRequest<{ Body: UserDto; Params: { id: string } }>,
     reply: FastifyReply
   ): Promise<
     FastifyReply<{

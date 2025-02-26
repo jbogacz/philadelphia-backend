@@ -39,7 +39,7 @@ export class HookService {
   }
 
   async create(hook: HookDto): Promise<HookDto> {
-    const user = await this.userRepository.findById(hook.userId);
+    const user = await this.userRepository.findByUserId(hook.userId);
     if (!user) {
       this.logger.error('User not found:', hook.userId);
       throw new NotFoundError('User not found: ' + hook.userId);

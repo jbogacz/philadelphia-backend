@@ -14,7 +14,7 @@ test('user:routes', async (t) => {
 
   await t.test('should return 200 when login is successful', async () => {
     const user: UserDto = {
-      id: 'dummy-1',
+      userId: 'dummy-1',
       email: 'test@philadelphia.com',
       role: UserRole.USER,
     };

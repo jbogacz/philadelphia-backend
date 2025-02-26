@@ -19,8 +19,8 @@ export class BaseRepository<T extends IEntity> {
 
   constructor(protected collection: Collection<T>) {}
 
-  async findByPrimaryId(id: string): Promise<WithId<T> | null> {
-    return this.collection.findOne({ _id: new ObjectId(id) } as Filter<T>);
+  async findByPrimaryId(_id: string): Promise<WithId<T> | null> {
+    return this.collection.findOne({ _id: new ObjectId(_id) } as Filter<T>);
   }
 
   async save(data: T): Promise<T | null> {
@@ -52,11 +52,11 @@ export class BaseRepository<T extends IEntity> {
     return upsert as T;
   }
 
-  async update(id: string, data: T): Promise<T | null> {
+  async update(_id: string, data: T): Promise<T | null> {
     const result = await this.collection.findOneAndUpdate(
-      { _id: new ObjectId(id) } as Filter<T>,
+      { _id: new ObjectId(_id) } as Filter<T>,
       {
-        $set: { ...data, _id: new ObjectId(id), updatedAt: new Date() },
+        $set: { ...data, _id: new ObjectId(_id), updatedAt: new Date() },
       },
       { returnDocument: 'after' }
     );

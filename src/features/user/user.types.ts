@@ -12,7 +12,7 @@ export enum UserRole {
 export const UserSchema = Type.Intersect([
   BaseSchema,
   Type.Object({
-    id: Type.String(),
+    userId: Type.String(),
     email: Type.String(),
     role: Type.Enum(UserRole),
   }),
@@ -23,9 +23,9 @@ export const UserSchema = Type.Intersect([
 export const UserDtoSchema = Type.Composite([
   Type.Omit(UserSchema, ['_id', 'createdAt', 'updatedAt', 'role']),
   Type.Object({
-    role: Type.Optional(Type.Enum(UserRole))
-  })
-])
+    role: Type.Optional(Type.Enum(UserRole)),
+  }),
+]);
 
 /**
  * MODEL

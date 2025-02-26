@@ -7,8 +7,8 @@ export class UserService {
 
   constructor(private readonly userRepository: UserRepository) {}
 
-  async findById(id: string): Promise<UserDto | null> {
-    return this.userRepository.findById(id);
+  async findByUserId(userId: string): Promise<UserDto | null> {
+    return this.userRepository.findByUserId(userId);
   }
 
   async register(user: UserDto): Promise<UserDto> {
@@ -16,8 +16,8 @@ export class UserService {
     return this.userRepository.create({ ...user, role: UserRole.USER });
   }
 
-  async update(id: string, user: UserDto): Promise<UserDto | null> {
+  async update(_id: string, user: UserDto): Promise<UserDto | null> {
     this.logger.info('Update user:', user);
-    return this.userRepository.update(id, { ...user, role: UserRole.USER });
+    return this.userRepository.update(_id, { ...user, role: UserRole.USER });
   }
 }

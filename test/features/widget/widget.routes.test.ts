@@ -16,7 +16,7 @@ test('widget:routes', async (t) => {
     await clearDatabase(fastify);
 
     await userRepository.save({
-      id: userId,
+      userId: userId,
       email: 'test@user.com',
       role: 'user',
     });
@@ -40,7 +40,7 @@ test('widget:routes', async (t) => {
     assert.equal(response.statusCode, 200);
     widget = response.json();
 
-    assert.ok(widget.id);
+    assert.ok(widget._id);
     assert.equal(widget.status, 'pending');
     assert.equal(widget.userId, userId);
   });
@@ -55,7 +55,7 @@ test('widget:routes', async (t) => {
     });
 
     assert.equal(response.statusCode, 200);
-    assert.equal(response.json().id, widget.id);
+    assert.equal(response.json()._id, widget._id);
   });
 
   await t.test('should return 404 when trying to register widget with invalid userId', async () => {
@@ -85,7 +85,7 @@ test('widget:routes', async (t) => {
   await t.test('should update widget with hookId and skip other fields', async () => {
     const response = await fastify.inject({
       method: 'PUT',
-      url: '/api/widgets/' + widget.id,
+      url: '/api/widgets/' + widget._id,
       payload: {
         hookId: hook._id,
         status: 'active',
@@ -94,7 +94,7 @@ test('widget:routes', async (t) => {
     });
 
     assert.equal(response.statusCode, 200);
-    assert.equal(response.json().id, widget.id);
+    assert.equal(response.json()._id, widget._id);
     assert.equal(response.json().hookId, hook._id);
     assert.equal(response.json().status, 'pending');
     assert.equal(response.json().userId, userId);

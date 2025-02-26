@@ -16,7 +16,7 @@ export class WidgetService {
   ) {}
 
   async register(userId: string): Promise<WidgetDto> {
-    const user = await this.userRepository.findById(userId);
+    const user = await this.userRepository.findByUserId(userId);
     if (!user) {
       this.logger.error('User not found:', userId);
       throw new NotFoundError('User not found: ' + userId);
@@ -28,11 +28,11 @@ export class WidgetService {
 
       const existing = await this.widgetRepository.query(
         { userId: userId, status: WidgetStatus.PENDING, hookId: { $exists: false } },
-        { session }
+        {  }
       );
       if (existing.length > 0) {
         this.logger.info('Return existing widget:', existing[0]);
-        return { id: existing[0]._id, ...existing[0] };
+        return existing[0];
       }
 
       const widget: Widget = {
@@ -40,11 +40,11 @@ export class WidgetService {
         userId: userId,
         code: `<script>${randomUUID().toString()}</script>`,
       };
-      const created = await this.widgetRepository.create(widget, { session });
+      const created = await this.widgetRepository.create(widget, {  });
       await session.commitTransaction();
 
       this.logger.info('Created widget:', created);
-      return { id: created._id, ...created };
+      return created;
     } catch (error) {
       await session.abortTransaction();
       throw error;
@@ -53,23 +53,23 @@ export class WidgetService {
     }
   }
 
-  async update(id: string, widget: WidgetDto): Promise<WidgetDto | null> {
-    const updated = await this.widgetRepository.update(id, { hookId: widget.hookId } as Widget);
+  async update(_id: string, widget: WidgetDto): Promise<WidgetDto | null> {
+    const updated = await this.widgetRepository.update(_id, { hookId: widget.hookId } as Widget);
     if (!updated) {
-      this.logger.error('Widget not found:', id);
-      throw new NotFoundError('Widget not found: ' + id);
+      this.logger.error('Widget not found:', _id);
+      throw new NotFoundError('Widget not found: ' + _id);
     }
     this.logger.info('Updated widget:', updated);
-    return { id: updated._id, ...updated };
+    return updated;
   }
 
-  async findById(id: string): Promise<WidgetDto | null> {
-    const widget = await this.widgetRepository.findByPrimaryId(id);
+  async findById(_id: string): Promise<WidgetDto | null> {
+    const widget = await this.widgetRepository.findByPrimaryId(_id);
     if (!widget) {
-      this.logger.error('Widget not found:', id);
-      throw new NotFoundError('Widget not found: ' + id);
+      this.logger.error('Widget not found:', _id);
+      throw new NotFoundError('Widget not found: ' + _id);
     }
     this.logger.info('Found widget:', widget);
-    return { id: widget._id, ...widget };
+    return widget;
   }
 }
