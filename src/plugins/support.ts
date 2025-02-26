@@ -56,8 +56,8 @@ export default fp<AppOptions>(async (fastify, opts) => {
     markup: new AdMarkupService(creativeService, config),
     impression: new ImpressionService(fastify.repository.impression),
     user: new UserService(fastify.repository.user),
-    hook: new HookService(fastify.repository.hook, fastify.repository.user),
-    widget: new WidgetService(fastify.repository.widget, fastify.repository.user),
+    hook: new HookService(fastify.repository.hook, fastify.repository.user, fastify.repository.widget),
+    widget: new WidgetService(fastify.mongo, fastify.repository.widget, fastify.repository.user),
   });
 
   fastify.decorate('controller', {

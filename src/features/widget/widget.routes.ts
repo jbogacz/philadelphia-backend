@@ -33,4 +33,28 @@ export const widgetRoutes: FastifyPluginAsync = async (fastify) => {
     },
     fastify.controller.widget.update.bind(fastify.controller.widget)
   );
+
+  fastify.get<{
+    Params: { id: string };
+  }>(
+    '/widgets/:id',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+          },
+          required: ['id'],
+        },
+        description: 'Find widget by id',
+        tags: ['widgets'],
+        response: {
+          200: WidgetDtoSchema,
+          404: ErrorDtoSchema,
+        },
+      },
+    },
+    fastify.controller.widget.findById.bind(fastify.controller.widget)
+  );
 };

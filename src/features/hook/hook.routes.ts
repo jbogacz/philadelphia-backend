@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { HookDtoSchema, HookQuerySchema } from './hook.types';
+import { HookDtoSchema, HookQuerySchema, HookUpdateDtoSchema } from './hook.types';
 import { ErrorDtoSchema } from '../../common/errors';
 
 export const hookRoutes: FastifyPluginAsync = async (fastify) => {
@@ -64,7 +64,7 @@ export const hookRoutes: FastifyPluginAsync = async (fastify) => {
     '/hooks/:id',
     {
       schema: {
-        body: HookDtoSchema,
+        body: HookUpdateDtoSchema,
         description: 'Update hook',
         tags: ['hooks'],
         response: {

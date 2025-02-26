@@ -36,4 +36,16 @@ export class WidgetController {
     const widget = await this.widgetService.update(request.params.id, request.body);
     return widget ? reply.code(200).send(widget) : reply.code(404).send({ error: 'Widget not found', code: 404 });
   }
+
+  async findById(
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply
+  ): Promise<
+    FastifyReply<{
+      Reply: WidgetDto | ErrorDto;
+    }>
+  > {
+    const widget = await this.widgetService.findById(request.params.id);
+    return widget ? reply.code(200).send(widget) : reply.code(404).send({ error: 'Widget not found', code: 404 });
+  }
 }

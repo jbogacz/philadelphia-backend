@@ -31,7 +31,7 @@ export class BaseRepository<T extends IEntity> {
     }
   }
 
-  async create(data: T): Promise<T> {
+  async create(data: T, options?: any): Promise<T> {
     const now = new Date();
 
     const upsert = await this.collection.findOneAndUpdate(
@@ -40,6 +40,7 @@ export class BaseRepository<T extends IEntity> {
       {
         upsert: true,
         returnDocument: 'after',
+        session: options?.session,
       }
     );
 
@@ -62,7 +63,7 @@ export class BaseRepository<T extends IEntity> {
     return result && (result as T);
   }
 
-  async query(query: Filter<T>): Promise<WithId<T>[]> {
-    return this.collection.find(query).toArray();
+  async query(query: Filter<T>, options?: any): Promise<WithId<T>[]> {
+    return this.collection.find(query, { session: options?.session }).toArray();
   }
 }
