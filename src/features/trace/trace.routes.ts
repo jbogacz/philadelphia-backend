@@ -32,19 +32,6 @@ export const traceRoutes: FastifyPluginAsync = async (fastify) => {
     }),
   });
 
-  fastify.post(
-    '/trace',
-    {
-      schema: {
-        description: 'Capture new trace',
-        tags: ['trace'],
-        body: TraceRequest,
-        response: 201,
-      },
-    },
-    fastify.controller.trace.capture.bind(fastify.controller.trace)
-  );
-
   fastify.get('/hello', (request, res) => {
     return res.send({ message: 'Hello, World!' });
   });

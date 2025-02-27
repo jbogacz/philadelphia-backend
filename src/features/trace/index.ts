@@ -1,6 +1,10 @@
+import { FastifyPluginAsync } from 'fastify';
 import { traceRoutes } from './trace.routes';
+import { tracePublicRoutes } from './trace.public.routes';
 
-// This export is what @fastify/autoload will pick up
-export default traceRoutes;
+const featurePlugin: FastifyPluginAsync = async (fastify) => {
+  await fastify.register(traceRoutes);
+  await fastify.register(tracePublicRoutes);
+};
 
-export type { CaptureTraceDto } from './trace.types';
+export default featurePlugin;

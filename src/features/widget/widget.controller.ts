@@ -4,9 +4,14 @@ import { ErrorDto } from '../../common/errors';
 import { WidgetDto, WidgetQueryDto } from './widget.types';
 import { getAuth } from '@clerk/fastify';
 import { WidgetService } from './widget.service';
+import { WidgetCodeService } from './widget.code.service';
 
 export class WidgetController {
-  constructor(private readonly widgetService: WidgetService, private readonly config: AppConfig) {}
+  constructor(
+    private readonly widgetService: WidgetService,
+    private readonly widgetCodeService: WidgetCodeService,
+    private readonly config: AppConfig
+  ) {}
 
   async register(
     request: FastifyRequest<{}>,
@@ -57,6 +62,7 @@ export class WidgetController {
       Reply: string | ErrorDto;
     }>
   > {
-    return reply.code(200).send('widget ' + request.query.widgetKey);
+    const code = await this.widgetCodeService.generate(request.query.widgetKey);
+    return reply.code(200).send(code);
   }
 }

@@ -4,75 +4,51 @@ import { BaseSchema, IEntity } from '../base.repository';
 /**
  * SCHEMA
  */
+export const FingerprintSchema = Type.Object({
+  fingerprintId: Type.String(),
+});
+
+export const PageSchema = Type.Object({
+  domain: Type.String(),
+  path: Type.String(),
+  search: Type.Optional(Type.String()),
+  referer: Type.Optional(Type.String()),
+});
+
 export const TraceSchema = Type.Intersect([
   BaseSchema,
   Type.Object({
+    type: Type.String(),
     traceId: Type.String(),
-    type: Type.String({ enum: ['flow', 'page'] }),
-    email: Type.Optional(Type.String({ format: 'email' })),
-    fingerprint: Type.Object({
-      fingerprintId: Type.String(),
-    }),
-    geo: Type.Optional(
-      Type.Object({
-        language: Type.Optional(Type.String()),
-        country: Type.Optional(Type.String()),
-        city: Type.Optional(Type.String()), // TODO: Change to region
-        timezone: Type.Optional(Type.String()),
-      }),
-    ),
-    device: Type.Optional(
-      Type.Object({
-        userAgent: Type.String(),
-        platform: Type.String(),
-        ip: Type.String(),
-      }),
-    ),
-    page: Type.Object({
-      domain: Type.Optional(Type.String()),
-      path: Type.Optional(Type.String()),
-      search: Type.Optional(Type.String()),
-      title: Type.Optional(Type.String()),
-      referer: Type.String(),
-    }),
+    fingerprint: FingerprintSchema,
+    widgetKey: Type.String(),
+    widgetId: Type.String(),
+    hookId: Type.String(),
   }),
 ]);
 
-export const FingerprintSchema = Type.Object({
-  fingerprintId: Type.String(),
-  created: Type.Date(), // TODO: Change to firstSeen
-  lastSeen: Type.Date(),
-});
-
-export const EmailSchema = Type.Object({
-  value: Type.String(),
-  created: Type.Date(), // TODO: Change to firstSeen
-  lastSeen: Type.Date(),
-});
-
-export const ProfileSchema = Type.Intersect([
-  BaseSchema,
+export const VisitTraceSchema = Type.Intersect([
+  TraceSchema,
   Type.Object({
-    fingerprints: Type.Array(FingerprintSchema),
-    emails: Type.Array(EmailSchema),
+    type: Type.Literal('visit'),
+    page: PageSchema,
   }),
-  // TODO: Add firstSeen and lastSeen
 ]);
+
+export const VisitTraceDtoSchema = Type.Omit(VisitTraceSchema, ['_id', 'createdAt', 'updatedAt', 'type', 'widgetId', 'hookId']);
 
 /**
  * MODEL
  */
 export type Trace = Static<typeof TraceSchema> & IEntity;
 
-export type Profile = Static<typeof ProfileSchema> & IEntity;
+export type VisitTrace = Static<typeof VisitTraceSchema> & IEntity;
 
 export type Fingerprint = Static<typeof FingerprintSchema>;
 
-export type Email = Static<typeof EmailSchema>;
+export type Page = Static<typeof PageSchema>;
 
 /**
  * DTO
  */
-export type CaptureTraceDto = Omit<Trace, '_id | createdAt | updatedAt'>;
-
-export type ProfileDto = Omit<Profile, 'id'>;
+export type VisitTraceDto = typeof VisitTraceDtoSchema.static;

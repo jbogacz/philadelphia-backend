@@ -1,5 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
 import { BaseSchema, IEntity } from '../base.repository';
+import { DynamicBlueprint, DynamicConfig } from '../../dynamic/types';
 
 export enum WidgetStatus {
   PENDING = 'pending',
@@ -35,6 +36,14 @@ export const WidgetDtoSchema = Type.Composite([
  * MODEL
  */
 export type Widget = Static<typeof WidgetSchema> & IEntity;
+
+export interface WidgetCodeBlueprint extends DynamicBlueprint {
+  widgetKey: string;
+}
+
+export interface WidgetCodeConfig extends DynamicConfig {
+  traceApiUrl: string;
+}
 
 /**
  * DTO

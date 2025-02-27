@@ -1,39 +1,38 @@
 import fp from 'fastify-plugin';
 import type { Db } from 'mongodb';
-import { AppConfig, AppOptions } from '../app.types';
+import { AppOptions } from '../app.types';
 import { AdController } from '../features/ad/ad.controller';
 import { AdMarkupService } from '../features/ad/ad.markup.service';
 import { CreativeService } from '../features/ad/creative.service';
 import { ImpressionController } from '../features/ad/impression.controller';
 import { ImpressionRepository } from '../features/ad/impression.repository';
 import { ImpressionService } from '../features/ad/impression.service';
-import { UserController } from '../features/user/user.controller';
-import { UserRepository } from '../features/user/user.repository';
-import { UserService } from '../features/user/user.service';
 import { CampaignRepository } from '../features/campaign/campaign.repository';
 import { CampaignService } from '../features/campaign/campaign.service';
 import { FlowController } from '../features/flow/flow.controller';
 import { FlowService } from '../features/flow/flow.service';
+import { HookController } from '../features/hook/hook.controller';
+import { HookRepository } from '../features/hook/hook.repository';
+import { HookService } from '../features/hook/hook.service';
 import { ListingController } from '../features/listing/listing.controller';
 import { PublisherRepository } from '../features/publisher/publisher.repository';
 import { PublisherService } from '../features/publisher/publisher.service';
-import { ProfileRepository } from '../features/trace/profile.repository';
 import { TraceController } from '../features/trace/trace.controller';
 import { TraceRepository } from '../features/trace/trace.repository';
 import { TraceService } from '../features/trace/trace.service';
-import { HookController } from '../features/hook/hook.controller';
-import { HookService } from '../features/hook/hook.service';
-import { HookRepository } from '../features/hook/hook.repository';
+import { UserController } from '../features/user/user.controller';
+import { UserRepository } from '../features/user/user.repository';
+import { UserService } from '../features/user/user.service';
+import { WidgetCodeService } from '../features/widget/widget.code.service';
+import { WidgetController } from '../features/widget/widget.controller';
 import { WidgetRepository } from '../features/widget/widget.repository';
 import { WidgetService } from '../features/widget/widget.service';
-import { WidgetController } from '../features/widget/widget.controller';
 
 export default fp<AppOptions>(async (fastify, opts) => {
   const { config } = opts;
   const db: Db = fastify.mongo.db!;
 
   fastify.decorate('repository', {
-    profile: new ProfileRepository(db.collection('profiles')),
     trace: new TraceRepository(db.collection('traces')),
     impression: new ImpressionRepository(db.collection('impressions')),
     publisher: new PublisherRepository(db.collection('publishers')),
@@ -46,9 +45,10 @@ export default fp<AppOptions>(async (fastify, opts) => {
   const creativeService = new CreativeService();
   const publisherService = new PublisherService(fastify.repository.publisher);
   const campaignService = new CampaignService(fastify.repository.campaign);
+  const widgetCodeService = new WidgetCodeService(config);
 
   fastify.decorate('service', {
-    trace: new TraceService(fastify.repository.trace, fastify.repository.profile),
+    trace: new TraceService(fastify.repository.trace, fastify.repository.widget),
     publisher: publisherService,
     campaign: campaignService,
     flow: new FlowService(publisherService, campaignService, config),
@@ -68,14 +68,13 @@ export default fp<AppOptions>(async (fastify, opts) => {
     user: new UserController(fastify.service.user),
     listing: new ListingController(),
     hook: new HookController(fastify.service.hook, config),
-    widget: new WidgetController(fastify.service.widget, config),
+    widget: new WidgetController(fastify.service.widget, widgetCodeService, config),
   });
 });
 
 declare module 'fastify' {
   export interface FastifyInstance {
     repository: {
-      profile: ProfileRepository;
       trace: TraceRepository;
       impression: ImpressionRepository;
       publisher: PublisherRepository;

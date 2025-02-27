@@ -1,5 +1,5 @@
 import FingerprintJS, { GetResult } from '../../fingerprint/fp.script';
-import { CaptureTraceDto } from '../../trace';
+// import { CaptureTraceDto } from '../../trace';
 import { AdMarkupConfig, AdMarkupBlueprint, ImpressionEvent, ImpressionType } from '../ad.types';
 
 export async function load(
@@ -10,7 +10,7 @@ export async function load(
   const traceId = crypto.randomUUID();
 
   try {
-    const trace: CaptureTraceDto = {
+    const trace = {
       traceId: traceId,
       type: 'page',
       fingerprint: {
@@ -95,7 +95,7 @@ async function calculateFingerprint(): Promise<GetResult> {
   return fp.get();
 }
 
-async function sendTrace(traceApiUrl: string, trace: CaptureTraceDto): Promise<void> {
+async function sendTrace(traceApiUrl: string, trace: any): Promise<void> {
   console.log('Sending trace:', trace);
   const result = await fetch(traceApiUrl, {
     method: 'POST',

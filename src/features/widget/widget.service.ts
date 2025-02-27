@@ -73,4 +73,8 @@ export class WidgetService {
     this.logger.info('Found widget:', widget);
     return widget;
   }
+
+  async generate(widgetKey: string): Promise<string> {
+    return 'widget ' + widgetKey;
+  }
 }

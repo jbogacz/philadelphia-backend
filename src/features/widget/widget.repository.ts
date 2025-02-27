@@ -6,4 +6,10 @@ export class WidgetRepository extends BaseRepository<Widget> {
   constructor(collection: Collection<Widget>) {
     super(collection);
   }
+
+  async findByWidgetKey(widgetKey: string): Promise<Widget | null> {
+    return this.collection.findOne({
+      widgetKey: widgetKey,
+    });
+  }
 }

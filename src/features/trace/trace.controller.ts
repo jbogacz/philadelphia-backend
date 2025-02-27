@@ -1,15 +1,15 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { TraceService } from './trace.service';
-import { CaptureTraceDto } from './trace.types';
+import { VisitTraceDto } from './trace.types';
 
 export class TraceController {
   constructor(private readonly traceService: TraceService) {}
 
-  async capture(
-    request: FastifyRequest<{ Body: CaptureTraceDto }>,
+  async captureVisit(
+    request: FastifyRequest<{ Body: VisitTraceDto }>,
     reply: FastifyReply,
   ): Promise<void> {
-    await this.traceService.capture(request.body);
+    await this.traceService.captureVisit(request.body);
     reply.code(201).send();
   }
 }
