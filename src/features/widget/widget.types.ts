@@ -17,13 +17,14 @@ export const WidgetSchema = Type.Intersect([
     status: Type.Enum(WidgetStatus),
     userId: Type.String(),
     hookId: Type.Optional(Type.String()),
+    widgetKey: Type.String(),
     code: Type.String(),
   }),
 ]);
 
 export const WidgetQuerySchema = Type.Object({
-  userId: Type.String(),
-  hookId: Type.String(),
+  apiKey: Type.String(),
+  widgetKey: Type.String(),
 });
 
 export const WidgetDtoSchema = Type.Composite([

@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AppConfig } from '../../app.types';
 import { ErrorDto } from '../../common/errors';
-import { WidgetDto } from './widget.types';
+import { WidgetDto, WidgetQueryDto } from './widget.types';
 import { getAuth } from '@clerk/fastify';
 import { WidgetService } from './widget.service';
 
@@ -47,5 +47,16 @@ export class WidgetController {
   > {
     const widget = await this.widgetService.findById(request.params.id);
     return widget ? reply.code(200).send(widget) : reply.code(404).send({ error: 'Widget not found', code: 404 });
+  }
+
+  async generate(
+    request: FastifyRequest<{ Querystring: WidgetQueryDto }>,
+    reply: FastifyReply
+  ): Promise<
+    FastifyReply<{
+      Reply: string | ErrorDto;
+    }>
+  > {
+    return reply.code(200).send('widget ' + request.query.widgetKey);
   }
 }

@@ -288,6 +288,14 @@
     </main>
 
     <!-- Third-Party Script -->
-    <script src="http://localhost:3000/api/ad?publisherId=publisher-1&targetId=ad-container"></script>
+    <!-- <script src="http://localhost:4000/api/ad?publisherId=publisher-1&targetId=ad-container"></script> -->
+
+    <scrip>
+      (function() {
+        var scriptTag = document.createElement('script');
+        scriptTag.src = 'http://localhost:4000/api/ad?publisherId=publisher-1&targetId=ad-container';
+        document.head.appendChild(scriptTag);
+      })();
+    </scrip>
   </body>
 </html>

@@ -27,7 +27,7 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
     '/users',
     {
       schema: {
-        description: 'Capture new trace',
+        description: 'Register a new user',
         tags: ['users'],
         body: UserDtoSchema,
         response: {
@@ -36,20 +36,5 @@ export const userRoutes: FastifyPluginAsync = async (fastify) => {
       },
     },
     fastify.controller.user.register.bind(fastify.controller.user)
-  );
-
-  fastify.put(
-    '/users/:id',
-    {
-      schema: {
-        description: 'Capture new trace',
-        tags: ['users'],
-        body: UserDtoSchema,
-        response: {
-          200: UserDtoSchema,
-        },
-      },
-    },
-    fastify.controller.user.update.bind(fastify.controller.user)
   );
 };

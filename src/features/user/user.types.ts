@@ -15,6 +15,7 @@ export const UserSchema = Type.Intersect([
     userId: Type.String(),
     email: Type.String(),
     role: Type.Enum(UserRole),
+    apiKey: Type.Optional(Type.String()),
   }),
 ]);
 

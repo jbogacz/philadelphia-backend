@@ -35,6 +35,10 @@ const start = async () => {
 
     // Add preHandler hook to check for authentication on all /api routes
     await server.addHook('preHandler', async (request: FastifyRequest, reply: FastifyReply) => {
+      if (request.url.startsWith('/api/public')) {
+        return;
+      }
+
       if (request.url.startsWith('/api')) {
         try {
           const { userId } = getAuth(request);

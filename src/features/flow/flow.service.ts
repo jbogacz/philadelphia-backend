@@ -1,4 +1,5 @@
 import { AppConfig } from '../../app.types';
+import { LoggerService } from '../../common';
 import { CampaignService } from '../campaign/campaign.service';
 import { CampaignTrace } from '../campaign/campaign.types';
 import { PublisherService } from '../publisher/publisher.service';
@@ -6,6 +7,8 @@ import { FlowBuilder } from './flow.builder';
 import { FlowBlueprint, FlowConfig, FlowDto, FlowEventDto, valueOfSource } from './flow.types';
 
 export class FlowService {
+  private logger = LoggerService.getLogger('feature.flow.FlowService');
+
   private flowBuilder: FlowBuilder = new FlowBuilder();
 
   constructor(
@@ -36,7 +39,7 @@ export class FlowService {
   }
 
   async captureEvent(event: FlowEventDto): Promise<void> {
-    console.log('Capturing flow event:', event);
+    this.logger.info('Capturing flow event:', event);
     const trace: CampaignTrace = {
       traceId: event.traceId,
       fingerprint: event.fingerprint,

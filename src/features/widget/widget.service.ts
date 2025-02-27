@@ -38,6 +38,7 @@ export class WidgetService {
       const widget: Widget = {
         status: WidgetStatus.PENDING,
         userId: userId,
+        widgetKey: randomUUID().toString(),
         code: `<script>${randomUUID().toString()}</script>`,
       };
       const created = await this.widgetRepository.create(widget, {  });

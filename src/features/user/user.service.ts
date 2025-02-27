@@ -13,11 +13,11 @@ export class UserService {
 
   async register(user: UserDto): Promise<UserDto> {
     this.logger.info('Register user:', user);
-    return this.userRepository.create({ ...user, role: UserRole.USER });
-  }
-
-  async update(_id: string, user: UserDto): Promise<UserDto | null> {
-    this.logger.info('Update user:', user);
-    return this.userRepository.update(_id, { ...user, role: UserRole.USER });
+    const apiKey = crypto.randomUUID();
+    return this.userRepository.create({
+      ...user,
+      role: UserRole.USER,
+      apiKey,
+    });
   }
 }

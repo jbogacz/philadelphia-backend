@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { User, UserDto } from './user.types';
+import { UserDto } from './user.types';
 import { UserService } from './user.service';
 
 export class UserController {
@@ -27,17 +27,5 @@ export class UserController {
   > {
     const user = await this.userService.register(request.body);
     return reply.code(201).send(user);
-  }
-
-  async update(
-    request: FastifyRequest<{ Body: UserDto; Params: { id: string } }>,
-    reply: FastifyReply
-  ): Promise<
-    FastifyReply<{
-      Reply: UserDto | { error: 'User not found'; code: 404 };
-    }>
-  > {
-    const user = await this.userService.update(request.params.id, request.body);
-    return reply.code(200).send(user);
   }
 }
