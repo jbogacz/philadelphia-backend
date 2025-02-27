@@ -41,7 +41,7 @@ test('trace:public:routes', async (t) => {
 
     const response = await fastify.inject({
       method: 'POST',
-      url: '/api/public/traces',
+      url: '/api/public/traces/visits',
       body: trace,
     });
 
@@ -80,7 +80,7 @@ test('trace:public:routes', async (t) => {
 
     const response = await fastify.inject({
       method: 'POST',
-      url: '/api/public/traces',
+      url: '/api/public/traces/visits',
       body: trace,
     });
 

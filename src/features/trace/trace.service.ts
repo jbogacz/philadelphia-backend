@@ -13,7 +13,7 @@ export class TraceService {
 
     const widget = await this.widgetRepository.findByWidgetKey(traceDto.widgetKey);
     if (!widget) {
-      this.logger.error('Widget not found:', traceDto.widgetKey);
+      this.logger.warn('Widget not found:', { widgetKey: traceDto.widgetKey });
     }
 
     const trace = {

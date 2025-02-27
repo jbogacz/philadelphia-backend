@@ -51,7 +51,7 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
 
   void fastify.register(mongodb, options.mongodb);
 
-  await fastify.after(); // Wait for mongodb plugin to register
+  await fastify.after();
 
   void fastify.register(async (fastify) => {
     if (options.config.isDevelopment()) {
@@ -79,12 +79,24 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     });
   }
 
-  void fastify.register(cors, {
-    origin: ['https://philadelphia-web.vercel.app'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-    exposedHeaders: ['Set-Cookie'],
+  void fastify.register(require('@fastify/cors'), {
+    hook: 'preHandler',
+    delegator: (req: any, callback: any) => {
+      // Forbid CORS for all routes by default
+      const corsOptions = {
+        origin: false,
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+        exposedHeaders: ['Set-Cookie'],
+      };
+      // Allow CORS for public routes
+      if (req.url && req.url.startsWith('/api/public')) {
+        corsOptions.origin = true;
+        corsOptions.credentials = false;
+      }
+      callback(null, corsOptions);
+    },
   });
 
   void fastify.register(async (server) => {

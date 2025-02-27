@@ -4,7 +4,7 @@ import { VisitTraceDtoSchema } from './trace.types';
 
 export const tracePublicRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post(
-    '/public/traces',
+    '/public/traces/visits',
     {
       schema: {
         body: VisitTraceDtoSchema,
