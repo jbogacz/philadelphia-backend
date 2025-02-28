@@ -1,16 +1,8 @@
-import { AutoloadPluginOptions } from "@fastify/autoload";
-import { FastifyServerOptions } from "fastify";
+import { AutoloadPluginOptions } from '@fastify/autoload';
+import { FastifyServerOptions } from 'fastify';
 
 export interface AppConfig {
-  trace: {
-    apiUrl: string;
-  };
-  impression: {
-    apiUrl: string;
-  };
-  flow: {
-    apiUrl: string;
-  };
+  apiUrl: string;
   isProduction: () => boolean;
   isDevelopment: () => boolean;
 }

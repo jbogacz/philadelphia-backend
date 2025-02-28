@@ -15,16 +15,17 @@ export const UserSchema = Type.Intersect([
     userId: Type.String(),
     email: Type.String(),
     role: Type.Enum(UserRole),
-    apiKey: Type.Optional(Type.String()),
+    apiKey: Type.String(),
   }),
 ]);
 
 // export const UserDtoSchema = Type.Omit(UserSchema, ['_id', 'createdAt', 'updatedAt']);
 
 export const UserDtoSchema = Type.Composite([
-  Type.Omit(UserSchema, ['_id', 'createdAt', 'updatedAt', 'role']),
+  Type.Omit(UserSchema, ['_id', 'createdAt', 'updatedAt', 'role', 'apiKey']),
   Type.Object({
     role: Type.Optional(Type.Enum(UserRole)),
+    apiKey: Type.Optional(Type.String()),
   }),
 ]);
 

@@ -1,37 +1,6 @@
-import { Type } from '@sinclair/typebox';
 import { FastifyPluginAsync } from 'fastify';
 
 export const traceRoutes: FastifyPluginAsync = async (fastify) => {
-  const TraceRequest = Type.Object({
-    traceId: Type.String(),
-    email: Type.Optional(Type.String({ format: 'email' })),
-    fingerprint: Type.Object({
-      fingerprintId: Type.String(),
-    }),
-    geo: Type.Optional(
-      Type.Object({
-        language: Type.Optional(Type.String()),
-        country: Type.Optional(Type.String()),
-        city: Type.Optional(Type.String()),
-        timezone: Type.Optional(Type.String()),
-      })
-    ),
-    device: Type.Optional(
-      Type.Object({
-        userAgent: Type.String(),
-        platform: Type.String(),
-        ip: Type.String(),
-      })
-    ),
-    page: Type.Object({
-      domain: Type.Optional(Type.String()),
-      path: Type.Optional(Type.String()),
-      search: Type.Optional(Type.String()),
-      title: Type.Optional(Type.String()),
-      referer: Type.Optional(Type.String()),
-    }),
-  });
-
   fastify.get('/hello', (request, res) => {
     return res.send({ message: 'Hello, World!' });
   });

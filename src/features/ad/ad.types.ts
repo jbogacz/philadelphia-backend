@@ -48,8 +48,7 @@ export interface AdMarkupBlueprint {
 }
 
 export interface AdMarkupConfig {
-  traceApiUrl: string;
-  impressionApiUrl: string;
+  apiUrl: string;
 }
 
 /**

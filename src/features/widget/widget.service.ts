@@ -6,12 +6,14 @@ import { WidgetRepository } from './widget.repository';
 import { Widget, WidgetDto, WidgetStatus } from './widget.types';
 import { FastifyMongoObject } from '@fastify/mongodb';
 import { txTemplate } from '../base.repository';
+import { AppConfig } from '../../app.types';
 
 export class WidgetService {
   private logger = LoggerService.getLogger('feature.widget.WidgetService');
 
   constructor(
     private readonly mongo: FastifyMongoObject,
+    private readonly config: AppConfig,
     private readonly widgetRepository: WidgetRepository,
     private readonly userRepository: UserRepository
   ) {}
@@ -30,15 +32,22 @@ export class WidgetService {
         { userId: userId, status: WidgetStatus.PENDING, hookId: { $exists: false } },
         { session }
       );
+
       if (existing.length > 0) {
         this.logger.info('Return existing widget:', existing[0]);
         return existing[0];
       }
+
+      const apiUrl = this.config.apiUrl;
+      const apiKey = user.apiKey;
+      const widgetKey = randomUUID().toString();
+      const widgetCode = this.buildScriptSnippet(apiUrl, apiKey, widgetKey);
+
       const widget: Widget = {
         status: WidgetStatus.PENDING,
         userId: userId,
-        widgetKey: randomUUID().toString(),
-        code: `<script>${randomUUID().toString()}</script>`,
+        widgetKey: widgetKey,
+        code: widgetCode,
       };
       return this.widgetRepository.create(widget, { session });
     });
@@ -71,7 +80,7 @@ export class WidgetService {
     return 'widget ' + widgetKey;
   }
 
-  private buildScriptSnippet(apiUrl: string, apiKey: string, widgetKey: string) {
+  private buildScriptSnippet(apiUrl: string, apiKey: string, widgetKey: string): string {
     return `<script src="${apiUrl}/public/widgets?apiKey=${apiKey}&widgetKey=${widgetKey}></script>`;
   }
 }

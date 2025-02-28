@@ -45,15 +45,7 @@ async function createTestConfig() {
       database: 'testdb',
     },
     config: {
-      trace: {
-        apiUrl: process.env.TRACE_API_URL!,
-      },
-      impression: {
-        apiUrl: process.env.IMPRESSION_API_URL!,
-      },
-      flow: {
-        apiUrl: process.env.FLOW_API_URL!,
-      },
+      apiUrl: process.env.API_URL!,
       isProduction: () => false,
       isDevelopment: () => true,
     },

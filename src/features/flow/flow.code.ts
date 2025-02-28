@@ -17,7 +17,7 @@ export async function load(blueprint: FlowBlueprint, config: FlowConfig) {
       campaignId: blueprint.campaignId,
       source: blueprint.source,
     };
-    await captureFlowEvent(config.flowApiUrl, event);
+    await captureFlowEvent(config.apiUrl, event);
   } catch (error) {
     console.error('flow.code', 'Failed to capture flow event:', error);
   }
@@ -34,9 +34,9 @@ async function calculateFingerprint(): Promise<GetResult> {
   return fp.get();
 }
 
-async function captureFlowEvent(flowApiUrl: string, flowEvent: FlowEventDto): Promise<void> {
+async function captureFlowEvent(apiUrl: string, flowEvent: FlowEventDto): Promise<void> {
   console.log('flow.code', 'Capturing flow event:', flowEvent);
-  const result = await fetch(flowApiUrl, {
+  const result = await fetch(apiUrl + '/flow', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

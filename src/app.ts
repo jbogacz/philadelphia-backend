@@ -1,9 +1,8 @@
-import 'dotenv/config';
 import AutoLoad from '@fastify/autoload';
-import cors from '@fastify/cors';
 import mongodb from '@fastify/mongodb';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
+import 'dotenv/config';
 import { FastifyPluginAsync } from 'fastify';
 import { join } from 'path';
 import { AppOptions } from './app.types';
@@ -22,15 +21,7 @@ clearEnvCache();
 const appOptions: AppOptions = {
   env: process.env.NODE_ENV,
   config: {
-    trace: {
-      apiUrl: process.env.TRACE_API_URL!,
-    },
-    impression: {
-      apiUrl: process.env.IMPRESSION_API_URL!,
-    },
-    flow: {
-      apiUrl: process.env.FLOW_API_URL!,
-    },
+    apiUrl: process.env.API_URL!,
     isProduction: () => process.env.NODE_ENV === 'production',
     isDevelopment: () => process.env.NODE_ENV === 'development',
   },

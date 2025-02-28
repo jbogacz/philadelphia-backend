@@ -28,9 +28,7 @@ export const WidgetQuerySchema = Type.Object({
   widgetKey: Type.String(),
 });
 
-export const WidgetDtoSchema = Type.Composite([
-  Type.Partial(Type.Omit(WidgetSchema, ['createdAt', 'updatedAt'])),
-]);
+export const WidgetDtoSchema = Type.Composite([Type.Partial(Type.Omit(WidgetSchema, ['createdAt', 'updatedAt']))]);
 
 /**
  * MODEL
@@ -42,7 +40,7 @@ export interface WidgetCodeBlueprint extends DynamicBlueprint {
 }
 
 export interface WidgetCodeConfig extends DynamicConfig {
-  traceApiUrl: string;
+  apiUrl: string;
 }
 
 /**

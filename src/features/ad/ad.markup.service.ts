@@ -10,7 +10,7 @@ export class AdMarkupService {
   constructor(
     private readonly creativeService: CreativeService,
     private readonly config: AppConfig,
-    private readonly markupBuilder = new AdMarkupBuilder(),
+    private readonly markupBuilder = new AdMarkupBuilder()
   ) {}
 
   async generate(publisherId: string, targetId: string): Promise<string> {
@@ -28,8 +28,7 @@ export class AdMarkupService {
     };
 
     const markupConfig: AdMarkupConfig = {
-      traceApiUrl: this.config.trace.apiUrl,
-      impressionApiUrl: this.config.impression.apiUrl,
+      apiUrl: this.config.apiUrl,
     };
 
     return this.markupBuilder.build(markupBlueprint, markupConfig);

@@ -25,7 +25,7 @@ export async function load(
       },
     };
 
-    await sendTrace(config.traceApiUrl, trace);
+    await sendTrace(config.apiUrl, trace);
   } catch (error) {
     console.error('Failed to send trace:', error);
   }
@@ -41,7 +41,7 @@ export async function load(
       creativeId: blueprint.creativeId,
     };
 
-    trackImpression(config.impressionApiUrl, renderedImpression);
+    trackImpression(config.apiUrl, renderedImpression);
   } catch (error) {
     console.error('Failed to send impression:', error);
   }
@@ -83,7 +83,7 @@ export async function load(
         creativeId: blueprint.creativeId,
       };
 
-      trackImpression(config.impressionApiUrl, renderedImpression);
+      trackImpression(config.apiUrl, renderedImpression);
     } catch (error) {
       console.error('Failed to send impression:', error);
     }
@@ -95,9 +95,9 @@ async function calculateFingerprint(): Promise<GetResult> {
   return fp.get();
 }
 
-async function sendTrace(traceApiUrl: string, trace: any): Promise<void> {
+async function sendTrace(apiUrl: string, trace: any): Promise<void> {
   console.log('Sending trace:', trace);
-  const result = await fetch(traceApiUrl, {
+  const result = await fetch(apiUrl + '/traces', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -110,9 +110,9 @@ async function sendTrace(traceApiUrl: string, trace: any): Promise<void> {
   }
 }
 
-function trackImpression(impressionApiUrl: string, impression: ImpressionEvent): void {
+function trackImpression(apiUrl: string, impression: ImpressionEvent): void {
   const params = new URLSearchParams(toRecord(impression));
-  const impressionUrl = impressionApiUrl + '?' + params.toString();
+  const impressionUrl = apiUrl + '/impression' + '?' + params.toString();
 
   console.log('Sending impression:', impressionUrl);
 

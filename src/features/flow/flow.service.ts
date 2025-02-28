@@ -31,8 +31,7 @@ export class FlowService {
     };
 
     const flowConfig: FlowConfig = {
-      traceApiUrl: this.config.trace.apiUrl,
-      flowApiUrl: this.config.flow.apiUrl,
+      apiUrl: this.config.apiUrl,
     };
 
     return this.flowBuilder.build(flowBlueprint, flowConfig);

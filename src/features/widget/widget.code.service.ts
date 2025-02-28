@@ -17,7 +17,7 @@ export class WidgetCodeService {
       widgetKey,
     };
     const config: WidgetCodeConfig = {
-      traceApiUrl: this.config.trace.apiUrl,
+      apiUrl: this.config.apiUrl,
     };
     return this.widgetCodeBuilder.build(blueprint, config);
   }

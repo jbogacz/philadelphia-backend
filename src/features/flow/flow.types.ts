@@ -22,8 +22,7 @@ export interface FlowBlueprint extends DynamicBlueprint {
 }
 
 export interface FlowConfig extends DynamicConfig {
-  traceApiUrl: string;
-  flowApiUrl: string;
+  apiUrl: string;
 }
 
 /**

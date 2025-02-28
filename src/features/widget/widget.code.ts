@@ -19,7 +19,7 @@ export async function load(blueprint: WidgetCodeBlueprint, config: WidgetCodeCon
       referer: document.referrer,
     },
   };
-  await sendVisitTrace(config.traceApiUrl, visitTrace);
+  await sendVisitTrace(config.apiUrl, visitTrace);
 }
 
 async function calculateFingerprint(): Promise<GetResult> {
@@ -27,9 +27,9 @@ async function calculateFingerprint(): Promise<GetResult> {
   return fp.get();
 }
 
-async function sendVisitTrace(traceApiUrl: string, trace: VisitTraceDto): Promise<void> {
+async function sendVisitTrace(apiUrl: string, trace: VisitTraceDto): Promise<void> {
   try {
-    await fetch(traceApiUrl + '/visits', {
+    await fetch(apiUrl + '/public/traces/visits', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
