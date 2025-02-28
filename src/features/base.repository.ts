@@ -68,6 +68,13 @@ export class BaseRepository<T extends IEntity> {
   }
 }
 
+/**
+ * Higher order function to wrap a function with a transaction.
+ * Call it directly with the dbClient to get the function and do not assign it to a variable.
+ *
+ * @param dbClient
+ * @returns
+ */
 const withTransaction =
   (dbClient: MongoClient) =>
   async <T>(fn: (session: ClientSession) => Promise<T>): Promise<T> => {

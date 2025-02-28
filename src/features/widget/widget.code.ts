@@ -13,7 +13,7 @@ export async function load(blueprint: WidgetCodeBlueprint, config: WidgetCodeCon
     },
     widgetKey: blueprint.widgetKey,
     page: {
-      domain: window.location.hostname,
+      domain: window.location.origin,
       path: window.location.pathname,
       search: window.location.search,
       referer: document.referrer,

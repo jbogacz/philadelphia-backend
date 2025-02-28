@@ -45,7 +45,7 @@ async function createTestConfig() {
       database: 'testdb',
     },
     config: {
-      apiUrl: process.env.API_URL!,
+      apiUrl: 'http://backend.com/api',
       isProduction: () => false,
       isDevelopment: () => true,
     },

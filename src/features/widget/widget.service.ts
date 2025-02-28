@@ -25,9 +25,7 @@ export class WidgetService {
       throw new NotFoundError('User not found: ' + userId);
     }
 
-    const runInTransaction = txTemplate.withTransaction(this.mongo.client);
-
-    const created = await runInTransaction(async (session) => {
+    return txTemplate.withTransaction(this.mongo.client)(async (session) => {
       const existing = await this.widgetRepository.query(
         { userId: userId, status: WidgetStatus.PENDING, hookId: { $exists: false } },
         { session }
@@ -49,11 +47,11 @@ export class WidgetService {
         widgetKey: widgetKey,
         code: widgetCode,
       };
-      return this.widgetRepository.create(widget, { session });
-    });
 
-    this.logger.info('Created widget:', created);
-    return created;
+      const created = await this.widgetRepository.create(widget, { session });
+      this.logger.info('Created widget:', created);
+      return created;
+    });
   }
 
   async update(_id: string, widget: WidgetDto): Promise<WidgetDto | null> {
@@ -81,6 +79,14 @@ export class WidgetService {
   }
 
   private buildScriptSnippet(apiUrl: string, apiKey: string, widgetKey: string): string {
-    return `<script src="${apiUrl}/public/widgets?apiKey=${apiKey}&widgetKey=${widgetKey}></script>`;
+    return `
+    <script>
+    (function() {
+      var script = document.createElement('script');
+      script.src = '${apiUrl}/public/widgets?apiKey=${apiKey}&widgetKey=${widgetKey}';
+      document.head.appendChild(script);
+    })();
+    </script>
+    `;
   }
 }
