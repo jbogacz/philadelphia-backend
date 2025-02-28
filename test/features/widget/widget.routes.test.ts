@@ -8,6 +8,9 @@ test('widget:routes', async (t) => {
   const userRepository = fastify.repository.user;
   const hookRepository = fastify.repository.hook;
 
+  // const originalWithTransaction = txTemplate.withTransaction;
+
+
   let userId: string = 'qux';
   let widget: any;
   let hook: Hook;

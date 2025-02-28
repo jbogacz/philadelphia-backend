@@ -5,6 +5,7 @@ import { UserRepository } from '../user/user.repository';
 import { WidgetRepository } from './widget.repository';
 import { Widget, WidgetDto, WidgetStatus } from './widget.types';
 import { FastifyMongoObject } from '@fastify/mongodb';
+import { txTemplate } from '../base.repository';
 
 export class WidgetService {
   private logger = LoggerService.getLogger('feature.widget.WidgetService');
@@ -22,36 +23,28 @@ export class WidgetService {
       throw new NotFoundError('User not found: ' + userId);
     }
 
-    const session = this.mongo.client.startSession();
-    try {
-      session.startTransaction();
+    const runInTransaction = txTemplate.withTransaction(this.mongo.client);
 
+    const created = await runInTransaction(async (session) => {
       const existing = await this.widgetRepository.query(
         { userId: userId, status: WidgetStatus.PENDING, hookId: { $exists: false } },
-        {  }
+        { session }
       );
       if (existing.length > 0) {
         this.logger.info('Return existing widget:', existing[0]);
         return existing[0];
       }
-
       const widget: Widget = {
         status: WidgetStatus.PENDING,
         userId: userId,
         widgetKey: randomUUID().toString(),
         code: `<script>${randomUUID().toString()}</script>`,
       };
-      const created = await this.widgetRepository.create(widget, {  });
-      await session.commitTransaction();
+      return this.widgetRepository.create(widget, { session });
+    });
 
-      this.logger.info('Created widget:', created);
-      return created;
-    } catch (error) {
-      await session.abortTransaction();
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    this.logger.info('Created widget:', created);
+    return created;
   }
 
   async update(_id: string, widget: WidgetDto): Promise<WidgetDto | null> {
@@ -76,5 +69,9 @@ export class WidgetService {
 
   async generate(widgetKey: string): Promise<string> {
     return 'widget ' + widgetKey;
+  }
+
+  private buildScriptSnippet(apiUrl: string, apiKey: string, widgetKey: string) {
+    return `<script src="${apiUrl}/public/widgets?apiKey=${apiKey}&widgetKey=${widgetKey}></script>`;
   }
 }

@@ -3,6 +3,8 @@ import { FastifyMongoNestedObject, FastifyMongoObject } from '@fastify/mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as test from 'node:test';
 import * as path from 'path';
+import { txTemplate } from '../src/features/base.repository';
+import { ClientSession } from 'mongodb';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -70,6 +72,12 @@ async function build(t: TestContext) {
     await fastify.close();
     await MongoHelper.cleanup();
   });
+
+  // Embedded Mongo does not support transactions so we mock it
+  txTemplate.withTransaction = (_: any) => async (fn) => {
+    return await fn(undefined as unknown as ClientSession);
+  };
+  console.warn('helper.ts', '## DB transactions disabled for embedded Mongo ##');
 
   return fastify;
 }

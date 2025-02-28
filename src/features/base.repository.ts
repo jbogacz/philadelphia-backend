@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox';
-import { Collection, Filter, MongoError, ObjectId, WithId } from 'mongodb';
+import { ClientSession, Collection, Filter, MongoClient, MongoError, ObjectId, WithId } from 'mongodb';
 import { LoggerService } from '../common';
 
 export const BaseSchema = Type.Object({
@@ -67,3 +67,24 @@ export class BaseRepository<T extends IEntity> {
     return this.collection.find(query, { session: options?.session }).toArray();
   }
 }
+
+const withTransaction =
+  (dbClient: MongoClient) =>
+  async <T>(fn: (session: ClientSession) => Promise<T>): Promise<T> => {
+    const session = dbClient.startSession();
+    try {
+      session.startTransaction();
+      const result = await fn(session);
+      await session.commitTransaction();
+      return result;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  };
+
+export let txTemplate = {
+  withTransaction,
+};
