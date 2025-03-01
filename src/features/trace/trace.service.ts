@@ -31,7 +31,7 @@ export class TraceService {
       return;
     }
 
-    if (widget.status == WidgetStatus.PENDING) {
+    if (widget.status == WidgetStatus.REGISTERED) {
       await this.widgetRepository.update(widget._id!, { status: WidgetStatus.ACTIVE } as Widget);
       widget.status = WidgetStatus.ACTIVE;
 

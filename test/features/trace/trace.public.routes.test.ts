@@ -23,14 +23,14 @@ test('trace:public:routes', async (t) => {
       widgetKey: 'widget-key-1',
       hookId: 'hook-id-1',
       userId: 'user-id-1',
-      status: WidgetStatus.PENDING,
+      status: WidgetStatus.REGISTERED,
       code: '<script></script>',
     });
 
     hook = await hookRepository.save({
       category: HookCategory.BLOG,
       name: 'hook-name-1',
-      status: HookStatus.PENDING,
+      status: HookStatus.REGISTERED,
       userId: 'user-id-1',
       widgetId: widget._id?.toString(),
     } as Hook);
