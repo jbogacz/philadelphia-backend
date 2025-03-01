@@ -33,6 +33,8 @@ export class TraceService {
 
     if (widget.status == WidgetStatus.PENDING) {
       await this.widgetRepository.update(widget._id!, { status: WidgetStatus.ACTIVE } as Widget);
+      widget.status = WidgetStatus.ACTIVE;
+
       await this.hookRepository.update(widget.hookId!, {
         status: HookStatus.ACTIVE,
         domain: visitTrace.page.domain,
@@ -40,11 +42,14 @@ export class TraceService {
       this.logger.info('Activated hook and widget:', { trace: visitTrace, widget: widget });
     }
 
-    const trace = {
-      ...visitTrace,
-      widgetId: widget?._id || '',
-      hookId: widget?.hookId || '',
-    };
-    await this.traceRepository.create(trace);
+    if (widget.status == WidgetStatus.ACTIVE) {
+      const trace = {
+        ...visitTrace,
+        widgetId: widget?._id || '',
+        hookId: widget?.hookId || '',
+      };
+      await this.traceRepository.create(trace);
+      this.logger.info('Captured visit trace:', trace);
+    }
   }
 }
