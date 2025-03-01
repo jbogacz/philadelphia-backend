@@ -37,9 +37,8 @@ export class WidgetService {
       }
 
       const apiUrl = this.config.apiUrl;
-      const apiKey = user.apiKey;
       const widgetKey = randomUUID().toString();
-      const widgetCode = this.buildScriptSnippet(apiUrl, apiKey, widgetKey);
+      const widgetCode = this.buildScriptSnippet(apiUrl, widgetKey);
 
       const widget: Widget = {
         status: WidgetStatus.PENDING,
@@ -78,15 +77,7 @@ export class WidgetService {
     return 'widget ' + widgetKey;
   }
 
-  private buildScriptSnippet(apiUrl: string, apiKey: string, widgetKey: string): string {
-    return `
-    <script>
-    (function() {
-      var script = document.createElement('script');
-      script.src = '${apiUrl}/public/widgets?apiKey=${apiKey}&widgetKey=${widgetKey}';
-      document.head.appendChild(script);
-    })();
-    </script>
-    `;
+  private buildScriptSnippet(apiUrl: string, widgetKey: string): string {
+    return `<script src="${apiUrl}/public/widgets?widgetKey=${widgetKey}"></script>`;
   }
 }

@@ -24,7 +24,6 @@ export const WidgetSchema = Type.Intersect([
 ]);
 
 export const WidgetQuerySchema = Type.Object({
-  apiKey: Type.String(),
   widgetKey: Type.String(),
 });
 

@@ -16,7 +16,7 @@ test('user:routes', async (t) => {
     await clearDatabase(fastify);
   });
 
-  await t.test('should return 200 when login is successful', async () => {
+  await t.test('should register new user', async () => {
     const response = await fastify.inject({
       method: 'POST',
       url: '/api/users',
@@ -30,7 +30,6 @@ test('user:routes', async (t) => {
     assert.equal(response.statusCode, 201);
     assert.equal(response.json().email, email);
     assert.equal(response.json().role, role);
-    assert.ok(response.json().apiKey);
 
     registered = response.json();
   });
@@ -53,6 +52,5 @@ test('user:routes', async (t) => {
     assert.equal(response.statusCode, 200);
     assert.equal(response.json().email, email);
     assert.equal(response.json().role, role);
-    assert.equal(response.json().apiKey, registered.apiKey);
   });
 });

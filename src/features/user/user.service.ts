@@ -13,11 +13,9 @@ export class UserService {
 
   async register(user: UserDto): Promise<UserDto> {
     this.logger.info('Register user:', user);
-    const apiKey = crypto.randomUUID();
     return this.userRepository.create({
       ...user,
       role: UserRole.USER,
-      apiKey,
     });
   }
 }
