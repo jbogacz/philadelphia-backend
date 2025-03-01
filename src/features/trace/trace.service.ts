@@ -1,24 +1,47 @@
 import { LoggerService } from '../../common';
+import { HookRepository } from '../hook/hook.repository';
+import { Hook, HookStatus } from '../hook/hook.types';
 import { WidgetRepository } from '../widget/widget.repository';
+import { Widget, WidgetStatus } from '../widget/widget.types';
 import { TraceRepository } from './trace.repository';
 import { VisitTraceDto } from './trace.types';
 
 export class TraceService {
   private logger = LoggerService.getLogger('trace:service');
 
-  constructor(private readonly traceRepository: TraceRepository, private readonly widgetRepository: WidgetRepository) {}
+  constructor(
+    private readonly traceRepository: TraceRepository,
+    private readonly widgetRepository: WidgetRepository,
+    private readonly hookRepository: HookRepository
+  ) {}
 
   async captureVisit(traceDto: VisitTraceDto): Promise<void> {
-    this.logger.info('Capture visit:', traceDto);
+    const visitTrace = { ...traceDto, type: 'visit' };
 
-    const widget = await this.widgetRepository.findByWidgetKey(traceDto.widgetKey);
+    this.logger.info('Processing trace', visitTrace);
+
+    const widget = await this.widgetRepository.findByWidgetKey(visitTrace.widgetKey);
     if (!widget) {
-      this.logger.warn('Widget not found:', { widgetKey: traceDto.widgetKey });
+      this.logger.warn('Received trace with invalid widgetKey:', visitTrace);
+      return;
+    }
+
+    if (widget.status == WidgetStatus.INACTIVE) {
+      this.logger.warn('Received trace for inactive widget:', { trace: visitTrace, widget: widget });
+      return;
+    }
+
+    if (widget.status == WidgetStatus.PENDING) {
+      await this.widgetRepository.update(widget._id!, { status: WidgetStatus.ACTIVE } as Widget);
+      await this.hookRepository.update(widget.hookId!, {
+        status: HookStatus.ACTIVE,
+        domain: visitTrace.page.domain,
+      } as Hook);
+      this.logger.info('Activated hook and widget:', { trace: visitTrace, widget: widget });
     }
 
     const trace = {
-      ...traceDto,
-      type: 'visit',
+      ...visitTrace,
       widgetId: widget?._id || '',
       hookId: widget?.hookId || '',
     };

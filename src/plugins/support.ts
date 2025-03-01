@@ -48,7 +48,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
   const widgetCodeService = new WidgetCodeService(config);
 
   fastify.decorate('service', {
-    trace: new TraceService(fastify.repository.trace, fastify.repository.widget),
+    trace: new TraceService(fastify.repository.trace, fastify.repository.widget, fastify.repository.hook),
     publisher: publisherService,
     campaign: campaignService,
     flow: new FlowService(publisherService, campaignService, config),
