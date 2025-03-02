@@ -13,6 +13,7 @@ export enum HookStatus {
   REGISTERED = 'registered',
   ACTIVE = 'active',
   INACTIVE = 'inactive',
+  DELETED = 'deleted',
 }
 
 /**

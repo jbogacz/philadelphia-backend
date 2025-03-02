@@ -7,6 +7,7 @@ export enum WidgetStatus {
   REGISTERED = 'registered',
   ACTIVE = 'active',
   INACTIVE = 'inactive',
+  DELETED = 'deleted',
 }
 
 /**

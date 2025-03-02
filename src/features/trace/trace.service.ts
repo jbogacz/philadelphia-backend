@@ -31,6 +31,11 @@ export class TraceService {
       return;
     }
 
+    if (widget.status == WidgetStatus.DELETED) {
+      this.logger.warn('Received trace for deleted widget:', { trace: visitTrace, widget: widget });
+      return;
+    }
+
     if (widget.status == WidgetStatus.REGISTERED) {
       await this.widgetRepository.update(widget._id!, { status: WidgetStatus.ACTIVE } as Widget);
       widget.status = WidgetStatus.ACTIVE;

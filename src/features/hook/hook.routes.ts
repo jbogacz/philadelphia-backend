@@ -76,4 +76,29 @@ export const hookRoutes: FastifyPluginAsync = async (fastify) => {
     },
     fastify.controller.hook.update.bind(fastify.controller.hook)
   );
+
+  fastify.delete(
+    '/hooks/:id',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+          },
+          required: ['id'],
+        },
+        description: 'Delete hook',
+        tags: ['hooks'],
+        response: {
+          204: {
+            type: 'null',
+          },
+          401: ErrorDtoSchema,
+          404: ErrorDtoSchema,
+        },
+      },
+    },
+    fastify.controller.hook.delete.bind(fastify.controller.hook)
+  );
 };

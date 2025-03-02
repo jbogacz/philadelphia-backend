@@ -63,6 +63,11 @@ export class BaseRepository<T extends IEntity> {
     return result && (result as T);
   }
 
+  async delete(_id: string): Promise<T | null> {
+    const result = await this.collection.findOneAndDelete({ _id: new ObjectId(_id) } as Filter<T>);
+    return result && (result as T);
+  }
+
   async query(query: Filter<T>, options?: any): Promise<WithId<T>[]> {
     return this.collection.find(query, { session: options?.session }).toArray();
   }

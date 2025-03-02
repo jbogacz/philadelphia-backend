@@ -80,7 +80,7 @@ test('hook:routes', async (t) => {
       domain: 'bar',
       favicon: 'baz',
       userId: '67b5c2ce1290f60c2eb83e19',
-      widgetId: 'widgetId',
+      widgetId: widget._id as string,
     };
 
     const response = await fastify.inject({
@@ -105,7 +105,7 @@ test('hook:routes', async (t) => {
       domain: 'updated',
       favicon: 'updated',
       userId: 'updated',
-      widgetId: 'widgetId',
+      widgetId: widget._id as string,
     };
 
     const response = await fastify.inject({
@@ -160,5 +160,21 @@ test('hook:routes', async (t) => {
     assert.equal(response.json()[0].name, 'updated');
     assert.equal(response.json()[0].domain, 'updated');
     assert.equal(response.json()[0].favicon, 'updated');
+  });
+
+  await t.test('should delete hook and update widget status', async () => {
+    const response = await fastify.inject({
+      method: 'DELETE',
+      url: '/api/hooks/' + created._id,
+    });
+
+    assert.equal(response.statusCode, 204);
+
+    const deleted = await fastify.repository.hook.findByPrimaryId(created._id);
+    assert.equal(deleted, null);
+
+    const widgetWithDeletedHook = await widgetRepository.findByPrimaryId(widget._id);
+    assert.equal(widgetWithDeletedHook.hookId, created._id);
+    assert.equal(widgetWithDeletedHook.status, WidgetStatus.DELETED);
   });
 });

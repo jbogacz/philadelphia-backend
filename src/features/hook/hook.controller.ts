@@ -33,7 +33,7 @@ export class HookController {
       return reply.code(401).send({ error: 'Unauthorized', code: 401, message: 'User ID does not match' });
     }
 
-    const hooks = await this.hookService.query({...request.query, userId: userId as string});
+    const hooks = await this.hookService.query({ ...request.query, userId: userId as string });
     return reply.code(200).send(hooks);
   }
 
@@ -64,5 +64,17 @@ export class HookController {
   > {
     const hook = await this.hookService.update(request.params.id, request.body);
     return hook ? reply.code(200).send(hook) : reply.code(404).send({ error: 'NotFoundError', code: 404 });
+  }
+
+  async delete(
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply
+  ): Promise<
+    FastifyReply<{
+      Reply: HookDto | ErrorDto;
+    }>
+  > {
+    await this.hookService.delete(request.params.id);
+    return reply.code(204).send();
   }
 }

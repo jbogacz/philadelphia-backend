@@ -74,4 +74,15 @@ export class HookService {
       updatedAt: updated.updatedAt?.toISOString(),
     };
   }
+
+  async delete(id: string): Promise<void> {
+    const deleted = await this.hookRepository.delete(id);
+    if (!deleted) {
+      this.logger.error('Hook not found:', id);
+      throw new NotFoundError('Hook not found: ' + id);
+    }
+    this.logger.info('Deleted hook:', deleted);
+
+    await this.widgetRepository.update(deleted.widgetId, { status: WidgetStatus.DELETED } as Widget);
+  }
 }
