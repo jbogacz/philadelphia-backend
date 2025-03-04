@@ -1,6 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
-import { BaseSchema, IEntity } from '../base.repository';
 import { DynamicBlueprint, DynamicConfig } from '../../dynamic/types';
+import { BaseSchema, IEntity } from '../base.repository';
 
 export enum WidgetStatus {
   PENDING = 'pending',
@@ -37,10 +37,21 @@ export type Widget = Static<typeof WidgetSchema> & IEntity;
 
 export interface WidgetCodeBlueprint extends DynamicBlueprint {
   widgetKey: string;
+  links: WidgetPanelLink[];
 }
 
 export interface WidgetCodeConfig extends DynamicConfig {
   apiUrl: string;
+}
+
+export interface WidgetPanelLink {
+  name: string;
+  url: string;
+  description?: string;
+  widgetKey: string;
+  sourceWidgetKey: string;
+  partnerId?: string;
+  campaignId?: string;
 }
 
 /**

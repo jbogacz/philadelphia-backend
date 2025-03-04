@@ -52,13 +52,16 @@ export class BaseRepository<T extends IEntity> {
     return upsert as T;
   }
 
-  async update(_id: string, data: T): Promise<T | null> {
+  async update(_id: string, data: T, options?: any): Promise<T | null> {
     const result = await this.collection.findOneAndUpdate(
       { _id: new ObjectId(_id) } as Filter<T>,
       {
         $set: { ...data, _id: new ObjectId(_id), updatedAt: new Date() },
       },
-      { returnDocument: 'after' }
+      {
+        returnDocument: 'after',
+        session: options?.session,
+      }
     );
     return result && (result as T);
   }
@@ -70,6 +73,10 @@ export class BaseRepository<T extends IEntity> {
 
   async query(query: Filter<T>, options?: any): Promise<WithId<T>[]> {
     return this.collection.find(query, { session: options?.session }).toArray();
+  }
+
+  async queryOne(query: Filter<T>, options?: any): Promise<WithId<T> | null> {
+    return this.collection.findOne(query, { session: options?.session });
   }
 }
 

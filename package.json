@@ -36,13 +36,13 @@
     "fastify-plugin": "^5.0.0",
     "minio": "^8.0.3",
     "pino-pretty": "^13.0.0",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.3",
+    "delay": "^4.4.1"
   },
   "devDependencies": {
     "@types/node": "^22.1.0",
     "c8": "^10.1.2",
     "concurrently": "^9.0.0",
-    "delay": "^4.4.1",
     "fastify-tsconfig": "^2.0.0",
     "http-server": "^14.1.1",
     "mongodb-memory-server": "^10.1.2",

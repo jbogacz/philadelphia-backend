@@ -27,6 +27,7 @@ import { WidgetCodeService } from '../features/widget/widget.code.service';
 import { WidgetController } from '../features/widget/widget.controller';
 import { WidgetRepository } from '../features/widget/widget.repository';
 import { WidgetService } from '../features/widget/widget.service';
+import { PartnershipRepository } from '../features/partnership/partnership.repository';
 
 export default fp<AppOptions>(async (fastify, opts) => {
   const { config } = opts;
@@ -40,12 +41,13 @@ export default fp<AppOptions>(async (fastify, opts) => {
     user: new UserRepository(db.collection('users')),
     hook: new HookRepository(db.collection('hooks')),
     widget: new WidgetRepository(db.collection('widgets')),
+    partnership: new PartnershipRepository(db.collection('partnerships')),
   });
 
   const creativeService = new CreativeService();
   const publisherService = new PublisherService(fastify.repository.publisher);
   const campaignService = new CampaignService(fastify.repository.campaign);
-  const widgetCodeService = new WidgetCodeService(config);
+  const widgetCodeService = new WidgetCodeService(fastify.repository.partnership, config);
 
   fastify.decorate('service', {
     trace: new TraceService(fastify.repository.trace, fastify.repository.widget, fastify.repository.hook),
@@ -56,7 +58,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     markup: new AdMarkupService(creativeService, config),
     impression: new ImpressionService(fastify.repository.impression),
     user: new UserService(fastify.repository.user),
-    hook: new HookService(fastify.repository.hook, fastify.repository.user, fastify.repository.widget),
+    hook: new HookService(fastify.mongo, fastify.repository.hook, fastify.repository.user, fastify.repository.widget),
     widget: new WidgetService(fastify.mongo, config, fastify.repository.widget, fastify.repository.user),
   });
 
@@ -82,6 +84,7 @@ declare module 'fastify' {
       user: UserRepository;
       hook: HookRepository;
       widget: WidgetRepository;
+      partnership: PartnershipRepository;
     };
     service: {
       trace: TraceService;

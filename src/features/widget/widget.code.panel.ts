@@ -1,6 +1,6 @@
 import { WidgetCodeBlueprint, WidgetCodeConfig } from './widget.types';
 
-export async function loadPanel(traceId: string, blueprint: WidgetCodeBlueprint, config: WidgetCodeConfig) {
+export async function loadPanel(traceId: string, fingerprintId: string, blueprint: WidgetCodeBlueprint, config: WidgetCodeConfig) {
   /**
    * Standalone Partner Links Widget - TypeScript Version
    *
@@ -191,7 +191,8 @@ export async function loadPanel(traceId: string, blueprint: WidgetCodeBlueprint,
                                     <span class="partner-name">${partner.name}</span>
                                     <span class="partner-url">${partner.url}</span>
                                     <span class="partner-description">${partner.description}</span>
-                                    <span class="partner-url">${traceId}</span>
+                                    <span class="partner-url">TraceId: ${traceId}</span>
+                                    <span class="partner-url">FingerprintId: ${fingerprintId}</span>
                                 </a>
                             </li>
                         `

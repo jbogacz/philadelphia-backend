@@ -3,11 +3,13 @@ import mongodb from '@fastify/mongodb';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
 import 'dotenv/config';
-import { FastifyPluginAsync } from 'fastify';
+import { FastifyBaseLogger, FastifyInstance, FastifyPluginAsync, FastifyTypeProvider, RawServerDefault } from 'fastify';
 import { join } from 'path';
 import { AppOptions } from './app.types';
 import { LoggerService } from './common/logger.service';
-import { createIndexes, seed } from './maintenance/maintenance.utils';
+import { createIndexes } from './maintenance/maintenance.utils';
+import { IncomingMessage, ServerResponse } from 'http';
+import { seedDemoData } from './maintenance/seed.demo.data';
 
 const clearEnvCache = () => {
   Object.keys(process.env).forEach((key) => {
@@ -43,13 +45,6 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
   void fastify.register(mongodb, options.mongodb);
 
   await fastify.after();
-
-  void fastify.register(async (fastify) => {
-    if (options.config.isDevelopment()) {
-      await seed(fastify);
-      await createIndexes(fastify);
-    }
-  });
 
   if (options.config.isDevelopment()) {
     void fastify.register(swagger, {
@@ -115,6 +110,14 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     dirNameRoutePrefix: false, // Don't use directory names as prefixes
     indexPattern: /index\.ts$/, // Look for index.ts files
     options: { prefix: '/api' },
+  });
+
+  // Seed schema indexes and demo data
+  void fastify.register(async (fastify) => {
+    if (options.config.isDevelopment()) {
+      // await createIndexes(fastify);
+      await seedDemoData(fastify);
+    }
   });
 };
 

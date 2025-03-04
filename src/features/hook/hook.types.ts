@@ -30,6 +30,7 @@ export const HookSchema = Type.Intersect([
     category: Type.Optional(Type.Enum(HookCategory)),
     status: Type.Optional(Type.Enum(HookStatus)),
     notificationsCount: Type.Optional(Type.Number()),
+    description: Type.Optional(Type.String()),
   }),
 ]);
 

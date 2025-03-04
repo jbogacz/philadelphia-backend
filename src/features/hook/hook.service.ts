@@ -1,3 +1,4 @@
+import { FastifyMongoObject } from '@fastify/mongodb';
 import { LoggerService } from '../../common';
 import { NotFoundError } from '../../common/errors';
 import { UserRepository } from '../user/user.repository';
@@ -10,6 +11,7 @@ export class HookService {
   private logger = LoggerService.getLogger('feature.hook.HookService');
 
   constructor(
+    private readonly mongo: FastifyMongoObject,
     private readonly hookRepository: HookRepository,
     private readonly userRepository: UserRepository,
     private readonly widgetRepository: WidgetRepository
@@ -39,6 +41,7 @@ export class HookService {
   }
 
   async create(hook: HookDto): Promise<HookDto> {
+    this.logger.info('Creating hook:', hook);
     const user = await this.userRepository.findByUserId(hook.userId);
     if (!user) {
       this.logger.error('User not found:', hook.userId);

@@ -1,16 +1,13 @@
 import PhiladelphiaJS, { GetResult } from '../fingerprint/fp.script';
 import { VisitTraceDto } from '../trace/trace.types';
-import { loadPanel } from './widget.code.panel';
+import { loadPanel as loadWidgetPanel } from './widget.code.panel';
 import { WidgetCodeBlueprint, WidgetCodeConfig } from './widget.types';
 
 export async function load(blueprint: WidgetCodeBlueprint, config: WidgetCodeConfig) {
   const traceId = crypto.randomUUID();
-
-  document.addEventListener('DOMContentLoaded', async () => {
-    await loadPanel(traceId, blueprint, config);
-  });
-
   const fingerprint = await calculateFingerprint();
+
+  loadWidgetPanel(traceId, fingerprint.visitorId, blueprint, config);
 
   const visitTrace: VisitTraceDto = {
     traceId: traceId,

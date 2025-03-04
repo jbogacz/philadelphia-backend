@@ -37,8 +37,8 @@ export async function seed(fastify: FastifyInstance): Promise<void> {
     const publishers = JSON.parse(await readFile('src/maintenance/publisher_data.json', 'utf-8'));
     await uploadToCollection(fastify, 'publishers', publishers, 'publisherId');
 
-    // const users = JSON.parse(await readFile('src/maintenance/user_data.json', 'utf-8'));
-    // await uploadToCollection(fastify, 'users', users, 'userId');
+    const users = JSON.parse(await readFile('src/maintenance/user_data.json', 'utf-8'));
+    await uploadToCollection(fastify, 'users', users, 'userId');
   } catch (error) {
     console.error('Failed to seed database:', error);
   }
@@ -46,7 +46,9 @@ export async function seed(fastify: FastifyInstance): Promise<void> {
 
 export async function createIndexes(fastify: FastifyInstance): Promise<void> {
   try {
-    await createIndex(fastify, 'users', { id: 1 }, { unique: true });
+    await createIndex(fastify, 'users', { userId: 1 }, { unique: true });
+    await createIndex(fastify, 'hooks', { widgetId: 1 }, { unique: true });
+    await createIndex(fastify, 'widgets', { hookId: 1 }, { unique: true });
   } catch (error) {
     console.error('Failed to create indexes:', error);
   }
