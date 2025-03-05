@@ -1,4 +1,4 @@
-import { WidgetCodeBlueprint, WidgetCodeConfig } from './widget.types';
+import { WidgetCodeBlueprint, WidgetCodeConfig, WidgetPanelLink } from './widget.types';
 
 export async function loadPanel(traceId: string, fingerprintId: string, blueprint: WidgetCodeBlueprint, config: WidgetCodeConfig) {
   /**
@@ -8,25 +8,18 @@ export async function loadPanel(traceId: string, fingerprintId: string, blueprin
    * a list of partner site links with descriptions when clicked.
    */
 
-  interface Partner {
-    name: string;
-    url: string;
-    description: string;
-  }
-
   class WidgetPanel {
     private container: HTMLElement | null = null;
     private button: HTMLElement | null = null;
     private window: HTMLElement | null = null;
     private closeBtn: HTMLElement | null = null;
-    private partners: Partner[];
+    private links: WidgetPanelLink[];
 
-    constructor(partners: Partner[]) {
-      this.partners = partners;
-      this.init();
+    constructor(partners: WidgetPanelLink[]) {
+      this.links = partners;
     }
 
-    private init(): void {
+    public build(): void {
       this.injectStyles();
       this.createWidgetHTML();
       this.cacheElements();
@@ -169,6 +162,31 @@ export async function loadPanel(traceId: string, fingerprintId: string, blueprin
     }
 
     private createWidgetHTML(): void {
+      const trackingScript = document.createElement('script');
+      trackingScript.textContent = `
+        function trackPartnerClick(linkData) {
+          console.log('Clicked on partner:', linkData);
+
+          // Access individual properties
+          console.log('Name:', linkData.name);
+          console.log('URL:', linkData.url);
+          console.log('ID:', linkData.id);
+
+          // Make API call with the data
+          // fetch('/api/track-click', {
+          //   method: 'POST',
+          //   headers: { 'Content-Type': 'application/json' },
+          //   body: JSON.stringify(linkData)
+          // })
+          // .then(response => response.json())
+          // .then(data => console.log('Success:', data))
+          // .catch(error => console.error('Error:', error));
+
+          return true; // Prevent default link behavior
+        }
+      `;
+      document.head.appendChild(trackingScript);
+
       const widgetHTML = `
         <div class="partner-widget-container">
             <div class="partner-widget-button">
@@ -183,17 +201,16 @@ export async function loadPanel(traceId: string, fingerprintId: string, blueprin
                 </div>
                 <div class="partner-widget-content">
                     <ul class="partner-list">
-                        ${this.partners
+                        ${this.links
                           .map(
-                            (partner) => `
+                            (link) => `
                             <li class="partner-item">
-                                <a href="${partner.url}" class="partner-link" target="_blank">
-                                    <span class="partner-name">${partner.name}</span>
-                                    <span class="partner-url">${partner.url}</span>
-                                    <span class="partner-description">${partner.description}</span>
-                                    <span class="partner-url">TraceId: ${traceId}</span>
-                                    <span class="partner-url">FingerprintId: ${fingerprintId}</span>
-                                </a>
+                              <a href="${link.url}" class="partner-link" target="_blank"
+                                onclick="return trackPartnerClick(${JSON.stringify(link).replace(/"/g, '&quot;')})">
+                                  <span class="partner-name">${link.name}</span>
+                                  <span class="partner-url">${link.url}</span>
+                                  <span class="partner-description">${link.description}</span>
+                              </a>
                             </li>
                         `
                           )
@@ -202,6 +219,7 @@ export async function loadPanel(traceId: string, fingerprintId: string, blueprin
                 </div>
             </div>
         </div>
+
     `;
 
       // Create a container element and set its innerHTML
@@ -273,34 +291,5 @@ export async function loadPanel(traceId: string, fingerprintId: string, blueprin
     }
   }
 
-  // Define partner data - replace with your actual partner information
-  const partners: Partner[] = [
-    {
-      name: 'TechPartner Solutions',
-      url: 'https://techpartner.example.com',
-      description: 'Leading provider of cloud solutions and digital transformation services.',
-    },
-    {
-      name: 'Creative Design Studio',
-      url: 'https://creativedesign.example.com',
-      description: 'Award-winning design agency specializing in branding and UI/UX design.',
-    },
-    {
-      name: 'Marketing Gurus',
-      url: 'https://marketinggurus.example.com',
-      description: 'Digital marketing experts helping businesses grow online presence.',
-    },
-    {
-      name: 'Data Analytics Pro',
-      url: 'https://dataanalytics.example.com',
-      description: 'Advanced data analytics and business intelligence solutions.',
-    },
-    {
-      name: 'Security Shield',
-      url: 'https://securityshield.example.com',
-      description: 'Cybersecurity services and solutions for businesses of all sizes.',
-    },
-  ];
-
-  new WidgetPanel(partners);
+  new WidgetPanel(blueprint.links).build();
 }
