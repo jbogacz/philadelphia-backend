@@ -5,6 +5,7 @@ export interface AppConfig {
   apiUrl: string;
   isProduction: () => boolean;
   isDevelopment: () => boolean;
+
 }
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
@@ -18,4 +19,5 @@ export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPlugin
       password: string;
     };
   };
+  seedDemoData: boolean;
 }

@@ -3,13 +3,10 @@ import mongodb from '@fastify/mongodb';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
 import 'dotenv/config';
-import { FastifyBaseLogger, FastifyInstance, FastifyPluginAsync, FastifyTypeProvider, RawServerDefault } from 'fastify';
+import { FastifyPluginAsync } from 'fastify';
 import { join } from 'path';
 import { AppOptions } from './app.types';
 import { LoggerService } from './common/logger.service';
-import { createIndexes } from './maintenance/maintenance.utils';
-import { IncomingMessage, ServerResponse } from 'http';
-import { seedDemoData } from './maintenance/seed.demo.data';
 
 const clearEnvCache = () => {
   Object.keys(process.env).forEach((key) => {
@@ -31,6 +28,7 @@ const appOptions: AppOptions = {
     url: process.env.MONGODB_URL!,
     database: process.env.MONGODB_DATABASE!,
   },
+  seedDemoData: process.env.MONGODB_SEED_DEMO_DATA === 'true',
 };
 
 // Pass --options via CLI arguments in command to enable these options.
@@ -112,10 +110,11 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
     options: { prefix: '/api' },
   });
 
-  // Seed schema indexes and demo data
+  // Seed demo data
   void fastify.register(async (fastify) => {
-    if (options.config.isDevelopment()) {
+    if (options.seedDemoData) {
       // await createIndexes(fastify);
+      const { seedDemoData } = await import('./maintenance/seed.demo.data.js');
       await seedDemoData(fastify);
     }
   });
