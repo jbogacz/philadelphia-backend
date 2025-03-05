@@ -35,7 +35,27 @@ export const VisitTraceSchema = Type.Intersect([
   }),
 ]);
 
+export const WidgetTraceSchema = Type.Intersect([
+  TraceSchema,
+  Type.Object({
+    type: Type.Literal('widget'),
+    sourceWidgetKey: Type.String(),
+    sourceWidgetId: Type.String(),
+    sourceHookId: Type.String(),
+  }),
+]);
+
 export const VisitTraceDtoSchema = Type.Omit(VisitTraceSchema, ['_id', 'createdAt', 'updatedAt', 'type', 'widgetId', 'hookId']);
+export const WidgetTraceDtoSchema = Type.Omit(WidgetTraceSchema, [
+  '_id',
+  'createdAt',
+  'updatedAt',
+  'type',
+  'widgetId',
+  'sourceWidgetId',
+  'hookId',
+  'sourceHookId',
+]);
 
 /**
  * MODEL
@@ -52,3 +72,5 @@ export type Page = Static<typeof PageSchema>;
  * DTO
  */
 export type VisitTraceDto = typeof VisitTraceDtoSchema.static;
+
+export type WidgetTraceDto = typeof WidgetTraceDtoSchema.static;

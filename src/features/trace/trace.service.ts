@@ -4,7 +4,7 @@ import { Hook, HookStatus } from '../hook/hook.types';
 import { WidgetRepository } from '../widget/widget.repository';
 import { Widget, WidgetStatus } from '../widget/widget.types';
 import { TraceRepository } from './trace.repository';
-import { VisitTraceDto } from './trace.types';
+import { VisitTraceDto, WidgetTraceDto } from './trace.types';
 
 export class TraceService {
   private logger = LoggerService.getLogger('trace:service');
@@ -15,7 +15,7 @@ export class TraceService {
     private readonly hookRepository: HookRepository
   ) {}
 
-  async captureVisit(traceDto: VisitTraceDto): Promise<void> {
+  async captureVisitTrace(traceDto: VisitTraceDto): Promise<void> {
     const visitTrace = { ...traceDto, type: 'visit' };
 
     this.logger.info('Processing trace', visitTrace);
@@ -55,6 +55,46 @@ export class TraceService {
       };
       await this.traceRepository.create(trace);
       this.logger.info('Captured visit trace:', trace);
+    }
+  }
+
+  async captureWidgetTrace(traceDto: WidgetTraceDto): Promise<void> {
+    const widgetTrace = { ...traceDto, type: 'widget' };
+
+    this.logger.info('Processing trace', widgetTrace);
+
+    const widget = await this.widgetRepository.findByWidgetKey(widgetTrace.widgetKey);
+    if (!widget) {
+      this.logger.warn('Received trace with invalid widgetKey:', widgetTrace);
+      return;
+    }
+
+    const sourceWidget = await this.widgetRepository.findByWidgetKey(widgetTrace.sourceWidgetKey);
+    if (!sourceWidget) {
+      this.logger.warn('Received trace with invalid sourceWidgetKey:', widgetTrace);
+      return;
+    }
+
+    if (widget.status == WidgetStatus.INACTIVE) {
+      this.logger.warn('Received trace for inactive widget:', { trace: widgetTrace, widget: widget });
+      return;
+    }
+
+    if (widget.status == WidgetStatus.DELETED) {
+      this.logger.warn('Received trace for deleted widget:', { trace: widgetTrace, widget: widget });
+      return;
+    }
+
+    if (widget.status == WidgetStatus.ACTIVE) {
+      const trace = {
+        ...widgetTrace,
+        widgetId: widget?._id || '',
+        hookId: widget?.hookId || '',
+        sourceWidgetId: sourceWidget?._id || '',
+        sourceHookId: sourceWidget?.hookId || '',
+      };
+      await this.traceRepository.create(trace);
+      this.logger.info('Captured widget trace:', trace);
     }
   }
 }

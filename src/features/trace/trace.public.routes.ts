@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import { ErrorDtoSchema } from '../../common/errors';
-import { VisitTraceDtoSchema } from './trace.types';
+import { VisitTraceDtoSchema, WidgetTraceDtoSchema } from './trace.types';
 
 export const tracePublicRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post(
@@ -8,7 +8,7 @@ export const tracePublicRoutes: FastifyPluginAsync = async (fastify) => {
     {
       schema: {
         body: VisitTraceDtoSchema,
-        description: 'Capture visit',
+        description: 'Capture page visit trace',
         tags: ['public'],
         response: {
           201: {},
@@ -16,6 +16,22 @@ export const tracePublicRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
     },
-    fastify.controller.trace.captureVisit.bind(fastify.controller.trace)
+    fastify.controller.trace.captureVisitTrace.bind(fastify.controller.trace)
+  );
+
+  fastify.post(
+    '/public/traces/widgets',
+    {
+      schema: {
+        body: WidgetTraceDtoSchema,
+        description: 'Capture widget link trace',
+        tags: ['public'],
+        response: {
+          201: {},
+          401: ErrorDtoSchema,
+        },
+      },
+    },
+    fastify.controller.trace.captureWidgetTrace.bind(fastify.controller.trace)
   );
 };
