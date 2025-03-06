@@ -17,7 +17,7 @@
     "prod": "npm run build:ts && node dist/server.js",
     "clean": "rm -rf dist/",
     "migrate:create": "migrate-mongo create",
-    "migrate:up": "ts-node node_modules/.bin/migrate-mongo up",
+    "migrate:up": "MONGODB_URL=$MONGODB_URL MONGODB_DATABASE=$MONGODB_DATABASE ts-node node_modules/.bin/migrate-mongo up",
     "migrate:down": "ts-node node_modules/.bin/migrate-mongo down",
     "migrate:status": "ts-node node_modules/.bin/migrate-mongo status"
   },
