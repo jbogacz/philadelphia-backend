@@ -1,6 +1,7 @@
+import { Geo } from '../trace/trace.types';
 import { WidgetCodeBlueprint, WidgetCodeConfig, WidgetPanelLink } from './widget.types';
 
-export async function load(traceId: string, fingerprintId: string, blueprint: WidgetCodeBlueprint, config: WidgetCodeConfig) {
+export async function load(traceId: string, fingerprintId: string, geo: Geo | null, blueprint: WidgetCodeBlueprint, config: WidgetCodeConfig) {
   /**
    * Standalone Partner Links Widget - TypeScript Version
    *
@@ -173,7 +174,8 @@ export async function load(traceId: string, fingerprintId: string, blueprint: Wi
               traceId: '${traceId}',
               fingerprint: { fingerprintId: '${fingerprintId}' },
               widgetKey: linkData.widgetKey,
-              sourceWidgetKey: linkData.sourceWidgetKey
+              sourceWidgetKey: linkData.sourceWidgetKey,
+              geo: ${JSON.stringify(geo) || undefined}
             }),
           });
 

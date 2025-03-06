@@ -2,18 +2,12 @@ import AutoLoad from '@fastify/autoload';
 import mongodb from '@fastify/mongodb';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
-import 'dotenv/config';
 import { FastifyPluginAsync } from 'fastify';
 import { join } from 'path';
 import { AppOptions } from './app.types';
 import { LoggerService } from './common/logger.service';
+import { clearEnvCache } from './common/utils';
 
-const clearEnvCache = () => {
-  Object.keys(process.env).forEach((key) => {
-    delete process.env[key];
-  });
-  require('dotenv').config(); // Reload .env
-};
 clearEnvCache();
 
 // Load environment variables from .env file

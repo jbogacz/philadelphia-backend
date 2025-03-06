@@ -15,12 +15,26 @@ export const PageSchema = Type.Object({
   referer: Type.Optional(Type.String()),
 });
 
+export const GeoSchema = Type.Object({
+  ip: Type.String(),
+  city: Type.String(),
+  postal: Type.String(),
+  region: Type.String(),
+  country: Type.String(),
+  latitude: Type.Number(),
+  longitude: Type.Number(),
+  timezone: Type.String(),
+  currentTime: Type.String(),
+  isp: Type.String(),
+});
+
 export const TraceSchema = Type.Intersect([
   BaseSchema,
   Type.Object({
     type: Type.String(),
     traceId: Type.String(),
     fingerprint: FingerprintSchema,
+    geo: Type.Optional(GeoSchema),
     widgetKey: Type.String(),
     widgetId: Type.String(),
     hookId: Type.String(),
@@ -69,6 +83,8 @@ export type WidgetTrace = Static<typeof WidgetTraceSchema> & IEntity;
 export type Fingerprint = Static<typeof FingerprintSchema>;
 
 export type Page = Static<typeof PageSchema>;
+
+export type Geo = Static<typeof GeoSchema>;
 
 /**
  * DTO

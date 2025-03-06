@@ -272,6 +272,64 @@
       </article>
     </main>
 
-    <script src="http://localhost:4000/api/public/widgets?widgetKey=4c787414-4658-4128-8eec-fd5a8e856bc9"></script>
+    <script src="http://localhost:4000/api/public/widgets?widgetKey=000d5f62-11c5-408d-a464-77c570fdd6da"></script>
+    <!-- <script>
+      // Alternative IP-Based Geolocation Logger
+      // Simply include this script in your HTML page
+
+      (function () {
+
+
+        // Fallback to another service if the first one fails
+        function tryFallbackService() {
+          console.log('Trying fallback geolocation service...');
+
+          const request = new XMLHttpRequest();
+          request.open('GET', 'https://geolocation-db.com/json/', true);
+
+          request.onload = function () {
+            if (this.status >= 200 && this.status < 400) {
+              try {
+                const data = JSON.parse(this.response);
+
+                const locationData = {
+                  ip: data.IPv4,
+                  country_code: data.country_code,
+                  country_name: data.country_name,
+                  city: data.city,
+                  postal: data.postal,
+                  latitude: data.latitude,
+                  longitude: data.longitude,
+                  state: data.state,
+                };
+
+                console.log('✅ Fallback IP-based location data:', locationData);
+                console.log(
+                  `User is located in: ${locationData.city || 'Unknown City'}, ${locationData.country_name || 'Unknown Country'}`
+                );
+              } catch (error) {
+                console.error('❌ Error parsing fallback geolocation data:', error);
+              }
+            } else {
+              console.error('❌ All geolocation services failed');
+            }
+          };
+
+          request.onerror = function () {
+            console.error('❌ Connection error with fallback geolocation service');
+          };
+
+          request.send();
+        }
+
+        // Start logging when page loads
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', tryFallbackService);
+        } else {
+          // DOM already loaded
+          tryFallbackService();
+        }
+      })();
+    </script> -->
   </body>
 </html>
