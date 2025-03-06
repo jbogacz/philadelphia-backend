@@ -1,6 +1,6 @@
 import { WidgetCodeBlueprint, WidgetCodeConfig, WidgetPanelLink } from './widget.types';
 
-export async function loadPanel(traceId: string, fingerprintId: string, blueprint: WidgetCodeBlueprint, config: WidgetCodeConfig) {
+export async function load(traceId: string, fingerprintId: string, blueprint: WidgetCodeBlueprint, config: WidgetCodeConfig) {
   /**
    * Standalone Partner Links Widget - TypeScript Version
    *
@@ -137,13 +137,13 @@ export async function loadPanel(traceId: string, fingerprintId: string, blueprin
             font-weight: 500;
             font-size: 14px;
             color: #000000;
-            margin-bottom: 4px;
             display: block;
         }
 
         .partner-url {
             font-size: 12px;
             color: #6b7280;
+            margin-top: 4px;
             margin-bottom: 4px;
             display: block;
             font-family: monospace;
@@ -165,24 +165,19 @@ export async function loadPanel(traceId: string, fingerprintId: string, blueprin
       const trackingScript = document.createElement('script');
       trackingScript.textContent = `
         function trackPartnerClick(linkData) {
-          console.log('Clicked on partner:', linkData);
 
-          // Access individual properties
-          console.log('Name:', linkData.name);
-          console.log('URL:', linkData.url);
-          console.log('ID:', linkData.id);
+          fetch('${config.apiUrl}' + '/public/traces/widgets', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              traceId: '${traceId}',
+              fingerprint: { fingerprintId: '${fingerprintId}' },
+              widgetKey: linkData.widgetKey,
+              sourceWidgetKey: linkData.sourceWidgetKey
+            }),
+          });
 
-          // Make API call with the data
-          // fetch('/api/track-click', {
-          //   method: 'POST',
-          //   headers: { 'Content-Type': 'application/json' },
-          //   body: JSON.stringify(linkData)
-          // })
-          // .then(response => response.json())
-          // .then(data => console.log('Success:', data))
-          // .catch(error => console.error('Error:', error));
-
-          return true; // Prevent default link behavior
+          return true;
         }
       `;
       document.head.appendChild(trackingScript);
@@ -207,9 +202,9 @@ export async function loadPanel(traceId: string, fingerprintId: string, blueprin
                             <li class="partner-item">
                               <a href="${link.url}" class="partner-link" target="_blank"
                                 onclick="return trackPartnerClick(${JSON.stringify(link).replace(/"/g, '&quot;')})">
-                                  <span class="partner-name">${link.name}</span>
-                                  <span class="partner-url">${link.url}</span>
-                                  <span class="partner-description">${link.description}</span>
+                                <span class="partner-name">${link.name}</span>
+                                <span class="partner-url">${link.url}</span>
+                                <span class="partner-description">${link.description}</span>
                               </a>
                             </li>
                         `

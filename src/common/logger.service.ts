@@ -10,7 +10,8 @@ export class LoggerService {
 
   static initialize(fastifyLogger: FastifyInstance['log']) {
     if (LoggerService.logger) {
-      throw new Error('Logger already initialized');
+      LoggerService.logger.warn('LoggerService already initialized');
+      return;
     }
     LoggerService.logger = fastifyLogger;
   }

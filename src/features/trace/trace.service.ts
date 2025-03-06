@@ -75,17 +75,7 @@ export class TraceService {
       return;
     }
 
-    if (widget.status == WidgetStatus.INACTIVE) {
-      this.logger.warn('Received trace for inactive widget:', { trace: widgetTrace, widget: widget });
-      return;
-    }
-
-    if (widget.status == WidgetStatus.DELETED) {
-      this.logger.warn('Received trace for deleted widget:', { trace: widgetTrace, widget: widget });
-      return;
-    }
-
-    if (widget.status == WidgetStatus.ACTIVE) {
+    if (sourceWidget.status === WidgetStatus.ACTIVE && widget.status == WidgetStatus.ACTIVE) {
       const trace = {
         ...widgetTrace,
         widgetId: widget?._id || '',

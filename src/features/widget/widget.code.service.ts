@@ -3,17 +3,33 @@ import { LoggerService } from '../../common';
 import { PartnershipRepository } from '../partnership/partnership.repository';
 import { Partnership } from '../partnership/partnership.types';
 import { WidgetCodeBuilder } from './widget.code.builder';
-import { WidgetCodeBlueprint, WidgetCodeConfig, WidgetPanelLink } from './widget.types';
+import { WidgetRepository } from './widget.repository';
+import { WidgetCodeBlueprint, WidgetCodeConfig, WidgetPanelLink, WidgetStatus } from './widget.types';
 
 export class WidgetCodeService {
   private logger = LoggerService.getLogger('feature.widget.WidgetCodeService');
 
   private widgetCodeBuilder: WidgetCodeBuilder = new WidgetCodeBuilder();
 
-  constructor(private readonly partnershipRepository: PartnershipRepository, private readonly config: AppConfig) {}
+  constructor(
+    private readonly widgetRepository: WidgetRepository,
+    private readonly partnershipRepository: PartnershipRepository,
+    private readonly config: AppConfig
+  ) {}
 
-  async generate(widgetKey: string): Promise<string> {
+  async generate(widgetKey: string): Promise<string | null> {
     this.logger.info('Generating widget code:', { widgetKey });
+
+    const widget = await this.widgetRepository.findByWidgetKey(widgetKey);
+    if (!widget) {
+      this.logger.error('Widget not found:', widgetKey);
+      return null;
+    }
+
+    if (widget.status === WidgetStatus.INACTIVE || widget.status === WidgetStatus.DELETED) {
+      this.logger.warn('Widget is inactive or deleted:', widget);
+      return null;
+    }
 
     const links = (await this.partnershipRepository.findAllBySourceWidgetKey(widgetKey)).map(
       (p: Partnership) =>
@@ -25,6 +41,10 @@ export class WidgetCodeService {
           sourceWidgetKey: p.sourceWidgetKey,
         } as WidgetPanelLink)
     );
+
+    if (links.length === 0) {
+      this.logger.warn('WidgetPanel will be skipped. No partnerships found for widget:', { widget });
+    }
 
     const blueprint: WidgetCodeBlueprint = {
       widgetKey,

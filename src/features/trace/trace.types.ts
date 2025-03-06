@@ -52,8 +52,8 @@ export const WidgetTraceDtoSchema = Type.Omit(WidgetTraceSchema, [
   'updatedAt',
   'type',
   'widgetId',
-  'sourceWidgetId',
   'hookId',
+  'sourceWidgetId',
   'sourceHookId',
 ]);
 
@@ -63,6 +63,8 @@ export const WidgetTraceDtoSchema = Type.Omit(WidgetTraceSchema, [
 export type Trace = Static<typeof TraceSchema> & IEntity;
 
 export type VisitTrace = Static<typeof VisitTraceSchema> & IEntity;
+
+export type WidgetTrace = Static<typeof WidgetTraceSchema> & IEntity;
 
 export type Fingerprint = Static<typeof FingerprintSchema>;
 

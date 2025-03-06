@@ -63,6 +63,9 @@ export class WidgetController {
     }>
   > {
     const code = await this.widgetCodeService.generate(request.query.widgetKey);
+    if (!code) {
+      return reply.code(400).send();
+    }
     return reply.code(200).send(code);
   }
 }

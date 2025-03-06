@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import * as assert from 'node:assert';
 import { build, clearDatabase } from '../../helper';
 import { TraceRepository } from '../../../src/features/trace/trace.repository';
-import { VisitTrace, VisitTraceDto } from '../../../src/features/trace/trace.types';
+import { VisitTrace, VisitTraceDto, WidgetTrace, WidgetTraceDto } from '../../../src/features/trace/trace.types';
 import { Widget, WidgetStatus } from '../../../src/features/widget/widget.types';
 import { Hook, HookCategory, HookStatus } from '../../../src/features/hook/hook.types';
 import { randomUUID } from 'node:crypto';
@@ -15,13 +15,14 @@ test('trace:public:routes', async (t) => {
 
   let hook: Hook;
   let widget: Widget;
+  let sourceHook: Hook;
+  let sourceWidget: Widget;
 
   t.before(async () => {
     await clearDatabase(fastify);
 
     widget = await widgetRepository.save({
       widgetKey: 'widget-key-1',
-      hookId: 'hook-id-1',
       userId: 'user-id-1',
       status: WidgetStatus.REGISTERED,
       code: '<script></script>',
@@ -36,6 +37,23 @@ test('trace:public:routes', async (t) => {
     } as Hook);
 
     await widgetRepository.update(widget._id!, { hookId: hook._id! } as Widget);
+
+    sourceWidget = await widgetRepository.save({
+      widgetKey: 'widget-key-2',
+      userId: 'user-id-2',
+      status: WidgetStatus.ACTIVE,
+      code: '<script></script>',
+    });
+
+    sourceHook = await hookRepository.save({
+      category: HookCategory.BLOG,
+      name: 'hook-name-2',
+      status: HookStatus.ACTIVE,
+      userId: 'user-id-2',
+      widgetId: sourceWidget._id?.toString(),
+    } as Hook);
+
+    await widgetRepository.update(sourceWidget._id!, { hookId: sourceHook._id! } as Widget);
   });
 
   await t.test('should capture visit trace', async () => {
@@ -86,7 +104,7 @@ test('trace:public:routes', async (t) => {
     assert.equal(dbHook?.domain, 'https://example.com');
   });
 
-  await t.test('should skip if invalid widgetKey', async () => {
+  await t.test('should skip visit trace if invalid widgetKey', async () => {
     const trace: VisitTraceDto = {
       traceId: randomUUID().toString(),
       fingerprint: {
@@ -113,7 +131,7 @@ test('trace:public:routes', async (t) => {
     assert.equal(traces.length, 0);
   });
 
-  await t.test('should skip if widget is inactive', async () => {
+  await t.test('should skip visit trace if widget is inactive', async () => {
     await widgetRepository.update(widget._id!, { status: WidgetStatus.INACTIVE } as Widget);
     const trace: VisitTraceDto = {
       traceId: randomUUID().toString(),
@@ -140,5 +158,35 @@ test('trace:public:routes', async (t) => {
     assert.equal(traces.length, 0);
 
     await widgetRepository.update(widget._id!, { status: WidgetStatus.ACTIVE } as Widget);
+  });
+
+  await t.test('should capture widget trace', async () => {
+    const trace: WidgetTraceDto = {
+      traceId: randomUUID().toString(),
+      fingerprint: {
+        fingerprintId: randomUUID().toString(),
+      },
+      widgetKey: widget.widgetKey,
+      sourceWidgetKey: sourceWidget.widgetKey,
+    };
+
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/api/public/traces/widgets',
+      body: trace,
+    });
+
+    assert.equal(response.statusCode, 201);
+
+    const dbTrace = await traceRepository.queryOne({ traceId: trace.traceId }) as WidgetTrace;
+    assert.ok(dbTrace);
+    assert.equal(dbTrace?.type, 'widget');
+    assert.equal(dbTrace?.widgetKey, widget.widgetKey);
+    assert.equal(dbTrace?.widgetId, widget._id?.toString());
+    assert.equal(dbTrace?.hookId, hook._id?.toString());
+    assert.equal(dbTrace?.sourceWidgetKey, sourceWidget.widgetKey);
+    assert.equal(dbTrace?.sourceWidgetId, sourceWidget._id?.toString());
+    assert.equal(dbTrace?.sourceHookId, sourceHook._id?.toString());
+    assert.equal(dbTrace?.fingerprint.fingerprintId, trace.fingerprint.fingerprintId);
   });
 });
