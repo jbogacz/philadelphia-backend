@@ -1,6 +1,6 @@
 // In this file you can configure migrate-mongo
 console.log('MONGODB_URL:', process.env.MONGODB_URL);
-console.log('MONGODB_DATABASE:', process.env.MONGODB_DATABASE);
+console.log('API_USERNAME:', process.env.API_USERNAME);
 
 const config = {
   mongodb: {
