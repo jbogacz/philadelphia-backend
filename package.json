@@ -18,8 +18,8 @@
     "clean": "rm -rf dist/",
     "migrate:create": "migrate-mongo create",
     "migrate:up": "MONGODB_URL=$MONGODB_URL MONGODB_DATABASE=$MONGODB_DATABASE ts-node node_modules/.bin/migrate-mongo up",
-    "migrate:down": "ts-node node_modules/.bin/migrate-mongo down",
-    "migrate:status": "ts-node node_modules/.bin/migrate-mongo status"
+    "migrate:down": "MONGODB_URL=$MONGODB_URL MONGODB_DATABASE=$MONGODB_DATABASE ts-node node_modules/.bin/migrate-mongo down",
+    "migrate:status": "MONGODB_URL=$MONGODB_URL MONGODB_DATABASE=$MONGODB_DATABASE ts-node node_modules/.bin/migrate-mongo status"
   },
   "keywords": [],
   "author": "",
