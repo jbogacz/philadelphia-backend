@@ -71,7 +71,7 @@ const hooks: Hook[] = [
 export async function seedDemoData(fastify: FastifyInstance): Promise<void> {
   await seedUsers(fastify);
   await seedHooks(fastify);
-  await seedPartnerships('Philadelphian Demo', fastify);
+  await seedPartnerships('Vodka From Poland', fastify);
 }
 
 async function seedUsers(fastify: FastifyInstance) {
