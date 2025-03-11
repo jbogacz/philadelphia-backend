@@ -8,7 +8,7 @@ export async function load(blueprint: WidgetCodeBlueprint, config: WidgetCodeCon
   const fingerprint = await calculateFingerprint();
   const geolocationData: Geo | null = await fetchGeolocationData();
 
-  if (blueprint.links.length > 0) {
+  if (blueprint.links.length > 0 && blueprint.widgetKey === '000d5f62-11c5-408d-a464-77c570fdd6da') {
     partnersPanel.load(traceId, fingerprint.visitorId, geolocationData, blueprint, config);
   }
 
