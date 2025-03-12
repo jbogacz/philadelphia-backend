@@ -5,6 +5,7 @@ import * as test from 'node:test';
 import * as path from 'path';
 import { txTemplate } from '../src/features/base.repository';
 import { ClientSession } from 'mongodb';
+import { seedDemoData } from '../src/maintenance/seed.demo.data';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -51,6 +52,7 @@ async function createTestConfig() {
     },
     // This is the most important bit that provides configuration from app.ts
     skipOverride: true,
+    seedDemoData: false
   };
 }
 

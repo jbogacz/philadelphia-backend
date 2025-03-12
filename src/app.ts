@@ -107,7 +107,6 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
   // Seed demo data
   void fastify.register(async (fastify) => {
     if (options.seedDemoData) {
-      // await createIndexes(fastify);
       const { seedDemoData } = await import('./maintenance/seed.demo.data.js');
       await seedDemoData(fastify);
     }
