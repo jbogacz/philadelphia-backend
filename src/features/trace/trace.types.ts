@@ -1,6 +1,11 @@
 import { Static, Type } from '@sinclair/typebox';
 import { BaseSchema, IEntity } from '../base.repository';
 
+export enum TraceType {
+  VISIT = 'visit',
+  WIDGET = 'widget',
+}
+
 /**
  * SCHEMA
  */
@@ -44,7 +49,7 @@ export const TraceSchema = Type.Intersect([
 export const VisitTraceSchema = Type.Intersect([
   TraceSchema,
   Type.Object({
-    type: Type.Literal('visit'),
+    type: Type.Literal(TraceType.VISIT),
     page: PageSchema,
   }),
 ]);
@@ -52,7 +57,7 @@ export const VisitTraceSchema = Type.Intersect([
 export const WidgetTraceSchema = Type.Intersect([
   TraceSchema,
   Type.Object({
-    type: Type.Literal('widget'),
+    type: Type.Literal(TraceType.WIDGET),
     sourceWidgetKey: Type.String(),
     sourceWidgetId: Type.String(),
     sourceHookId: Type.String(),

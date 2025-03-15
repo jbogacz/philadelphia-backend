@@ -22,6 +22,8 @@ import { WidgetController } from '../features/widget/widget.controller';
 import { WidgetRepository } from '../features/widget/widget.repository';
 import { WidgetService } from '../features/widget/widget.service';
 import { PartnershipRepository } from '../features/partnership/partnership.repository';
+import { InsightController } from '../features/insight/insight.controllet';
+import { InsightService } from '../features/insight/insight.service';
 
 export default fp<AppOptions>(async (fastify, opts) => {
   const { config } = opts;
@@ -49,6 +51,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     user: new UserService(fastify.repository.user),
     hook: new HookService(fastify.mongo, fastify.repository.hook, fastify.repository.user, fastify.repository.widget),
     widget: new WidgetService(fastify.mongo, config, fastify.repository.widget, fastify.repository.user),
+    insight: new InsightService(fastify.mongo),
   });
 
   fastify.decorate('controller', {
@@ -58,6 +61,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     listing: new ListingController(),
     hook: new HookController(fastify.service.hook, config),
     widget: new WidgetController(fastify.service.widget, widgetCodeService, config),
+    insight: new InsightController(fastify.service.insight),
   });
 });
 
@@ -78,6 +82,7 @@ declare module 'fastify' {
       user: UserService;
       hook: HookService;
       widget: WidgetService;
+      insight: InsightService;
     };
     controller: {
       trace: TraceController;
@@ -86,6 +91,7 @@ declare module 'fastify' {
       listing: ListingController;
       hook: HookController;
       widget: WidgetController;
+      insight: InsightController;
     };
   }
 }

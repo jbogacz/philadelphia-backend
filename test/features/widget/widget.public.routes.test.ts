@@ -37,10 +37,6 @@ test('widget:public:routes', async (t) => {
     });
   });
 
-  t.before(async () => {
-    await clearDatabase(fastify);
-  });
-
   await t.test('should not generate widget code if passed wrong widgetKey', async () => {
     const response = await fastify.inject({
       method: 'GET',

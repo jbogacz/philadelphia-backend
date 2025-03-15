@@ -4,7 +4,7 @@ import { Hook, HookStatus } from '../hook/hook.types';
 import { WidgetRepository } from '../widget/widget.repository';
 import { Widget, WidgetStatus } from '../widget/widget.types';
 import { TraceRepository } from './trace.repository';
-import { VisitTraceDto, WidgetTraceDto } from './trace.types';
+import { TraceType, VisitTraceDto, WidgetTraceDto } from './trace.types';
 
 export class TraceService {
   private logger = LoggerService.getLogger('trace:service');
@@ -16,7 +16,7 @@ export class TraceService {
   ) {}
 
   async captureVisitTrace(traceDto: VisitTraceDto): Promise<void> {
-    const visitTrace = { ...traceDto, type: 'visit' };
+    const visitTrace = { ...traceDto, type: TraceType.VISIT };
 
     this.logger.info('Processing trace', visitTrace);
 
@@ -59,7 +59,7 @@ export class TraceService {
   }
 
   async captureWidgetTrace(traceDto: WidgetTraceDto): Promise<void> {
-    const widgetTrace = { ...traceDto, type: 'widget' };
+    const widgetTrace = { ...traceDto, type: TraceType.WIDGET };
 
     this.logger.info('Processing trace', widgetTrace);
 
