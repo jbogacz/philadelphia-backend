@@ -1,7 +1,11 @@
 import { FastifyMongoObject, ObjectId } from '@fastify/mongodb';
 import { InsightsOverviewDto, InsightsQueryDto } from './insight.type';
 import { TraceType } from '../trace/trace.types';
-import { startOfDay, subDays, endOfDay, eachDayOfInterval, format } from 'date-fns';
+import { startOfDay } from 'date-fns/startOfDay';
+import { endOfDay } from 'date-fns/endOfDay';
+import { subDays } from 'date-fns/subDays';
+import { eachDayOfInterval } from 'date-fns/eachDayOfInterval';
+import { format } from 'date-fns/format';
 
 interface MatchCriteria {
   hookId: { $eq: ObjectId };
