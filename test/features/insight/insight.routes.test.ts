@@ -5,7 +5,7 @@ import { ObjectId } from '@fastify/mongodb';
 import { randomUUID } from 'node:crypto';
 import { TraceType } from '../../../src/features/trace/trace.types';
 import { InsightsOverviewDto } from '../../../src/features/insight/insight.type';
-import { sub, subDays } from 'date-fns';
+import { subDays } from 'date-fns/subDays';
 
 test('insight:routes', async (t) => {
   const fastify = await build(t);
@@ -65,6 +65,9 @@ test('insight:routes', async (t) => {
     const insightsOverview = JSON.parse(response.body) as InsightsOverviewDto;
     assert.equal(insightsOverview.summary.direct.visits, 24);
     assert.equal(insightsOverview.summary.direct.uniqueVisitors, 19);
+    assert.equal(insightsOverview.summary.direct.visitsChange, 999);
+    assert.equal(insightsOverview.summary.direct.uniqueVisitorsChange, 999);
+
     assert.equal(insightsOverview.daily.direct.length, 14);
     assert.equal(insightsOverview.daily.direct[0].date, subDays(now, 13).toISOString().substring(0, 10));
     assert.equal(insightsOverview.daily.direct[13].date, now.toISOString().substring(0, 10));
@@ -105,10 +108,49 @@ test('insight:routes', async (t) => {
     const insightsOverview = JSON.parse(response.body) as InsightsOverviewDto;
     assert.equal(insightsOverview.summary.direct.visits, 3);
     assert.equal(insightsOverview.summary.direct.uniqueVisitors, 3);
+    assert.equal(insightsOverview.summary.direct.visitsChange, 200);
+    assert.equal(insightsOverview.summary.direct.uniqueVisitorsChange, 200);
     assert.equal(insightsOverview.daily.direct.length, 3);
     assert.equal(insightsOverview.summary.partner.visits, 2);
     assert.equal(insightsOverview.summary.partner.uniqueVisitors, 1);
+    assert.equal(insightsOverview.summary.partner.visitsChange, 999);
+    assert.equal(insightsOverview.summary.partner.uniqueVisitorsChange, 999);
     assert.equal(insightsOverview.daily.partner.length, 3);
+  });
+
+  await t.test('should calculate percentage change against previous same period', async () => {
+    const now = new Date();
+
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), now);
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), now);
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), now);
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), now);
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), now);
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), subDays(now, 14));
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), subDays(now, 14));
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), subDays(now, 14));
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), subDays(now, 14));
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), subDays(now, 14));
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), subDays(now, 14));
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), subDays(now, 14));
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), subDays(now, 14));
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), subDays(now, 14));
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), subDays(now, 14));
+    await saveTrace(TraceType.VISIT, randomUUID().toString(), subDays(now, 14));
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/api/insights',
+      query: {
+        hookId: '67c31b8a3478e7376e61a622',
+      },
+    });
+
+    const insightsOverview = JSON.parse(response.body) as InsightsOverviewDto;
+    assert.equal(insightsOverview.summary.direct.visits, 5);
+    assert.equal(insightsOverview.summary.direct.uniqueVisitors, 5);
+    assert.equal(insightsOverview.summary.direct.visitsChange, -55);
+    assert.equal(insightsOverview.summary.direct.uniqueVisitorsChange, -55);
   });
 
   function saveTrace(type: string, fingerprintId: string, date: Date) {

@@ -6,6 +6,7 @@ import { endOfDay } from 'date-fns/endOfDay';
 import { subDays } from 'date-fns/subDays';
 import { eachDayOfInterval } from 'date-fns/eachDayOfInterval';
 import { format } from 'date-fns/format';
+import { differenceInDays } from 'date-fns/differenceInDays';
 
 interface MatchCriteria {
   hookId: { $eq: ObjectId };
@@ -28,7 +29,8 @@ export class InsightService {
   async fetchInsights(queryDto: InsightsQueryDto): Promise<InsightsOverviewDto> {
     const query: InsightsQuery = {
       hookId: new ObjectId(queryDto.hookId),
-      startDate: queryDto.startDate ? startOfDay(new Date(queryDto.startDate)) : startOfDay(subDays(new Date(), 13)), // Default to 14 days ago
+      // Default to 14 days ago ( which is -13 days from today )
+      startDate: queryDto.startDate ? startOfDay(new Date(queryDto.startDate)) : startOfDay(subDays(new Date(), 13)),
       endDate: queryDto.endDate ? endOfDay(new Date(queryDto.endDate)) : endOfDay(new Date()),
     };
 
@@ -42,10 +44,14 @@ export class InsightService {
         direct: {
           visits: totalVisits.visits,
           uniqueVisitors: totalVisits.uniqueVisitors,
+          visitsChange: totalVisits.visitsChange,
+          uniqueVisitorsChange: totalVisits.uniqueVisitorsChange,
         },
         partner: {
           visits: totalPartnerVisits.visits,
           uniqueVisitors: totalPartnerVisits.uniqueVisitors,
+          visitsChange: totalPartnerVisits.visitsChange,
+          uniqueVisitorsChange: totalPartnerVisits.uniqueVisitorsChange,
         },
       },
       daily: {
@@ -55,8 +61,32 @@ export class InsightService {
     };
   }
 
-  private async fetchTotalVisits(traceType: string, query: InsightsQuery): Promise<{ visits: number; uniqueVisitors: number }> {
-    const matchCriteria: MatchCriteria = {
+  private async fetchTotalVisits(
+    traceType: string,
+    query: InsightsQuery
+  ): Promise<{ visits: number; uniqueVisitors: number; visitsChange: number; uniqueVisitorsChange: number }> {
+    // Calculate the duration in days,
+    // +1 to include both start and end dates
+    const periodDurationInDays = differenceInDays(query.endDate, query.startDate) + 1;
+
+    // Calculate the previous period
+    const prevPeriodEnd = subDays(query.startDate, 1); // One day before current period starts
+    const prevPeriodStart = subDays(prevPeriodEnd, periodDurationInDays - 1);
+
+    // Ensure the previous period also has the correct times
+    const prevStartDate = startOfDay(prevPeriodStart);
+    const prevEndDate = endOfDay(prevPeriodEnd);
+
+    const prevCriteria: MatchCriteria = {
+      hookId: { $eq: query.hookId },
+      type: { $eq: traceType },
+      createdAt: {
+        $gte: prevStartDate,
+        $lte: prevEndDate,
+      },
+    };
+
+    const currCriteria: MatchCriteria = {
       hookId: { $eq: query.hookId },
       type: { $eq: traceType },
       createdAt: {
@@ -65,9 +95,31 @@ export class InsightService {
       },
     };
 
+    const [prevResult, currResult] = await Promise.all([this.fetchPeriodVisits(prevCriteria), this.fetchPeriodVisits(currCriteria)]);
+
+    const [currInsight] = currResult || [];
+    const [prevInsight] = prevResult || [];
+    const currVisits = currInsight?.visits || 0;
+    const currUniqueVisitors = currInsight?.uniqueVisitors || 0;
+    const prevVisits = prevInsight?.visits || 0;
+    const prevUniqueVisitors = prevInsight?.uniqueVisitors || 0;
+
+    // Calculate the percentage change
+    const visitsChange = prevVisits === 0 ? 999 : ((currVisits - prevVisits) / prevVisits) * 100;
+    const uniqueVisitorsChange = prevUniqueVisitors === 0 ? 999 : ((currUniqueVisitors - prevUniqueVisitors) / prevUniqueVisitors) * 100;
+
+    return {
+      visits: currVisits,
+      uniqueVisitors: currUniqueVisitors,
+      visitsChange: Math.round(visitsChange),
+      uniqueVisitorsChange: Math.round(uniqueVisitorsChange),
+    };
+  }
+
+  private async fetchPeriodVisits(periodMatchCriteria: MatchCriteria): Promise<{ visits: number; uniqueVisitors: number }[]> {
     const pipeline = [
       {
-        $match: matchCriteria,
+        $match: periodMatchCriteria,
       },
       {
         $group: {
@@ -84,13 +136,10 @@ export class InsightService {
         },
       },
     ];
-    const result = await this.mongo.db?.collection('traces').aggregate(pipeline).toArray();
-
-    const [insight] = result || [];
-    return {
-      visits: insight?.visits || 0,
-      uniqueVisitors: insight?.uniqueVisitors || 0,
-    };
+    const result = this.mongo.db?.collection('traces').aggregate(pipeline).toArray() as Promise<
+      { visits: number; uniqueVisitors: number }[]
+    >;
+    return result;
   }
 
   private async fetchDailyVisits(
@@ -158,7 +207,6 @@ export class InsightService {
       return resultsMap.get(date) || { date, visits: 0, uniqueVisitors: 0 };
     });
 
-    // return (result as { date: string; visits: number; uniqueVisitors: number }[]) || [];
     return completeResults;
   }
 }

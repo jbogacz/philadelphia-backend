@@ -22,7 +22,7 @@ import { WidgetController } from '../features/widget/widget.controller';
 import { WidgetRepository } from '../features/widget/widget.repository';
 import { WidgetService } from '../features/widget/widget.service';
 import { PartnershipRepository } from '../features/partnership/partnership.repository';
-import { InsightController } from '../features/insight/insight.controllet';
+import { InsightController } from '../features/insight/insight.controller';
 import { InsightService } from '../features/insight/insight.service';
 
 export default fp<AppOptions>(async (fastify, opts) => {

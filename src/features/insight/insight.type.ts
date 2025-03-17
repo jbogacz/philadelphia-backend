@@ -14,10 +14,14 @@ export const InsightsOverviewSchema = Type.Object({
     direct: Type.Object({
       visits: Type.Number(),
       uniqueVisitors: Type.Number(),
+      visitsChange: Type.Number(),
+      uniqueVisitorsChange: Type.Number(),
     }),
     partner: Type.Object({
       visits: Type.Number(),
       uniqueVisitors: Type.Number(),
+      visitsChange: Type.Number(),
+      uniqueVisitorsChange: Type.Number(),
     }),
   }),
   daily: Type.Object({
