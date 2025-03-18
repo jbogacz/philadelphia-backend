@@ -105,8 +105,8 @@ export class InsightService {
     const prevUniqueVisitors = prevInsight?.uniqueVisitors || 0;
 
     // Calculate the percentage change
-    const visitsChange = prevVisits === 0 ? 999 : ((currVisits - prevVisits) / prevVisits) * 100;
-    const uniqueVisitorsChange = prevUniqueVisitors === 0 ? 999 : ((currUniqueVisitors - prevUniqueVisitors) / prevUniqueVisitors) * 100;
+    const visitsChange = prevVisits === 0 ? 0 : ((currVisits - prevVisits) / prevVisits) * 100;
+    const uniqueVisitorsChange = prevUniqueVisitors === 0 ? 0 : ((currUniqueVisitors - prevUniqueVisitors) / prevUniqueVisitors) * 100;
 
     return {
       visits: currVisits,

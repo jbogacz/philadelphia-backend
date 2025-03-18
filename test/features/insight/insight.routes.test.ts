@@ -65,8 +65,8 @@ test('insight:routes', async (t) => {
     const insightsOverview = JSON.parse(response.body) as InsightsOverviewDto;
     assert.equal(insightsOverview.summary.direct.visits, 24);
     assert.equal(insightsOverview.summary.direct.uniqueVisitors, 19);
-    assert.equal(insightsOverview.summary.direct.visitsChange, 999);
-    assert.equal(insightsOverview.summary.direct.uniqueVisitorsChange, 999);
+    assert.equal(insightsOverview.summary.direct.visitsChange, 0);
+    assert.equal(insightsOverview.summary.direct.uniqueVisitorsChange, 0);
 
     assert.equal(insightsOverview.daily.direct.length, 14);
     assert.equal(insightsOverview.daily.direct[0].date, subDays(now, 13).toISOString().substring(0, 10));
@@ -113,8 +113,8 @@ test('insight:routes', async (t) => {
     assert.equal(insightsOverview.daily.direct.length, 3);
     assert.equal(insightsOverview.summary.partner.visits, 2);
     assert.equal(insightsOverview.summary.partner.uniqueVisitors, 1);
-    assert.equal(insightsOverview.summary.partner.visitsChange, 999);
-    assert.equal(insightsOverview.summary.partner.uniqueVisitorsChange, 999);
+    assert.equal(insightsOverview.summary.partner.visitsChange, 0);
+    assert.equal(insightsOverview.summary.partner.uniqueVisitorsChange, 0);
     assert.equal(insightsOverview.daily.partner.length, 3);
   });
 
