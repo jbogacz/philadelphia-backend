@@ -1,4 +1,4 @@
-require('./src/common/utils').clearEnvCache();
+require('./dist/common/utils.js').clearEnvCache();
 
 const config = {
   mongodb: {
