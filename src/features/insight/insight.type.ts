@@ -22,6 +22,12 @@ export const InsightsOverviewSchema = Type.Object({
       uniqueVisitors: Type.Number(),
       visitsChange: Type.Number(),
       uniqueVisitorsChange: Type.Number(),
+      distribution: Type.Array(
+        Type.Object({
+          name: Type.String(),
+          percentage: Type.Number(),
+        })
+      ),
     }),
   }),
   daily: Type.Object({
