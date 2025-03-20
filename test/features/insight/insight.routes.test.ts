@@ -155,7 +155,7 @@ test('insight:routes', async (t) => {
     assert.equal(insightsOverview.summary.direct.uniqueVisitorsChange, -55);
   });
 
-  await t.test('should calculate percentage partner distribution', async () => {
+  await t.test('should calculate partner distribution', async () => {
     const { hookId: targetHookId } = await saveHookAndWidget('Target Hook');
     const { hookId: sourceHookId1 } = await saveHookAndWidget('Source Hook 1');
     const { hookId: sourceHookId2 } = await saveHookAndWidget('Source Hook 2');
@@ -192,6 +192,24 @@ test('insight:routes', async (t) => {
     assert.equal(insightsOverview.summary.partner.distribution[1].visits, 3);
     assert.equal(insightsOverview.summary.partner.distribution[2].name, 'Source Hook 3');
     assert.equal(insightsOverview.summary.partner.distribution[2].visits, 2);
+  });
+
+  await t.test('should return empty summary and distribution', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/api/insights',
+      query: {
+        hookId: '67c31b8a3478e7376e61a622',
+      },
+    });
+    assert.equal(response.statusCode, 200);
+    const insightsOverview = JSON.parse(response.body) as InsightsOverviewDto;
+    assert.equal(insightsOverview.summary.partner.visits, 0);
+    assert.equal(insightsOverview.summary.partner.uniqueVisitors, 0);
+    assert.equal(insightsOverview.summary.partner.distribution.length, 0);
+    assert.equal(insightsOverview.daily.direct.length, 0);
+    assert.equal(insightsOverview.daily.partner.length, 0);
+
   });
 
   function saveTrace(type: string, fingerprintId: string, date: Date) {
