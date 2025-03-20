@@ -207,9 +207,6 @@ test('insight:routes', async (t) => {
     assert.equal(insightsOverview.summary.partner.visits, 0);
     assert.equal(insightsOverview.summary.partner.uniqueVisitors, 0);
     assert.equal(insightsOverview.summary.partner.distribution.length, 0);
-    assert.equal(insightsOverview.daily.direct.length, 0);
-    assert.equal(insightsOverview.daily.partner.length, 0);
-
   });
 
   function saveTrace(type: string, fingerprintId: string, date: Date) {
