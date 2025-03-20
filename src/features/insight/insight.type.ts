@@ -25,7 +25,7 @@ export const InsightsOverviewSchema = Type.Object({
       distribution: Type.Array(
         Type.Object({
           name: Type.String(),
-          percentage: Type.Number(),
+          visits: Type.Number(),
         })
       ),
     }),

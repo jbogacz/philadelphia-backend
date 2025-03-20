@@ -8,7 +8,7 @@ import { AppOptions } from './app.types';
 import { LoggerService } from './common/logger.service';
 import { clearEnvCache } from './common/utils';
 
-clearEnvCache();
+// clearEnvCache();
 
 // Load environment variables from .env file
 const appOptions: AppOptions = {
@@ -107,8 +107,10 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
   // Seed demo data
   void fastify.register(async (fastify) => {
     if (options.seedDemoData) {
-      const { seedDemoData } = await import('./maintenance/seed.demo.data.js');
-      await seedDemoData(fastify);
+      // const { seedDemoData } = await import('./maintenance/seed.demo.data.js');
+      // await seedDemoData(fastify);
+      // const { seedDemoPartnerTraces } = await import('./maintenance/seed.demo.partner.traces.js');
+      // await seedDemoPartnerTraces(fastify);
     }
   });
 };

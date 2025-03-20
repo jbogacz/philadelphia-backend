@@ -212,7 +212,7 @@ export class InsightService {
     return completeResults;
   }
 
-  private async calculatePartnerDistribution(query: InsightsQuery): Promise<{ name: string; percentage: number }[]> {
+  private async calculatePartnerDistribution(query: InsightsQuery): Promise<{ name: string; visits: number }[]> {
     const pipeline = [
       {
         $match: {
@@ -254,13 +254,6 @@ export class InsightService {
         },
       },
     ];
-    const result = ((await this.mongo.db?.collection('traces').aggregate(pipeline).toArray()) as { visits: number; name: string }[]) || [];
-
-    const totalVisits = result.reduce((sum, item) => sum + item.visits, 0);
-    const distribution = result.map((item) => ({
-      name: item.name,
-      percentage: totalVisits > 0 ? Math.round((item.visits / totalVisits) * 100) : 0,
-    }));
-    return distribution;
+    return ((await this.mongo.db?.collection('traces').aggregate(pipeline).toArray()) as { name: string; visits: number }[]) || [];
   }
 }
