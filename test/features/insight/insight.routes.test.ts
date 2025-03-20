@@ -6,6 +6,8 @@ import { randomUUID } from 'node:crypto';
 import { TraceType } from '../../../src/features/trace/trace.types';
 import { InsightsOverviewDto } from '../../../src/features/insight/insight.type';
 import { subDays } from 'date-fns/subDays';
+import { Hook } from '../../../src/features/hook/hook.types';
+import { Widget, WidgetStatus } from '../../../src/features/widget/widget.types';
 
 test('insight:routes', async (t) => {
   const fastify = await build(t);
@@ -153,6 +155,63 @@ test('insight:routes', async (t) => {
     assert.equal(insightsOverview.summary.direct.uniqueVisitorsChange, -55);
   });
 
+  await t.test('should calculate partner distribution', async () => {
+    const { hookId: targetHookId } = await saveHookAndWidget('Target Hook');
+    const { hookId: sourceHookId1 } = await saveHookAndWidget('Source Hook 1');
+    const { hookId: sourceHookId2 } = await saveHookAndWidget('Source Hook 2');
+    const { hookId: sourceHookId3 } = await saveHookAndWidget('Source Hook 3');
+
+    const now = new Date();
+    await saveWidgetTrace(sourceHookId1, targetHookId, subDays(now, 5));
+    await saveWidgetTrace(sourceHookId1, targetHookId, subDays(now, 5));
+    await saveWidgetTrace(sourceHookId1, targetHookId, subDays(now, 5));
+    await saveWidgetTrace(sourceHookId1, targetHookId, subDays(now, 5));
+    await saveWidgetTrace(sourceHookId1, targetHookId, subDays(now, 5));
+    await saveWidgetTrace(sourceHookId2, targetHookId, subDays(now, 3));
+    await saveWidgetTrace(sourceHookId2, targetHookId, subDays(now, 3));
+    await saveWidgetTrace(sourceHookId2, targetHookId, subDays(now, 3));
+    await saveWidgetTrace(sourceHookId3, targetHookId, subDays(now, 2));
+    await saveWidgetTrace(sourceHookId3, targetHookId, subDays(now, 2));
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/api/insights',
+      query: {
+        hookId: targetHookId.toString(),
+      },
+    });
+    assert.equal(response.statusCode, 200);
+
+    const insightsOverview = JSON.parse(response.body) as InsightsOverviewDto;
+    assert.equal(insightsOverview.summary.partner.visits, 10);
+    assert.equal(insightsOverview.summary.partner.uniqueVisitors, 10);
+    assert.equal(insightsOverview.summary.partner.distribution.length, 3);
+    assert.equal(insightsOverview.summary.partner.distribution[0].name, 'Source Hook 1');
+    assert.equal(insightsOverview.summary.partner.distribution[0].visits, 5);
+    assert.equal(insightsOverview.summary.partner.distribution[1].name, 'Source Hook 2');
+    assert.equal(insightsOverview.summary.partner.distribution[1].visits, 3);
+    assert.equal(insightsOverview.summary.partner.distribution[2].name, 'Source Hook 3');
+    assert.equal(insightsOverview.summary.partner.distribution[2].visits, 2);
+  });
+
+  await t.test('should return empty summary and distribution', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/api/insights',
+      query: {
+        hookId: '67c31b8a3478e7376e61a622',
+      },
+    });
+    assert.equal(response.statusCode, 200);
+    const insightsOverview = JSON.parse(response.body) as InsightsOverviewDto;
+    assert.equal(insightsOverview.summary.partner.visits, 0);
+    assert.equal(insightsOverview.summary.partner.uniqueVisitors, 0);
+    assert.equal(insightsOverview.summary.partner.distribution.length, 0);
+    assert.equal(insightsOverview.daily.direct.length, 0);
+    assert.equal(insightsOverview.daily.partner.length, 0);
+
+  });
+
   function saveTrace(type: string, fingerprintId: string, date: Date) {
     const trace = {
       createdAt: date,
@@ -167,5 +226,47 @@ test('insight:routes', async (t) => {
       widgetKey: randomUUID().toString(),
     };
     return fastify.mongo.db?.collection('traces').insertOne(trace);
+  }
+
+  function saveWidgetTrace(sourceHookId: ObjectId, hookId: ObjectId, date: Date) {
+    const trace = {
+      createdAt: date,
+      updatedAt: date,
+      hookId: hookId,
+      sourceHookId: sourceHookId,
+      type: TraceType.WIDGET,
+      fingerprint: {
+        fingerprintId: randomUUID().toString(),
+      },
+      traceId: randomUUID().toString(),
+    };
+    return fastify.mongo.db?.collection('traces').insertOne(trace);
+  }
+
+  async function saveHookAndWidget(name: string): Promise<{ hookId: ObjectId; widgetId: ObjectId }> {
+    const noSpacesName = name.replace(/\s/g, '');
+    const widget: Widget = {
+      status: WidgetStatus.ACTIVE,
+      userId: 'userId-' + noSpacesName,
+      widgetKey: 'widgetKey-' + noSpacesName,
+      code: 'code-' + noSpacesName,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    const dbWidget = await fastify.mongo.db?.collection('widgets').insertOne(widget);
+    const hook: Hook = {
+      name: name,
+      domain: 'domain',
+      favicon: 'favicon',
+      userId: 'userId-' + noSpacesName,
+      widgetId: dbWidget?.insertedId as string,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    const dbHook = await fastify.mongo.db?.collection('hooks').insertOne(hook);
+    return {
+      hookId: dbHook.insertedId,
+      widgetId: dbWidget.insertedId,
+    };
   }
 });

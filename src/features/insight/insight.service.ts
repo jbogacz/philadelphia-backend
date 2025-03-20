@@ -26,7 +26,7 @@ interface InsightsQuery {
 export class InsightService {
   constructor(private readonly mongo: FastifyMongoObject) {}
 
-  async fetchInsights(queryDto: InsightsQueryDto): Promise<InsightsOverviewDto> {
+  async calculateInsights(queryDto: InsightsQueryDto): Promise<InsightsOverviewDto> {
     const query: InsightsQuery = {
       hookId: new ObjectId(queryDto.hookId),
       // Default to 14 days ago ( which is -13 days from today )
@@ -34,10 +34,11 @@ export class InsightService {
       endDate: queryDto.endDate ? endOfDay(new Date(queryDto.endDate)) : endOfDay(new Date()),
     };
 
-    const totalVisits = await this.fetchTotalVisits(TraceType.VISIT, query);
-    const dailyVisits = await this.fetchDailyVisits(TraceType.VISIT, query);
-    const totalPartnerVisits = await this.fetchTotalVisits(TraceType.WIDGET, query);
-    const dailyPartnerVisits = await this.fetchDailyVisits(TraceType.WIDGET, query);
+    const totalVisits = await this.calculateTotalVisits(TraceType.VISIT, query);
+    const dailyVisits = await this.calculateDailyVisits(TraceType.VISIT, query);
+    const totalPartnerVisits = await this.calculateTotalVisits(TraceType.WIDGET, query);
+    const dailyPartnerVisits = await this.calculateDailyVisits(TraceType.WIDGET, query);
+    const partnerDistribution = await this.calculatePartnerDistribution(query);
 
     return {
       summary: {
@@ -52,6 +53,7 @@ export class InsightService {
           uniqueVisitors: totalPartnerVisits.uniqueVisitors,
           visitsChange: totalPartnerVisits.visitsChange,
           uniqueVisitorsChange: totalPartnerVisits.uniqueVisitorsChange,
+          distribution: partnerDistribution,
         },
       },
       daily: {
@@ -61,7 +63,7 @@ export class InsightService {
     };
   }
 
-  private async fetchTotalVisits(
+  private async calculateTotalVisits(
     traceType: string,
     query: InsightsQuery
   ): Promise<{ visits: number; uniqueVisitors: number; visitsChange: number; uniqueVisitorsChange: number }> {
@@ -142,7 +144,7 @@ export class InsightService {
     return result;
   }
 
-  private async fetchDailyVisits(
+  private async calculateDailyVisits(
     traceType: string,
     query: InsightsQuery
   ): Promise<{ date: string; visits: number; uniqueVisitors: number }[]> {
@@ -208,5 +210,50 @@ export class InsightService {
     });
 
     return completeResults;
+  }
+
+  private async calculatePartnerDistribution(query: InsightsQuery): Promise<{ name: string; visits: number }[]> {
+    const pipeline = [
+      {
+        $match: {
+          hookId: { $eq: query.hookId },
+          type: { $eq: TraceType.WIDGET },
+          createdAt: {
+            $gte: query.startDate,
+            $lte: query.endDate,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$sourceHookId',
+          visits: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: 'hooks',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'hook',
+        },
+      },
+      {
+        $unwind: '$hook',
+      },
+      {
+        $sort: {
+          visits: -1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: '$hook.name',
+          visits: 1,
+        },
+      },
+    ];
+    return ((await this.mongo.db?.collection('traces').aggregate(pipeline).toArray()) as { name: string; visits: number }[]) || [];
   }
 }

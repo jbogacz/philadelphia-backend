@@ -13,7 +13,7 @@ export class InsightController {
       Reply: InsightsOverviewDto;
     }>
   > {
-    const insights = await this.insightService.fetchInsights(request.query);
+    const insights = await this.insightService.calculateInsights(request.query);
     return reply.code(200).send(insights);
   }
 }

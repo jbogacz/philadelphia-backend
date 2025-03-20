@@ -4,6 +4,7 @@ import { BaseSchema, IEntity } from '../base.repository';
 export enum TraceType {
   VISIT = 'visit',
   WIDGET = 'widget',
+  FLOW = 'flow',
 }
 
 /**
@@ -61,6 +62,15 @@ export const WidgetTraceSchema = Type.Intersect([
     sourceWidgetKey: Type.String(),
     sourceWidgetId: Type.String(),
     sourceHookId: Type.String(),
+  }),
+]);
+
+export const FlowTraceSchema = Type.Intersect([
+  TraceSchema,
+  Type.Object({
+    type: Type.Literal(TraceType.FLOW),
+    partnerId: Type.String(),
+    campaignId: Type.String(),
   }),
 ]);
 
