@@ -187,11 +187,11 @@ test('insight:routes', async (t) => {
     assert.equal(insightsOverview.summary.partner.uniqueVisitors, 10);
     assert.equal(insightsOverview.summary.partner.distribution.length, 3);
     assert.equal(insightsOverview.summary.partner.distribution[0].name, 'Source Hook 1');
-    assert.equal(insightsOverview.summary.partner.distribution[0].percentage, 50);
+    assert.equal(insightsOverview.summary.partner.distribution[0].visits, 5);
     assert.equal(insightsOverview.summary.partner.distribution[1].name, 'Source Hook 2');
-    assert.equal(insightsOverview.summary.partner.distribution[1].percentage, 30);
+    assert.equal(insightsOverview.summary.partner.distribution[1].visits, 3);
     assert.equal(insightsOverview.summary.partner.distribution[2].name, 'Source Hook 3');
-    assert.equal(insightsOverview.summary.partner.distribution[2].percentage, 20);
+    assert.equal(insightsOverview.summary.partner.distribution[2].visits, 2);
   });
 
   function saveTrace(type: string, fingerprintId: string, date: Date) {
