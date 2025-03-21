@@ -1,4 +1,4 @@
-name: philadelphia-backend
+name: philadelphia-backend-pipeline
 
 on:
   pull_request:
