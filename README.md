@@ -10,7 +10,7 @@ Required containers from docker-compose:
 
 # MongoDB migration
 
-To create new migration script please run `npm run migrate:create -- my-first-migration`
+To create new migration script please run `npm run migrate:create my-first-migration`
 
 # Technical debt:
 

@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import { build, clearDatabase } from '../../helper';
 import { HookDto } from '../../../src/features/hook/hook.types';
 import { WidgetDto, WidgetStatus } from '../../../src/features/widget/widget.types';
+import { ObjectId } from '@fastify/mongodb';
 
 test('hook:routes', async (t) => {
   const fastify = await build(t);
@@ -58,6 +59,11 @@ test('hook:routes', async (t) => {
 
     const widgetWithHook = await widgetRepository.findByPrimaryId(widget._id);
     assert.equal(widgetWithHook.hookId, created._id);
+
+    // hook.widgetId is stored as ObjectId
+    const hookDb = await fastify.mongo.db.collection('hooks').findOne({ _id: new ObjectId(created._id) });
+    assert.ok(hookDb.widgetId instanceof ObjectId);
+    assert.ok(hookDb.widgetId.equals(new ObjectId(widget._id)));
   });
 
   await t.test('should find hook by ID', async () => {
