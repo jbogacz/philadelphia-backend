@@ -1,4 +1,4 @@
-import { FastifyMongoObject } from '@fastify/mongodb';
+import { FastifyMongoObject, ObjectId } from '@fastify/mongodb';
 import { LoggerService } from '../../common';
 import { NotFoundError } from '../../common/errors';
 import { UserRepository } from '../user/user.repository';
@@ -48,7 +48,11 @@ export class HookService {
       throw new NotFoundError('User not found: ' + hook.userId);
     }
 
-    const created = await this.hookRepository.create({ ...hook, status: HookStatus.REGISTERED } as Hook);
+    const created = await this.hookRepository.create({
+      ...hook,
+      widgetId: new ObjectId(hook.widgetId), // Convert string to ObjectId
+      status: HookStatus.REGISTERED,
+    } as any);
     this.logger.info('Created hook:', created);
 
     await this.widgetRepository.update(created.widgetId, { hookId: created._id, status: WidgetStatus.REGISTERED } as Widget);
