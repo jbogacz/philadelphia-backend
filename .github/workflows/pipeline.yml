@@ -1,11 +1,11 @@
-name: philadelphia-backend-pipeline
+name: philadelphia_backend_pipeline
 
 on:
   pull_request:
     branches: [main]
 
 jobs:
-  run-tests:
+  run_tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
