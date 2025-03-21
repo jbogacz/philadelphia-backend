@@ -8,7 +8,7 @@ import { AppOptions } from './app.types';
 import { LoggerService } from './common/logger.service';
 import { clearEnvCache } from './common/utils';
 
-// clearEnvCache();
+clearEnvCache();
 
 // Load environment variables from .env file
 const appOptions: AppOptions = {
