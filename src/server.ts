@@ -8,14 +8,31 @@ const server = fastify({
     transport: {
       target: 'pino-pretty',
       options: {
-        translateTime: 'HH:MM:ss Z',
+        translateTime: false,
         ignore: 'pid,hostname',
         messageFormat: '{className} : {msg}',
         colorize: true,
       },
     },
+    timestamp: () => {
+      const now = new Date();
+      const polandTime = now.toLocaleString('pl-PL', {
+        timeZone: 'Europe/Warsaw',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      });
+      return `,"time":"${polandTime}"`;
+    },
   },
 });
+
+const timeConfig = {
+  timezone: process.env.TZ,
+  serverTime: new Date().toString(),
+};
+server.log.info(timeConfig, 'Starting server...');
 
 // Health check routes
 server.get('/', { logLevel: 'silent' }, () => 'ok');
