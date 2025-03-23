@@ -1,5 +1,5 @@
 import PhiladelphiaJS, { GetResult } from '../fingerprint/fp.script';
-import { Geo, VisitTraceDto } from '../trace/trace.types';
+import { FingerprintComponents, Geo, VisitTraceDto } from '../trace/trace.types';
 import { WidgetCodeBlueprint, WidgetCodeConfig } from './widget.types';
 import * as partnersPanel from './widget.code.panel';
 
@@ -12,10 +12,14 @@ export async function load(blueprint: WidgetCodeBlueprint, config: WidgetCodeCon
     partnersPanel.load(traceId, fingerprint.visitorId, geolocationData, blueprint, config);
   }
 
+  const jsonComponents = JSON.stringify(fingerprint.components);
+  const components = JSON.parse(jsonComponents) as FingerprintComponents;
+
   const visitTrace: VisitTraceDto = {
     traceId: traceId,
     fingerprint: {
       fingerprintId: fingerprint.visitorId,
+      components: components,
     },
     widgetKey: blueprint.widgetKey,
     page: {
@@ -30,8 +34,8 @@ export async function load(blueprint: WidgetCodeBlueprint, config: WidgetCodeCon
 }
 
 async function calculateFingerprint(): Promise<GetResult> {
-  const fp = await PhiladelphiaJS.load();
-  return fp.get();
+  const fp = await PhiladelphiaJS.load({ debug: false });
+  return await fp.get();
 }
 
 async function sendVisitTrace(apiUrl: string, trace: VisitTraceDto): Promise<void> {
@@ -62,18 +66,20 @@ async function fetchGeolocationData(): Promise<Geo | null> {
     clearTimeout(timeoutId); // Clear the timeout if fetch completes
 
     const data = await response.json();
-    return data && {
-      ip: data.ip,
-      city: data.city,
-      postal: data.zipcode,
-      region: data.state_prov,
-      country: data.country_name,
-      latitude: parseFloat(data.latitude),
-      longitude: parseFloat(data.longitude),
-      timezone: data.time_zone?.name,
-      currentTime: data.time_zone?.current_time,
-      isp: data.isp,
-    };
+    return (
+      data && {
+        ip: data.ip,
+        city: data.city,
+        postal: data.zipcode,
+        region: data.state_prov,
+        country: data.country_name,
+        latitude: parseFloat(data.latitude),
+        longitude: parseFloat(data.longitude),
+        timezone: data.time_zone?.name,
+        currentTime: data.time_zone?.current_time,
+        isp: data.isp,
+      }
+    );
   } catch (error) {
     return null;
   }

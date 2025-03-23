@@ -18,7 +18,7 @@ export class TraceService {
   async captureVisitTrace(traceDto: VisitTraceDto): Promise<void> {
     const visitTrace = { ...traceDto, type: TraceType.VISIT };
 
-    this.logger.info('Processing trace', visitTrace);
+    this.logger.info('Processing trace', { ...visitTrace, fingerprint: { ...visitTrace.fingerprint, components: '!Large data omitted!' } });
 
     const widget = await this.widgetRepository.findByWidgetKey(visitTrace.widgetKey);
     if (!widget) {
@@ -54,14 +54,14 @@ export class TraceService {
         hookId: widget?.hookId || '',
       };
       await this.traceRepository.create(trace);
-      this.logger.info('Captured visit trace:', trace);
+      this.logger.info('Captured visit trace:', { ...trace, fingerprint: { ...trace.fingerprint, components: '!Large data omitted!' } });
     }
   }
 
   async captureWidgetTrace(traceDto: WidgetTraceDto): Promise<void> {
     const widgetTrace = { ...traceDto, type: TraceType.WIDGET };
 
-    this.logger.info('Processing trace', widgetTrace);
+    this.logger.info('Processing trace', { ...widgetTrace, fingerprint: { ...widgetTrace.fingerprint, components: '!Large data omitted!' } });
 
     const widget = await this.widgetRepository.findByWidgetKey(widgetTrace.widgetKey);
     if (!widget) {
@@ -84,7 +84,7 @@ export class TraceService {
         sourceHookId: sourceWidget?.hookId || '',
       };
       await this.traceRepository.create(trace);
-      this.logger.info('Captured widget trace:', trace);
+      this.logger.info('Captured widget trace:', { ...trace, fingerprint: { ...trace.fingerprint, components: '!Large data omitted!' } });
     }
   }
 }
