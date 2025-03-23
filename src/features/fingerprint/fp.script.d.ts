@@ -153,7 +153,7 @@ declare function getWebGLContext(cache: Options['cache']): CanvasContext | undef
 
 declare function getAudioContextBaseLatency(): number;
 
-declare function getDateTimeLocale(): string;
+declare function getDateTimeLocale(): string | -1 | -2 | -3;
 
 declare const sources: {
     fonts: typeof getFonts;
