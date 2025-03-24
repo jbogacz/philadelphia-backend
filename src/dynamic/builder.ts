@@ -28,11 +28,15 @@ export class DynamicBuilder<T extends DynamicBlueprint, U extends DynamicConfig>
       throw new Error('Failed to bundle dynamic code');
     }
 
+    // Prevent the dynamic code from being loaded multiple times
     const code = `
-      ${this.dynamicCodeName + 'DynamicCode'}.load(
-        ${JSON.stringify(blueprint)},
-        ${JSON.stringify(config)}
-      );
+      if (!window.__${this.dynamicCodeName}Loaded_449d04dc8f372e8318c74dec02e99000) {
+        ${this.dynamicCodeName + 'DynamicCode'}.load(
+          ${JSON.stringify(blueprint)},
+          ${JSON.stringify(config)}
+        );
+        window.__${this.dynamicCodeName}Loaded_449d04dc8f372e8318c74dec02e99000 = true;
+      }
     `;
 
     return result.outputFiles[0].text + code;
