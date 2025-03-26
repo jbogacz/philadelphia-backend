@@ -17,7 +17,7 @@ import { TraceService } from '../features/trace/trace.service';
 import { UserController } from '../features/user/user.controller';
 import { UserRepository } from '../features/user/user.repository';
 import { UserService } from '../features/user/user.service';
-import { WidgetCodeService } from '../features/widget/widget.code.service';
+import { WidgetComponentService } from '../features/widget/widget.component.service';
 import { WidgetController } from '../features/widget/widget.controller';
 import { WidgetRepository } from '../features/widget/widget.repository';
 import { WidgetService } from '../features/widget/widget.service';
@@ -41,7 +41,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
 
   const publisherService = new PublisherService(fastify.repository.publisher);
   const campaignService = new CampaignService(fastify.repository.campaign);
-  const widgetCodeService = new WidgetCodeService(fastify.repository.widget, fastify.repository.partnership, config);
+  const widgetCodeService = new WidgetComponentService(fastify.repository.widget, fastify.repository.partnership, config);
 
   fastify.decorate('service', {
     trace: new TraceService(fastify.repository.trace, fastify.repository.widget, fastify.repository.hook),

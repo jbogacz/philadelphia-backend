@@ -4,12 +4,12 @@ import { ErrorDto } from '../../common/errors';
 import { WidgetDto, WidgetQueryDto } from './widget.types';
 import { getAuth } from '@clerk/fastify';
 import { WidgetService } from './widget.service';
-import { WidgetCodeService } from './widget.code.service';
+import { WidgetComponentService } from './widget.component.service';
 
 export class WidgetController {
   constructor(
     private readonly widgetService: WidgetService,
-    private readonly widgetCodeService: WidgetCodeService,
+    private readonly widgetCodeService: WidgetComponentService,
     private readonly config: AppConfig
   ) {}
 
