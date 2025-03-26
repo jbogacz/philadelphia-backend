@@ -1,17 +1,12 @@
 import * as esbuild from 'esbuild';
 
-import { LoggerService } from '../common';
 import { DynamicBlueprint, DynamicConfig } from './types';
 import { join } from 'path';
 
 export class DynamicBuilder<T extends DynamicBlueprint, U extends DynamicConfig> {
-  private logger = LoggerService.getLogger('dynamic.DynamicCodeBuilder');
-
   constructor(private readonly dynamicCodeName: string, private readonly dynamicDirname: string) {}
 
   async build(blueprint: T, config: U): Promise<string> {
-    this.logger.info('Building dynamic code: ' + this.dynamicCodeName);
-
     // Bundle the ad code
     const result = await esbuild.build({
       entryPoints: [join(this.dynamicDirname, this.dynamicCodeName + '.code.js')],
@@ -20,7 +15,7 @@ export class DynamicBuilder<T extends DynamicBlueprint, U extends DynamicConfig>
       format: 'iife',
       globalName: this.dynamicCodeName + 'DynamicCode',
       minify: false,
-      target: ['es2015'],
+      target: ['es2020'],
       platform: 'browser',
     });
 
@@ -30,12 +25,12 @@ export class DynamicBuilder<T extends DynamicBlueprint, U extends DynamicConfig>
 
     // Prevent the dynamic code from being loaded multiple times
     const code = `
-      if (!window.__${this.dynamicCodeName}Loaded_449d04dc8f372e8318c74dec02e99000) {
+      if (!window.__${this.dynamicCodeName.replace('.', '')}Loaded_449d04dc8f372e8318c74dec02e99000) {
         ${this.dynamicCodeName + 'DynamicCode'}.load(
           ${JSON.stringify(blueprint)},
           ${JSON.stringify(config)}
         );
-        window.__${this.dynamicCodeName}Loaded_449d04dc8f372e8318c74dec02e99000 = true;
+        window.__${this.dynamicCodeName.replace('.', '')}Loaded_449d04dc8f372e8318c74dec02e99000 = true;
       }
     `;
 

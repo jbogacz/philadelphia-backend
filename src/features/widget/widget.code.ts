@@ -1,16 +1,12 @@
-import PhiladelphiaJS, { GetResult } from '../fingerprint/fp.script';
+import PhiladelphiaJS from '../fingerprint/fp.script';
 import { FingerprintComponents, Geo, VisitTraceDto } from '../trace/trace.types';
+import { load as loadPanel } from './widget.panel.code';
 import { WidgetCodeBlueprint, WidgetCodeConfig } from './widget.types';
-import * as partnersPanel from './widget.code.panel';
 
 export async function load(blueprint: WidgetCodeBlueprint, config: WidgetCodeConfig) {
   const traceId = crypto.randomUUID();
   const fingerprint = await calculateFingerprint();
   const geolocationData: Geo | null = await fetchGeolocationData();
-
-  if (blueprint.links.length > 0 && blueprint.widgetKey === '000d5f62-11c5-408d-a464-77c570fdd6da') {
-    partnersPanel.load(traceId, fingerprint.fingerprintId, geolocationData, blueprint, config);
-  }
 
   const visitTrace: VisitTraceDto = {
     traceId: traceId,
@@ -28,6 +24,10 @@ export async function load(blueprint: WidgetCodeBlueprint, config: WidgetCodeCon
     geo: geolocationData || undefined,
   };
   await sendVisitTrace(config.apiUrl, visitTrace);
+
+  if (blueprint.links.length > 0 && blueprint.widgetKey === '000d5f62-11c5-408d-a464-77c570fdd6da') {
+    await loadPanel(traceId, fingerprint, geolocationData, blueprint, config);
+  }
 }
 
 async function calculateFingerprint(): Promise<{ fingerprintId: string; components: FingerprintComponents }> {
@@ -37,7 +37,7 @@ async function calculateFingerprint(): Promise<{ fingerprintId: string; componen
   const components = JSON.parse(jsonComponents) as FingerprintComponents;
   return {
     fingerprintId: result.visitorId,
-    components: removeField(components, 'duration'), // Remove the duration fields
+    components: removeField(components, 'duration'),
   };
 }
 
@@ -66,7 +66,7 @@ async function fetchGeolocationData(): Promise<Geo | null> {
       signal: controller.signal,
     });
 
-    clearTimeout(timeoutId); // Clear the timeout if fetch completes
+    clearTimeout(timeoutId);
 
     const data = await response.json();
     return (
@@ -94,9 +94,9 @@ function removeField(obj: any, fieldToRemove: string): any {
   } else if (typeof obj === 'object' && obj !== null) {
     return Object.fromEntries(
       Object.entries(obj)
-        .filter(([key]) => key !== fieldToRemove) // Remove the target field
-        .map(([key, value]) => [key, removeField(value, fieldToRemove)]) // Recurse
+        .filter(([key]) => key !== fieldToRemove)
+        .map(([key, value]) => [key, removeField(value, fieldToRemove)])
     );
   }
-  return obj; // Return non-object values as is
+  return obj;
 }

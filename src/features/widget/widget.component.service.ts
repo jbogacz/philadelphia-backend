@@ -6,8 +6,13 @@ import { WidgetCodeBuilder } from './widget.code.builder';
 import { WidgetRepository } from './widget.repository';
 import { WidgetCodeBlueprint, WidgetCodeConfig, WidgetPanelLink, WidgetStatus } from './widget.types';
 
-export class WidgetCodeService {
-  private logger = LoggerService.getLogger('feature.widget.WidgetCodeService');
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+const cssContent = readFileSync(join(__dirname, 'styles.css'), 'utf8');
+
+export class WidgetComponentService {
+  private logger = LoggerService.getLogger('feature.widget.WidgetComponentService');
 
   private widgetCodeBuilder: WidgetCodeBuilder = new WidgetCodeBuilder();
 
@@ -50,9 +55,12 @@ export class WidgetCodeService {
       widgetKey,
       links: links,
     };
+
     const config: WidgetCodeConfig = {
       apiUrl: this.config.apiUrl,
+      styles: cssContent,
     };
+
     return this.widgetCodeBuilder.build(blueprint, config);
   }
 }

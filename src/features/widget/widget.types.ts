@@ -42,6 +42,7 @@ export interface WidgetCodeBlueprint extends DynamicBlueprint {
 
 export interface WidgetCodeConfig extends DynamicConfig {
   apiUrl: string;
+  styles: string;
 }
 
 export interface WidgetPanelLink {
