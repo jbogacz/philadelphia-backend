@@ -54,7 +54,8 @@ export class WidgetService {
   }
 
   async update(_id: string, widget: WidgetDto): Promise<WidgetDto | null> {
-    const updated = await this.widgetRepository.update(_id, { hookId: widget.hookId } as Widget);
+    const { status, userId, widgetKey, ...safeWidget } = widget;
+    const updated = await this.widgetRepository.update(_id, safeWidget as Widget);
     if (!updated) {
       this.logger.error('Widget not found:', _id);
       throw new NotFoundError('Widget not found: ' + _id);
