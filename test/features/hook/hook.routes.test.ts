@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { test } from 'node:test';
 import { build, clearDatabase } from '../../helper';
-import { HookDto } from '../../../src/features/hook/hook.types';
+import { HookDto, HookUpdateDto } from '../../../src/features/hook/hook.types';
 import { WidgetDto, WidgetStatus } from '../../../src/features/widget/widget.types';
 import { ObjectId } from '@fastify/mongodb';
 
@@ -36,6 +36,7 @@ test('hook:routes', async (t) => {
       favicon: 'baz',
       userId: 'qux',
       widgetId: widget._id as string,
+      description: 'baz',
     };
 
     const createResponse = await fastify.inject({
@@ -56,14 +57,7 @@ test('hook:routes', async (t) => {
     assert.equal(created.favicon, hookDto.favicon);
     assert.equal(created.userId, hookDto.userId);
     assert.equal(created.widgetId, hookDto.widgetId);
-
-    const widgetWithHook = await widgetRepository.findByPrimaryId(widget._id);
-    assert.equal(widgetWithHook.hookId, created._id);
-
-    // hook.widgetId is stored as ObjectId
-    const hookDb = await fastify.mongo.db.collection('hooks').findOne({ _id: new ObjectId(created._id) });
-    assert.ok(hookDb.widgetId instanceof ObjectId);
-    assert.ok(hookDb.widgetId.equals(new ObjectId(widget._id)));
+    assert.equal(created.description, hookDto.description);
   });
 
   await t.test('should find hook by ID', async () => {
@@ -78,6 +72,17 @@ test('hook:routes', async (t) => {
     assert.equal(response.json().domain, created.domain);
     assert.equal(response.json().favicon, created.favicon);
     assert.equal(response.json().userId, created.userId);
+    assert.equal(response.json().description, created.description);
+  });
+
+  await t.test('should link hook with widget', async () => {
+    const widgetWithHook = await widgetRepository.findByPrimaryId(widget._id);
+    assert.equal(widgetWithHook.hookId, created._id);
+
+    // hook.widgetId is stored as ObjectId
+    const hookDb = await fastify.mongo.db.collection('hooks').findOne({ _id: new ObjectId(created._id) });
+    assert.ok(hookDb.widgetId instanceof ObjectId);
+    assert.ok(hookDb.widgetId.equals(new ObjectId(widget._id)));
   });
 
   await t.test('should return 404 when trying to create hook with invalid userId', async () => {
@@ -166,6 +171,20 @@ test('hook:routes', async (t) => {
     assert.equal(response.json()[0].name, 'updated');
     assert.equal(response.json()[0].domain, 'updated');
     assert.equal(response.json()[0].favicon, 'updated');
+  });
+
+  await t.test('should update description', async () => {
+    const updatedHook: HookUpdateDto = {
+      description: 'qux',
+    };
+
+    await fastify.inject({
+      method: 'PUT',
+      url: '/api/hooks/' + created._id,
+      payload: updatedHook,
+    });
+    const updated = await fastify.repository.hook.findByPrimaryId(created._id?.toString());
+    assert.equal(updated?.description, 'qux');
   });
 
   await t.test('should delete hook and update widget status', async () => {

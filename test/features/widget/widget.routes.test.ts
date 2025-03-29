@@ -89,7 +89,7 @@ test('widget:routes', async (t) => {
     assert.equal(response.json().code, 401);
   });
 
-  await t.test('should update widget with hookId and skip other fields', async () => {
+  await t.test('should update only allowed fields', async () => {
     const response = await fastify.inject({
       method: 'PUT',
       url: '/api/widgets/' + widget._id,
@@ -98,6 +98,8 @@ test('widget:routes', async (t) => {
         status: 'active',
         userId: 'updated',
         widgetKey: 'updated',
+        position: 'updated',
+        color: 'updated',
       },
     });
 
@@ -107,5 +109,7 @@ test('widget:routes', async (t) => {
     assert.equal(response.json().status, 'pending');
     assert.equal(response.json().userId, userId);
     assert.equal(response.json().widgetKey, widget.widgetKey);
+    assert.equal(response.json().position, 'updated');
+    assert.equal(response.json().color, 'updated');
   });
 });

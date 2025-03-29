@@ -21,6 +21,8 @@ export const WidgetSchema = Type.Intersect([
     hookId: Type.Optional(Type.String()),
     widgetKey: Type.String(),
     code: Type.String(),
+    position: Type.Optional(Type.String()),
+    color: Type.Optional(Type.String()),
   }),
 ]);
 
