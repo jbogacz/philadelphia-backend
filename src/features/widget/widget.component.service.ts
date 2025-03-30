@@ -59,6 +59,8 @@ export class WidgetComponentService {
     const config: WidgetCodeConfig = {
       apiUrl: this.config.apiUrl,
       styles: cssContent,
+      color: widget.color,
+      position: widget.position,
     };
 
     return this.widgetCodeBuilder.build(blueprint, config);

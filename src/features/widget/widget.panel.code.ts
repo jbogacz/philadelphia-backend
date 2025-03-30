@@ -15,8 +15,23 @@ export async function load(
 }
 
 function appendStyles(config: WidgetCodeConfig) {
+  let styles = config.styles;
+
+  const customColor = config.color ?? '#000000';
+  if (customColor !== '#000000') {
+    styles = replaceCssAttribute(styles, '.partner-widget-button', 'background-color', 'background-color', customColor);
+    styles = replaceCssAttribute(styles, '.partner-widget-button:hover', 'background-color', 'background-color', customColor);
+    styles = replaceCssAttribute(styles, '.partner-widget-header', 'background-color', 'background-color', customColor);
+  }
+
+  const customPosition = config.position ?? 'bottom-left';
+  if (customPosition !== 'bottom-left') {
+    styles = replaceCssAttribute(styles, '.partner-widget-container', 'left', 'right', '20px');
+    styles = replaceCssAttribute(styles, '.partner-widget-button', 'left', 'right', '0');
+  }
+
   const styleEl = document.createElement('style');
-  styleEl.textContent = config.styles;
+  styleEl.textContent = styles;
   document.head.appendChild(styleEl);
 }
 
@@ -142,4 +157,24 @@ function appendWidget(blueprint: WidgetCodeBlueprint, config: WidgetCodeConfig) 
   const container = document.createElement('div');
   container.innerHTML = Mustache.render(template, { links: preparedLinks });
   document.body.appendChild(container);
+}
+
+function replaceCssAttribute(cssString: string, selector: string, oldProperty: string, newProperty: string, newValue: string): string {
+  const selectorRegex = new RegExp(`(${selector}\\s*{[^}]*})`, 'g');
+  const cssBlock = cssString.match(selectorRegex);
+  if (!cssBlock) {
+    console.error(`Selector "${selector}" not found in CSS`);
+    return cssString;
+  }
+  const propertyRegex = new RegExp(`(\\s*${oldProperty}\\s*:\\s*)[^;]*(;)`, 'g');
+  const propertyMatch = cssBlock[0].match(propertyRegex);
+  if (!propertyMatch) {
+    console.error(`Property "${oldProperty}" not found in selector "${selector}"`);
+    return cssString;
+  }
+  const whitespaceMatch = propertyMatch[0].match(/(\s+)/);
+  const whitespace = whitespaceMatch ? whitespaceMatch[0] : ' ';
+  const replacement = `${whitespace}${newProperty}: ${newValue};`;
+  const updatedBlock = cssBlock[0].replace(propertyRegex, replacement);
+  return cssString.replace(selectorRegex, updatedBlock);
 }
