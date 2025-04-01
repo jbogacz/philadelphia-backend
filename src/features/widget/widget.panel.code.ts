@@ -11,7 +11,7 @@ export async function load(
 ) {
   appendStyles(config);
   appendWidget(blueprint, config);
-  appendScript(traceId, fingerprint, geo, config);
+  appendScript(traceId, fingerprint, geo, blueprint, config);
 }
 
 function appendStyles(config: WidgetCodeConfig) {
@@ -39,6 +39,7 @@ function appendScript(
   traceId: string,
   fingerprint: { fingerprintId: string; components: FingerprintComponents },
   geo: Geo | null,
+  blueprint: WidgetCodeBlueprint,
   config: WidgetCodeConfig
 ) {
   const template = /* javascript */ `
@@ -56,7 +57,7 @@ function appendScript(
           traceId: '{{traceId}}',
           fingerprint: { fingerprintId: '{{fingerprintId}}', components: components },
           widgetKey: linkData.widgetKey,
-          sourceWidgetKey: linkData.sourceWidgetKey,
+          sourceWidgetKey: '{{{sourceWidgetKey}}}',
           geo: geo
         }),
       });
@@ -110,6 +111,7 @@ function appendScript(
     apiUrl: config.apiUrl,
     traceId: traceId,
     fingerprintId: fingerprint.fingerprintId,
+    sourceWidgetKey: blueprint.widgetKey,
     componentsJson: JSON.stringify(fingerprint.components),
     geoJson: geo ? JSON.stringify(geo) : undefined,
   });
