@@ -24,6 +24,8 @@ import { WidgetService } from '../features/widget/widget.service';
 import { PartnershipRepository } from '../features/partnership/partnership.repository';
 import { InsightController } from '../features/insight/insight.controller';
 import { InsightService } from '../features/insight/insight.service';
+import { PartnerController } from '../features/partner/partner.controller';
+import { PartnerService } from '../features/partner/partner.service';
 
 export default fp<AppOptions>(async (fastify, opts) => {
   const { config } = opts;
@@ -52,6 +54,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     hook: new HookService(fastify.mongo, fastify.repository.hook, fastify.repository.user, fastify.repository.widget),
     widget: new WidgetService(fastify.mongo, config, fastify.repository.widget, fastify.repository.user),
     insight: new InsightService(fastify.mongo),
+    partner: new PartnerService(fastify.repository.hook, fastify.repository.trace),
   });
 
   fastify.decorate('controller', {
@@ -62,6 +65,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     hook: new HookController(fastify.service.hook, config),
     widget: new WidgetController(fastify.service.widget, widgetCodeService, config),
     insight: new InsightController(fastify.service.insight),
+    partner: new PartnerController(fastify.service.partner),
   });
 });
 
@@ -83,6 +87,7 @@ declare module 'fastify' {
       hook: HookService;
       widget: WidgetService;
       insight: InsightService;
+      partner: PartnerService;
     };
     controller: {
       trace: TraceController;
@@ -92,6 +97,7 @@ declare module 'fastify' {
       hook: HookController;
       widget: WidgetController;
       insight: InsightController;
+      partner: PartnerController;
     };
   }
 }

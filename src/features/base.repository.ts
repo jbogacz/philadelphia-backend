@@ -78,6 +78,11 @@ export class BaseRepository<T extends IEntity> {
   async queryOne(query: Filter<T>, options?: any): Promise<WithId<T> | null> {
     return this.collection.findOne(query, { session: options?.session });
   }
+
+  async aggregate(pipeline: any[], options?: any): Promise<T[]> {
+    const result = await this.collection.aggregate(pipeline, { session: options?.session }).toArray();
+    return result as T[];
+  }
 }
 
 /**

@@ -2,7 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { HookDtoSchema, HookQuerySchema, HookUpdateDtoSchema } from './hook.types';
 import { ErrorDtoSchema } from '../../common/errors';
 
-export const hookRoutes: FastifyPluginAsync = async (fastify) => {
+export const routes: FastifyPluginAsync = async (fastify) => {
   fastify.get(
     '/hooks',
     {

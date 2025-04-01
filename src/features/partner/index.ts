@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { routes } from './hook.routes';
+import { routes } from './partner.routes';
 
 const plugin: FastifyPluginAsync = async (fastify) => {
   await fastify.register(routes);
