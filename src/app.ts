@@ -7,6 +7,7 @@ import { join } from 'path';
 import { AppOptions } from './app.types';
 import { LoggerService } from './common/logger.service';
 import { clearEnvCache } from './common/utils';
+import { setFastifyInstance } from './app.store';
 
 clearEnvCache();
 
@@ -27,6 +28,9 @@ const appOptions: AppOptions = {
 
 // Pass --options via CLI arguments in command to enable these options.
 const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise<void> => {
+  // Set the Fastify instance at the beginning of the plugin function
+  setFastifyInstance(fastify);
+
   const options = { ...appOptions, ...cliOptions };
   console.log('Fastify options', options);
 

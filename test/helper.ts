@@ -1,15 +1,15 @@
 const helper = require('fastify-cli/helper.js');
 import { FastifyMongoNestedObject, FastifyMongoObject } from '@fastify/mongodb';
+import { ClientSession } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as test from 'node:test';
 import * as path from 'path';
 import { txTemplate } from '../src/features/base.repository';
-import { ClientSession } from 'mongodb';
-import { seedDemoData } from '../src/maintenance/seed.demo.data';
 
 declare module 'fastify' {
   interface FastifyInstance {
     mongo: FastifyMongoObject & FastifyMongoNestedObject;
+    cacheManager: any;
   }
 }
 

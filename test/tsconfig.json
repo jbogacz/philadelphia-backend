@@ -3,7 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "noEmit": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["../src/**/*.ts", "**/*.ts"]
 }

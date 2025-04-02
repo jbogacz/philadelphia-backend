@@ -1,7 +1,7 @@
 import { Static, Type } from '@sinclair/typebox';
 
 export const PartnerQuerySchema = Type.Object({
-  hookId: Type.String(),
+  hookId: Type.String({ default: '67c54a431a17eacc9f0cc74b' }),
   includeVisits: Type.Optional(Type.Boolean({ default: false })),
 });
 
