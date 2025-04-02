@@ -99,5 +99,6 @@ declare module 'fastify' {
       insight: InsightController;
       partner: PartnerController;
     };
+    cacheManager: any
   }
 }

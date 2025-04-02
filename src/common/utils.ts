@@ -1,3 +1,5 @@
+import { createHash } from 'crypto';
+
 export const randomId = (): string => Math.random().toString(36).substring(2, 9);
 
 export const clearEnvCache = () => {
@@ -6,6 +8,13 @@ export const clearEnvCache = () => {
   });
   require('dotenv').config();
 };
+
+export function computeHashKey(obj: object): string {
+  // Direct JSON stringify without sorting
+  const jsonString = JSON.stringify(obj);
+  // Create a hash of the JSON string
+  return createHash('md5').update(jsonString).digest('hex');
+}
 
 /**
  * Generates a consistent number between min and max (inclusive) for a particular day

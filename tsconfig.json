@@ -4,7 +4,9 @@
     "outDir": "dist",
     "sourceMap": true,
     "noUnusedLocals": false,
-    "allowJs": true
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*.ts", "src/**/*.js"]
 }

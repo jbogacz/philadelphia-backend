@@ -10,12 +10,12 @@ interface PartnerParams {
 
 export const routes: FastifyPluginAsync = async (fastify) => {
   fastify.get(
-    '/partners',
+    '/public/partners',
     {
       schema: {
         querystring: PartnerQuerySchema,
         description: 'Query partners',
-        tags: ['partners'],
+        tags: ['public'],
         response: {
           200: PartnerQueryResponseSchema,
           400: ErrorDtoSchema,

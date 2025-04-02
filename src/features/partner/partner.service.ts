@@ -1,13 +1,21 @@
 import { ObjectId } from '@fastify/mongodb';
+import { generateDailyNumber } from '../../common/utils';
+import { Cached } from '../../plugins/cache.plugin';
 import { HookRepository } from '../hook/hook.repository';
 import { TraceRepository } from '../trace/trace.repository';
-import { PartnerPage, PartnerQuery, PartnerQueryResponse } from './partner.types';
-import { generateDailyNumber } from '../../common/utils';
+import type { PartnerQuery } from './partner.types';
+import { PartnerPage, PartnerQueryResponse } from './partner.types';
+import { LoggerService } from '../../common';
 
 export class PartnerService {
+  private logger = LoggerService.getLogger('partner:service');
+
   constructor(private readonly hookRepository: HookRepository, private readonly traceRepository: TraceRepository) {}
 
+  @Cached('partnerService.aggregateData', { ttl: 600 }) // 10 minutes
   async aggregateData(query: PartnerQuery): Promise<PartnerQueryResponse> {
+    this.logger.info('Aggregating data', { query });
+
     const hookId = new ObjectId(query.hookId);
     const partners: PartnerPage[] = await this.queryPartnerPages({ hookId });
     return { partners } as PartnerQueryResponse;
@@ -21,6 +29,7 @@ export class PartnerService {
       {
         $match: {
           _id: { $ne: hookId },
+          status: 'active',
         },
       },
       {

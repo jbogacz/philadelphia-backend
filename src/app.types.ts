@@ -21,3 +21,9 @@ export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPlugin
   };
   seedDemoData: boolean;
 }
+
+export interface CacheOptions {
+  ttl?: number;
+  checkperiod?: number;
+  useClones?: boolean;
+}
