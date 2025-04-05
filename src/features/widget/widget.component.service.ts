@@ -52,7 +52,7 @@ export class WidgetComponentService {
 
       const blueprint: WidgetCodeBlueprint = {
         widgetKey,
-        links: links,
+        showWidgetPanel: widget.enabled,
       };
 
       const cssContent = readFileSync(join(__dirname, 'styles.css'), 'utf8');

@@ -1,21 +1,19 @@
 import { ObjectId } from '@fastify/mongodb';
+import { LoggerService } from '../../common';
+import { NotFoundError } from '../../common/errors';
 import { generateDailyNumber } from '../../common/utils';
 import { Cached } from '../../plugins/cache.plugin';
 import { HookRepository } from '../hook/hook.repository';
-import { TraceRepository } from '../trace/trace.repository';
+import { WidgetRepository } from '../widget/widget.repository';
 import type { PartnerQuery } from './partner.types';
 import { PartnerPage, PartnerQueryResponse } from './partner.types';
-import { LoggerService } from '../../common';
-import { WidgetRepository } from '../widget/widget.repository';
-import { Not } from '@sinclair/typebox';
-import { NotFoundError } from '../../common/errors';
 
 export class PartnerService {
   private logger = LoggerService.getLogger('partner:service');
 
   constructor(private readonly hookRepository: HookRepository, private readonly widgetRepository: WidgetRepository) {}
 
-  // @Cached('partnerService.aggregateData', { ttl: 600 }) // 10 minutes
+  @Cached('partnerService.aggregateData', { ttl: 600 }) // 10 minutes
   async aggregateData(query: PartnerQuery): Promise<PartnerQueryResponse> {
     this.logger.info('Aggregating data', { query });
 
