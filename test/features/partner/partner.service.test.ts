@@ -29,7 +29,7 @@ test('partner:service', async (t) => {
   await t.test('should return 4 random partners and skip publisher hook', async () => {
     // given
     const coffeeShopQuery: PartnerQuery = {
-      hookId: '67c6f4321b8a40bfa6836ee2',
+      widgetKey: '111d5f62-22c5-408d-a464-77c570fdd6d1',
     };
 
     // when
@@ -43,5 +43,6 @@ test('partner:service', async (t) => {
     assert.ok(response.partners[0].widgetKey);
     assert.ok(response.partners[0].imageUrl);
     assert.ok(response.partners[0].todayVisits);
+    assert.ok(response.partners[0].promoMessage);
   });
 });

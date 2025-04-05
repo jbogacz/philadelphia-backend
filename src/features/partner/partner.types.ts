@@ -1,8 +1,7 @@
 import { Static, Type } from '@sinclair/typebox';
 
 export const PartnerQuerySchema = Type.Object({
-  hookId: Type.String({ default: '67c54a431a17eacc9f0cc74b' }),
-  includeVisits: Type.Optional(Type.Boolean({ default: false })),
+  widgetKey: Type.String({ default: 'c3eb59f1-3802-41ba-b0f1-709e13999967' }),
 });
 
 export const PartnerPageSchema = Type.Object({
@@ -10,6 +9,7 @@ export const PartnerPageSchema = Type.Object({
   url: Type.String(),
   widgetKey: Type.String(),
   description: Type.Optional(Type.String()),
+  promoMessage: Type.Optional(Type.String()),
   imageUrl: Type.Optional(Type.String()),
   todayVisits: Type.Optional(Type.Number()),
 });

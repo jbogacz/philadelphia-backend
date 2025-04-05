@@ -9,7 +9,6 @@ import { WidgetCodeBlueprint, WidgetCodeConfig, WidgetPanelLink, WidgetStatus } 
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const cssContent = readFileSync(join(__dirname, 'styles.css'), 'utf8');
 
 export class WidgetComponentService {
   private logger = LoggerService.getLogger('feature.widget.WidgetComponentService');
@@ -45,17 +44,18 @@ export class WidgetComponentService {
           widgetKey: p.widgetKey,
           sourceWidgetKey: p.sourceWidgetKey,
         } as WidgetPanelLink)
-    );
+      );
 
-    if (links.length === 0) {
-      this.logger.warn('WidgetPanel will be skipped. No partnerships found for widget:', { widget });
-    }
+      if (links.length === 0) {
+        this.logger.warn('WidgetPanel will be skipped. No partnerships found for widget:', { widget });
+      }
 
-    const blueprint: WidgetCodeBlueprint = {
-      widgetKey,
-      links: links,
-    };
+      const blueprint: WidgetCodeBlueprint = {
+        widgetKey,
+        showWidgetPanel: widget.enabled,
+      };
 
+      const cssContent = readFileSync(join(__dirname, 'styles.css'), 'utf8');
     const config: WidgetCodeConfig = {
       apiUrl: this.config.apiUrl,
       styles: cssContent,

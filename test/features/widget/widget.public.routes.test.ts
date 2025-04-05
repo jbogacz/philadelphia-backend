@@ -59,30 +59,4 @@ test('widget:public:routes', async (t) => {
     });
     assert.equal(response.statusCode, 400);
   });
-
-  await t.test('should generate widget without partners panel', async () => {
-    const partnership: Partnership = await fastify.repository.partnership.save({
-      sourceWidgetKey: widget.widgetKey,
-      widgetKey: randomUUID().toString(),
-      pageName: 'TechPartner Solutions',
-      pageUrl: 'https://techpartner.example.com',
-      pageDescription: 'TechPartner Solutions is a leading technology company that provides in…',
-    });
-
-    const response = await fastify.inject({
-      method: 'GET',
-      url: '/api/public/widgets',
-      query: {
-        widgetKey: widget.widgetKey,
-      },
-    });
-
-    assert.equal(response.statusCode, 200);
-    assert.ok(response.payload);
-    assert.ok(response.payload.includes(partnership.sourceWidgetKey));
-    assert.ok(response.payload.includes(partnership.widgetKey));
-    assert.ok(response.payload.includes(partnership.pageName));
-    assert.ok(response.payload.includes(partnership.pageUrl));
-    assert.ok(response.payload.includes(partnership.pageDescription));
-  });
 });

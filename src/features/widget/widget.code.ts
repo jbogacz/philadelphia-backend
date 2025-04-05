@@ -25,7 +25,7 @@ export async function load(blueprint: WidgetCodeBlueprint, config: WidgetCodeCon
   };
   await sendVisitTrace(config.apiUrl, visitTrace);
 
-  if (blueprint.links.length > 0 && blueprint.widgetKey === '000d5f62-11c5-408d-a464-77c570fdd6da') {
+  if (blueprint.showWidgetPanel) {
     await loadPanel(traceId, fingerprint, geolocationData, blueprint, config);
   }
 }

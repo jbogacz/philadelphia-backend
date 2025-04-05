@@ -33,6 +33,7 @@ export const hookWidgetPairs = [
       domain: 'https://www.seattlecoffeehouse.com',
       imageUrl:
         'https://czwh4ne6ibmhrjpf.public.blob.vercel-storage.com/hooks/67c6f4321b8a40bfa6836ee2/profile-image-4YwXnJmhODbmnavqxZCNZblm40j3lu.jpeg',
+      promoMessage: 'Enjoy a 20% discount. Use code: SEATTLE20',
       widget: {
         position: 'top-right',
         color: '#059669',
@@ -68,6 +69,7 @@ export const hookWidgetPairs = [
       domain: 'https://www.techinsightsblog.com',
       imageUrl:
         'https://czwh4ne6ibmhrjpf.public.blob.vercel-storage.com/hooks/67c6f8765b8a40bfa6836ee4/profile-image-5ZwXnJmhODbmnavqxZCNZblm40j3lu.jpeg',
+      promoMessage: 'Enjoy a 20% discount. Use code: SEATTLE20',
       widget: {
         position: 'bottom-right',
         color: '#2563EB',
@@ -102,6 +104,7 @@ export const hookWidgetPairs = [
       domain: 'https://www.urbanfashionstore.com',
       imageUrl:
         'https://czwh4ne6ibmhrjpf.public.blob.vercel-storage.com/hooks/67c6f2109b8a40bfa6836ee6/profile-image-6ZwXnJmhODbmnavqxZCNZblm40j3lu.jpeg',
+      promoMessage: 'Enjoy a 20% discount. Use code: SEATTLE20',
       widget: {
         position: 'top-right',
         color: '#DB2777',
@@ -137,6 +140,7 @@ export const hookWidgetPairs = [
       domain: 'https://www.powerfitgym.com',
       imageUrl:
         'https://czwh4ne6ibmhrjpf.public.blob.vercel-storage.com/hooks/67c6f6543b8a40bfa6836ee8/profile-image-7ZwXnJmhODbmnavqxZCNZblm40j3lu.jpeg',
+      promoMessage: 'Enjoy a 20% discount. Use code: SEATTLE20',
       widget: {
         position: 'bottom-left',
         color: '#16A34A',
@@ -172,6 +176,7 @@ export const hookWidgetPairs = [
       domain: 'https://www.wanderlusttravels.com',
       imageUrl:
         'https://czwh4ne6ibmhrjpf.public.blob.vercel-storage.com/hooks/67c6f0987b8a40bfa6836ef0/profile-image-8ZwXnJmhODbmnavqxZCNZblm40j3lu.jpeg',
+      promoMessage: 'Enjoy a 20% discount. Use code: SEATTLE20',
       widget: {
         position: 'top-left',
         color: '#1D4ED8',
@@ -207,6 +212,7 @@ export const hookWidgetPairs = [
       domain: 'https://www.bellaitalia-restaurant.com',
       imageUrl:
         'https://czwh4ne6ibmhrjpf.public.blob.vercel-storage.com/hooks/67c6fb321b8a40bfa6836ef2/profile-image-9ZwXnJmhODbmnavqxZCNZblm40j3lu.jpeg',
+      promoMessage: 'Enjoy a 20% discount. Use code: SEATTLE20',
       widget: {
         position: 'bottom-right',
         color: '#DC2626',
@@ -242,6 +248,7 @@ export const hookWidgetPairs = [
       domain: 'https://www.classicbooksstore.com',
       imageUrl:
         'https://czwh4ne6ibmhrjpf.public.blob.vercel-storage.com/hooks/67c6fd987b8a40bfa6836ef4/profile-image-10ZwXnJmhODbmnavqxZCNZblm40j3lu.jpeg',
+      promoMessage: 'Enjoy a 20% discount. Use code: SEATTLE20',
       widget: {
         position: 'top-right',
         color: '#D97706',
