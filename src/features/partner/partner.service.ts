@@ -6,18 +6,26 @@ import { TraceRepository } from '../trace/trace.repository';
 import type { PartnerQuery } from './partner.types';
 import { PartnerPage, PartnerQueryResponse } from './partner.types';
 import { LoggerService } from '../../common';
+import { WidgetRepository } from '../widget/widget.repository';
+import { Not } from '@sinclair/typebox';
+import { NotFoundError } from '../../common/errors';
 
 export class PartnerService {
   private logger = LoggerService.getLogger('partner:service');
 
-  constructor(private readonly hookRepository: HookRepository, private readonly traceRepository: TraceRepository) {}
+  constructor(private readonly hookRepository: HookRepository, private readonly widgetRepository: WidgetRepository) {}
 
-  @Cached('partnerService.aggregateData', { ttl: 600 }) // 10 minutes
+  // @Cached('partnerService.aggregateData', { ttl: 600 }) // 10 minutes
   async aggregateData(query: PartnerQuery): Promise<PartnerQueryResponse> {
     this.logger.info('Aggregating data', { query });
 
-    const hookId = new ObjectId(query.hookId);
-    const partners: PartnerPage[] = await this.queryPartnerPages({ hookId });
+    const widget = await this.widgetRepository.findByWidgetKey(query.widgetKey);
+    if (!widget) {
+      this.logger.error('Widget not found', { widgetKey: query.widgetKey });
+      throw new NotFoundError('Widget not found');
+    }
+
+    const partners: PartnerPage[] = await this.queryPartnerPages({ hookId: new ObjectId(widget?.hookId) });
     return { partners } as PartnerQueryResponse;
   }
 
@@ -84,6 +92,7 @@ export class PartnerService {
         $project: {
           name: 1,
           description: 1,
+          promoMessage: 1,
           url: '$domain',
           imageUrl: 1,
           widgetKey: '$widgetData.widgetKey',
