@@ -137,50 +137,69 @@ async function appendWidget(blueprint: WidgetCodeBlueprint, config: WidgetCodeCo
           <div class="partner-widget-close">×</div>
         </div>
         <div class="partner-widget-content">
-          <div class="partner-grid">
-          {{#links}}
-            <div class="partner-card">
-              <a href="{{url}}" style="text-decoration: none; color: inherit;" target="_blank" onclick="trackPartnerClick({{{jsonString}}})">
-                <div class="partner-card-content">
-                  <div class="partner-logo">
-                    {{#hasImage}}
-                      <img src="{{{imageUrl}}}" alt="{{{name}}}">
-                    {{/hasImage}}
-                    {{^hasImage}}
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-handshake-icon lucide-handshake">
-                        <path d="m11 17 2 2a1 1 0 1 0 3-3"/>
-                        <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/>
-                        <path d="m21 3 1 11h-2"/>
-                        <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/>
-                        <path d="M3 4h8"/>
-                      </svg>
-                    {{/hasImage}}
-                  </div>
-                  <div class="partner-info">
-                    <div class="partner-header">
-                      <h3 class="partner-name">{{{name}}}</h3>
-                      {{#hasPromoMessage}}
-                        <span class="partner-promo-badge">{{{promoMessage}}}</span>
-                      {{/hasPromoMessage}}
+          {{#hasLinks}}
+            <div class="partner-grid">
+            {{#links}}
+              <div class="partner-card">
+                <a href="{{url}}" style="text-decoration: none; color: inherit;" target="_blank" onclick="trackPartnerClick({{{jsonString}}})">
+                  <div class="partner-card-content">
+                    <div class="partner-logo">
+                      {{#hasImage}}
+                        <img src="{{{imageUrl}}}" alt="{{{name}}}">
+                      {{/hasImage}}
+                      {{^hasImage}}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-handshake-icon lucide-handshake">
+                          <path d="m11 17 2 2a1 1 0 1 0 3-3"/>
+                          <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/>
+                          <path d="m21 3 1 11h-2"/>
+                          <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/>
+                          <path d="M3 4h8"/>
+                        </svg>
+                      {{/hasImage}}
                     </div>
-                    {{#hasDescription}}
-                      <div class="partner-description" title="{{{description}}}">
-                        {{{description}}}
+                    <div class="partner-info">
+                      <div class="partner-header">
+                        <h3 class="partner-name">{{{name}}}</h3>
+                        {{#hasPromoMessage}}
+                          <span class="partner-promo-badge">{{{promoMessage}}}</span>
+                        {{/hasPromoMessage}}
                       </div>
-                    {{/hasDescription}}
-                    <div class="partner-visits">
-                      <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>
-                      Dzisiaj: {{{todayVisits}}} odwiedzin
+                      {{#hasDescription}}
+                        <div class="partner-description" title="{{{description}}}">
+                          {{{description}}}
+                        </div>
+                      {{/hasDescription}}
+                      <div class="partner-visits">
+                        <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Dzisiaj: {{{todayVisits}}} odwiedzin
+                      </div>
                     </div>
                   </div>
-                </div>
-              </a>
+                </a>
+              </div>
+              {{/links}}
             </div>
-            {{/links}}
-          </div>
+          {{/hasLinks}}
+          {{^hasLinks}}
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; border-radius: 8px; border: 1px solid #e0e0e0; padding: 24px; text-align: center; background-color: #f9f9f9; max-width: 400px; margin: 0 auto;">
+              <div style="width: 64px; height: 64px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; background-color: #f0f4f9; border-radius: 50%;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#6b7280" style="width: 32px; height: 32px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 style="font-size: 18px; font-weight: 600; color: #374151; margin-bottom: 8px;">Nie Znaleziono Partnerów</h3>
+              <p style="font-size: 14px; color: #6b7280; line-height: 1.5; margin-bottom: 16px;">
+                Obecnie nie ma partnerów do wyświetlenia. Partnerzy mogą pojawić się tutaj po nawiązaniu współpracy.
+              </p>
+              <button style="background-color: #f0f4f9; color: #4b5563; border: none; padding: 8px 16px; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s ease;">Dowiedz Się o Partnerstwach</button>
+              <div style="margin-top: 16px; font-size: 12px; color: #9ca3af;">
+                Sprawdź ponownie wkrótce
+              </div>
+            </div>
+          {{/hasLinks}}
         </div>
       </div>
     </div>
@@ -202,28 +221,8 @@ async function appendWidget(blueprint: WidgetCodeBlueprint, config: WidgetCodeCo
   }));
 
   const container = document.createElement('div');
-  container.innerHTML = Mustache.render(template, { links: links });
+  container.innerHTML = Mustache.render(template, { links: links, hasLinks: links.length > 0 });
   document.body.appendChild(container);
-}
-
-function replaceCssAttribute(cssString: string, selector: string, oldProperty: string, newProperty: string, newValue: string): string {
-  const selectorRegex = new RegExp(`(${selector}\\s*{[^}]*})`, 'g');
-  const cssBlock = cssString.match(selectorRegex);
-  if (!cssBlock) {
-    console.error(`Selector "${selector}" not found in CSS`);
-    return cssString;
-  }
-  const propertyRegex = new RegExp(`(\\s*${oldProperty}\\s*:\\s*)[^;]*(;)`, 'g');
-  const propertyMatch = cssBlock[0].match(propertyRegex);
-  if (!propertyMatch) {
-    console.error(`Property "${oldProperty}" not found in selector "${selector}"`);
-    return cssString;
-  }
-  const whitespaceMatch = propertyMatch[0].match(/(\s+)/);
-  const whitespace = whitespaceMatch ? whitespaceMatch[0] : ' ';
-  const replacement = `${whitespace}${newProperty}: ${newValue};`;
-  const updatedBlock = cssBlock[0].replace(propertyRegex, replacement);
-  return cssString.replace(selectorRegex, updatedBlock);
 }
 
 function calculateLighterColor(mainColor: string, lightenPercent = 20) {
@@ -244,10 +243,8 @@ function calculateLighterColor(mainColor: string, lightenPercent = 20) {
   const lighterB = Math.min(Math.floor(b * lightenFactor), 255);
 
   // Convert back to hex and ensure 2 digits for each component
-  const lighterHex = '#' +
-    lighterR.toString(16).padStart(2, '0') +
-    lighterG.toString(16).padStart(2, '0') +
-    lighterB.toString(16).padStart(2, '0');
+  const lighterHex =
+    '#' + lighterR.toString(16).padStart(2, '0') + lighterG.toString(16).padStart(2, '0') + lighterB.toString(16).padStart(2, '0');
 
   return lighterHex;
 }
