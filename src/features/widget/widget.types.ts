@@ -23,6 +23,7 @@ export const WidgetSchema = Type.Intersect([
     code: Type.String(),
     position: Type.Optional(Type.String()),
     color: Type.Optional(Type.String()),
+    enabled: Type.Optional(Type.Boolean()),
   }),
 ]);
 
@@ -39,7 +40,7 @@ export type Widget = Static<typeof WidgetSchema> & IEntity;
 
 export interface WidgetCodeBlueprint extends DynamicBlueprint {
   widgetKey: string;
-  links: WidgetPanelLink[];
+  showWidgetPanel?: boolean;
 }
 
 export interface WidgetCodeConfig extends DynamicConfig {

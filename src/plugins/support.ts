@@ -54,7 +54,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     hook: new HookService(fastify.mongo, fastify.repository.hook, fastify.repository.user, fastify.repository.widget),
     widget: new WidgetService(fastify.mongo, config, fastify.repository.widget, fastify.repository.user),
     insight: new InsightService(fastify.mongo),
-    partner: new PartnerService(fastify.repository.hook, fastify.repository.trace),
+    partner: new PartnerService(fastify.repository.hook, fastify.repository.widget),
   });
 
   fastify.decorate('controller', {

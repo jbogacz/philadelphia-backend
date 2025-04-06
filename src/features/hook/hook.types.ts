@@ -32,6 +32,7 @@ export const HookSchema = Type.Intersect([
     notificationsCount: Type.Optional(Type.Number()),
     description: Type.Optional(Type.String()),
     imageUrl: Type.Optional(Type.String()),
+    promoMessage: Type.Optional(Type.String({ maxLength: 50 })),
   }),
 ]);
 
