@@ -12,7 +12,7 @@ export class PartnerService {
 
   constructor(private readonly hookRepository: HookRepository, private readonly traceRepository: TraceRepository) {}
 
-  @Cached('partnerService.aggregateData', { ttl: 600 }) // 10 minutes
+  @Cached('partnerService.aggregateData', { ttl: 60 })
   async aggregateData(query: PartnerQuery): Promise<PartnerQueryResponse> {
     this.logger.info('Aggregating data', { query });
 
