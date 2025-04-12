@@ -56,4 +56,46 @@ export const demandRoutes: FastifyPluginAsync = async (fastify) => {
     },
     fastify.controller.demand.findAllByUserId.bind(fastify.controller.demand)
   );
+
+  fastify.get(
+    '/demands/:id',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+          },
+        },
+        tags: ['demands'],
+        response: {
+          200: DemandDtoSchema,
+          404: ErrorDtoSchema,
+          401: ErrorDtoSchema,
+        },
+      },
+    },
+    fastify.controller.demand.findById.bind(fastify.controller.demand)
+  );
+
+  fastify.delete(
+    '/demands/:id',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+          },
+        },
+        tags: ['demands'],
+        response: {
+          204: {},
+          404: ErrorDtoSchema,
+          401: ErrorDtoSchema,
+        },
+      },
+    },
+    fastify.controller.demand.delete.bind(fastify.controller.demand)
+  );
 };

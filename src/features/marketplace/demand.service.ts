@@ -55,4 +55,26 @@ export class DemandService {
       updatedAt: demand.updatedAt?.toISOString(),
     }));
   }
+
+  async findById(id: string, userId: string): Promise<DemandDto | null> {
+    const demand = await this.demandRepository.findByPrimaryId(id, userId);
+    return (
+      demand && {
+        ...demand,
+        createdAt: demand.createdAt?.toISOString(),
+        updatedAt: demand.updatedAt?.toISOString(),
+      }
+    );
+  }
+
+  async delete(id: string, userId: string): Promise<void> {
+    const demand = await this.demandRepository.findByPrimaryId(id, userId);
+    if (!demand) {
+      this.logger.error('Demand not found:', id);
+      throw new NotFoundError('Demand not found: ' + id);
+    }
+
+    await this.demandRepository.delete(id);
+    this.logger.info('Deleted demand:', { id, userId });
+  }
 }

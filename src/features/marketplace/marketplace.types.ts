@@ -26,6 +26,7 @@ export const DemandSchema = Type.Intersect([
     budget: RangeSchema,
     duration: Type.Union([Type.Literal(7), Type.Literal(14), Type.Literal(30)]),
     status: Type.Enum(DemandStatus),
+    audience: Type.String(),
   }),
 ]);
 

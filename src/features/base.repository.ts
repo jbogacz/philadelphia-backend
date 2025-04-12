@@ -24,8 +24,17 @@ export class BaseRepository<T extends IEntity> {
 
   constructor(protected collection: Collection<T>) {}
 
-  async findByPrimaryId(id: any): Promise<WithId<T> | null> {
-    return this.collection.findOne({ _id: id instanceof ObjectId ? id : ObjectId.createFromHexString(id) } as Filter<T>);
+  async findByPrimaryId(id: any, userId?: string): Promise<WithId<T> | null> {
+    const filter: Filter<any> = {
+      _id: id instanceof ObjectId ? id : ObjectId.createFromHexString(id),
+    };
+
+    // Restrict access to the document if userId is provided
+    if (userId !== undefined) {
+      filter.userId = userId;
+    }
+
+    return this.collection.findOne(filter);
   }
 
   async save(data: T): Promise<T | null> {

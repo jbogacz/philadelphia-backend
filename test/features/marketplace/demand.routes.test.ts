@@ -46,6 +46,7 @@ test('demand.routes', async (t) => {
       goal: 1000,
       budget: { min: 100, max: 1000 },
       duration: 30,
+      audience: 'baz',
     };
 
     const createResponse = await fastify.inject({
@@ -63,7 +64,7 @@ test('demand.routes', async (t) => {
 
     const document = await db.collection('demands').findOne({ _id: ObjectId.createFromHexString(demand._id!) });
     assert.ok(document);
-    assert.equal(document.hookId, payload.hookId);
+    assert.equal(document.hookId.toString(), payload.hookId.toString());
     assert.equal(document.userId, payload.userId);
     assert.equal(document.title, payload.title);
     assert.equal(document.description, payload.description);
