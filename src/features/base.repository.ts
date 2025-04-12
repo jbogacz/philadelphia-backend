@@ -14,13 +14,27 @@ export interface IEntity {
   updatedAt?: Date;
 }
 
+export const RangeSchema = Type.Object({
+  min: Type.Number(),
+  max: Type.Number(),
+});
+
 export class BaseRepository<T extends IEntity> {
   private logger = LoggerService.getLogger('feature.base.BaseRepository');
 
   constructor(protected collection: Collection<T>) {}
 
-  async findByPrimaryId(_id: string): Promise<WithId<T> | null> {
-    return this.collection.findOne({ _id: new ObjectId(_id) } as Filter<T>);
+  async findByPrimaryId(id: any, userId?: string): Promise<WithId<T> | null> {
+    const filter: Filter<any> = {
+      _id: id instanceof ObjectId ? id : ObjectId.createFromHexString(id),
+    };
+
+    // Restrict access to the document if userId is provided
+    if (userId !== undefined) {
+      filter.userId = userId;
+    }
+
+    return this.collection.findOne(filter);
   }
 
   async save(data: T): Promise<T | null> {
@@ -52,11 +66,11 @@ export class BaseRepository<T extends IEntity> {
     return upsert as T;
   }
 
-  async update(_id: string, data: T, options?: any): Promise<T | null> {
+  async update(id: any, data: T, options?: any): Promise<T | null> {
     const result = await this.collection.findOneAndUpdate(
-      { _id: new ObjectId(_id) } as Filter<T>,
+      { _id: id instanceof ObjectId ? id : ObjectId.createFromHexString(id) } as Filter<T>,
       {
-        $set: { ...data, _id: new ObjectId(_id), updatedAt: new Date() },
+        $set: { ...data, updatedAt: new Date() },
       },
       {
         returnDocument: 'after',
@@ -66,8 +80,24 @@ export class BaseRepository<T extends IEntity> {
     return result && (result as T);
   }
 
-  async delete(_id: string): Promise<T | null> {
-    const result = await this.collection.findOneAndDelete({ _id: new ObjectId(_id) } as Filter<T>);
+  async updateWhere(query: Filter<T>, data: T, options?: any): Promise<T | null> {
+    const result = await this.collection.findOneAndUpdate(
+      query,
+      {
+        $set: { ...data, updatedAt: new Date() },
+      },
+      {
+        returnDocument: 'after',
+        session: options?.session,
+      }
+    );
+    return result && (result as T);
+  }
+
+  async delete(id: any): Promise<T | null> {
+    const result = await this.collection.findOneAndDelete({
+      _id: id instanceof ObjectId ? id : ObjectId.createFromHexString(id),
+    } as Filter<T>);
     return result && (result as T);
   }
 

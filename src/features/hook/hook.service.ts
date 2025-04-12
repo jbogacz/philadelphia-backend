@@ -30,9 +30,6 @@ export class HookService {
 
   async query(query: HookQueryDto): Promise<HookDto[]> {
     const hooks = await this.hookRepository.query(query);
-
-    this.logger.info('Hook query executed:', { query, hooks });
-
     return hooks.map((hook) => ({
       ...hook,
       createdAt: hook.createdAt?.toISOString(),

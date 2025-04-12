@@ -111,11 +111,10 @@ test('hook:routes', async (t) => {
 
   await t.test('should update hook', async () => {
     const updatedHook: HookDto = {
-      _id: created._id,
       name: 'updated',
       domain: 'updated',
       favicon: 'updated',
-      userId: 'updated',
+      userId: '67b5c2ce1290f60c2eb83e19',
       widgetId: widget._id as string,
     };
 
@@ -123,10 +122,12 @@ test('hook:routes', async (t) => {
       method: 'PUT',
       url: '/api/hooks/' + created._id,
       payload: updatedHook,
+      headers: {
+        'x-user-id': '67b5c2ce1290f60c2eb83e19',
+      },
     });
 
     assert.equal(response.statusCode, 200);
-    assert.equal(response.json()._id, updatedHook._id);
     assert.equal(response.json().name, updatedHook.name);
     assert.equal(response.json().domain, updatedHook.domain);
     assert.equal(response.json().favicon, updatedHook.favicon);

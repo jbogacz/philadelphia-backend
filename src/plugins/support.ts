@@ -8,7 +8,6 @@ import { FlowService } from '../features/flow/flow.service';
 import { HookController } from '../features/hook/hook.controller';
 import { HookRepository } from '../features/hook/hook.repository';
 import { HookService } from '../features/hook/hook.service';
-import { ListingController } from '../features/listing/listing.controller';
 import { PublisherRepository } from '../features/publisher/publisher.repository';
 import { PublisherService } from '../features/publisher/publisher.service';
 import { TraceController } from '../features/trace/trace.controller';
@@ -26,6 +25,9 @@ import { InsightController } from '../features/insight/insight.controller';
 import { InsightService } from '../features/insight/insight.service';
 import { PartnerController } from '../features/partner/partner.controller';
 import { PartnerService } from '../features/partner/partner.service';
+import { DemandController } from '../features/marketplace/demand.controller';
+import { DemandRepository } from '../features/marketplace/demand.repository';
+import { DemandService } from '../features/marketplace/demand.service';
 
 export default fp<AppOptions>(async (fastify, opts) => {
   const { config } = opts;
@@ -39,6 +41,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     hook: new HookRepository(db.collection('hooks')),
     widget: new WidgetRepository(db.collection('widgets')),
     partnership: new PartnershipRepository(db.collection('partnerships')),
+    demand: new DemandRepository(db.collection('demands')),
   });
 
   const publisherService = new PublisherService(fastify.repository.publisher);
@@ -55,17 +58,18 @@ export default fp<AppOptions>(async (fastify, opts) => {
     widget: new WidgetService(fastify.mongo, config, fastify.repository.widget, fastify.repository.user),
     insight: new InsightService(fastify.mongo),
     partner: new PartnerService(fastify.repository.hook, fastify.repository.widget),
+    demand: new DemandService(fastify.repository.demand),
   });
 
   fastify.decorate('controller', {
     trace: new TraceController(fastify.service.trace),
     flow: new FlowController(fastify.service.flow),
     user: new UserController(fastify.service.user),
-    listing: new ListingController(),
     hook: new HookController(fastify.service.hook, config),
     widget: new WidgetController(fastify.service.widget, widgetCodeService, config),
     insight: new InsightController(fastify.service.insight),
     partner: new PartnerController(fastify.service.partner),
+    demand: new DemandController(fastify.service.demand, config),
   });
 });
 
@@ -79,6 +83,7 @@ declare module 'fastify' {
       hook: HookRepository;
       widget: WidgetRepository;
       partnership: PartnershipRepository;
+      demand: DemandRepository;
     };
     service: {
       trace: TraceService;
@@ -88,16 +93,17 @@ declare module 'fastify' {
       widget: WidgetService;
       insight: InsightService;
       partner: PartnerService;
+      demand: DemandService;
     };
     controller: {
       trace: TraceController;
       flow: FlowController;
       user: UserController;
-      listing: ListingController;
       hook: HookController;
       widget: WidgetController;
       insight: InsightController;
       partner: PartnerController;
+      demand: DemandController;
     };
     cacheManager: any
   }
