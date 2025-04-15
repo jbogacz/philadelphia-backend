@@ -4,7 +4,6 @@ import { ErrorDto, NotFoundError } from '../../common/errors';
 import { AppConfig } from '../../app.types';
 import { getAuth } from '@clerk/fastify';
 import { DemandService } from './demand.service';
-import { Not } from '@sinclair/typebox';
 
 export class DemandController {
   constructor(private readonly demandService: DemandService, private readonly config: AppConfig) {}

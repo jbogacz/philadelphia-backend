@@ -1,6 +1,8 @@
 import { Type } from '@sinclair/typebox';
 import { ClientSession, Collection, Filter, MongoClient, MongoError, ObjectId, WithId } from 'mongodb';
 import { LoggerService } from '../common';
+import { NotFoundError } from '../common/errors';
+import { is24Hex } from '../common/utils';
 
 export const BaseSchema = Type.Object({
   _id: Type.Optional(Type.String()),
@@ -25,6 +27,11 @@ export class BaseRepository<T extends IEntity> {
   constructor(protected collection: Collection<T>) {}
 
   async findByPrimaryId(id: any, userId?: string): Promise<WithId<T> | null> {
+    if (!is24Hex(id)) {
+      this.logger.error('Invalid ID format:', id);
+      throw new NotFoundError('Record not found: ' + id);
+    }
+    
     const filter: Filter<any> = {
       _id: id instanceof ObjectId ? id : ObjectId.createFromHexString(id),
     };
@@ -67,6 +74,11 @@ export class BaseRepository<T extends IEntity> {
   }
 
   async update(id: any, data: T, options?: any): Promise<T | null> {
+    if (!is24Hex(id)) {
+      this.logger.error('Invalid ID format:', id);
+      throw new NotFoundError('Record not found: ' + id);
+    }
+
     const result = await this.collection.findOneAndUpdate(
       { _id: id instanceof ObjectId ? id : ObjectId.createFromHexString(id) } as Filter<T>,
       {
@@ -95,6 +107,11 @@ export class BaseRepository<T extends IEntity> {
   }
 
   async delete(id: any): Promise<T | null> {
+    if (!is24Hex(id)) {
+      this.logger.error('Invalid ID format:', id);
+      throw new NotFoundError('Record not found: ' + id);
+    }
+
     const result = await this.collection.findOneAndDelete({
       _id: id instanceof ObjectId ? id : ObjectId.createFromHexString(id),
     } as Filter<T>);

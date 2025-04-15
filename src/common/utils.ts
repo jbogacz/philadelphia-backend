@@ -16,6 +16,10 @@ export function computeHashKey(obj: object): string {
   return createHash('md5').update(jsonString).digest('hex');
 }
 
+export function is24Hex(str: string): boolean {
+  return /^[a-fA-F0-9]{24}$/.test(str);
+}
+
 /**
  * Generates a consistent number between min and max (inclusive) for a particular day
  * @param min The minimum value (default: 50)

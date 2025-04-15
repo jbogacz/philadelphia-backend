@@ -12,6 +12,12 @@ export enum DemandStatus {
   CANCELLED = 'cancelled',
 }
 
+export enum OfferStatus {
+  PENDING = 'pending', // Awaiting decision
+  ACCEPTED = 'accepted', // Accepted by requester
+  REJECTED = 'rejected', // Rejected by requester
+}
+
 /**
  * SCHEMA
  */
@@ -57,12 +63,77 @@ export const UpdateDemandDtoSchema = Type.Composite([
   }),
 ]);
 
+export const OfferSchema = Type.Intersect([
+  BaseSchema,
+  Type.Object({
+    demandId: Type.String(),
+    providerId: Type.String(), // Provider's user ID
+
+    // Core offer details
+    trafficOffer: Type.Number(),
+    price: Type.Number(),
+    duration: Type.Union([Type.Literal(7), Type.Literal(14), Type.Literal(30)]),
+
+    // Decision-making assistance fields
+    trafficSources: Type.String(),
+    pitch: Type.String(),
+    audienceDescription: Type.String(),
+
+    status: Type.Enum(OfferStatus, { default: OfferStatus.PENDING }), // Offer status
+  }),
+]);
+
+export const OfferDtoSchema = Type.Composite([
+  Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status']),
+  Type.Object({
+    createdAt: Type.Optional(Type.String({ format: 'date-time' })),
+    updatedAt: Type.Optional(Type.String({ format: 'date-time' })),
+    status: Type.Optional(Type.Enum(OfferStatus)),
+  }),
+]);
+
+export const UpdateOfferDtoSchema = Type.Composite([
+  Type.Partial(Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status'])),
+  Type.Object({
+    createdAt: Type.Optional(Type.String({ format: 'date-time' })),
+    updatedAt: Type.Optional(Type.String({ format: 'date-time' })),
+    status: Type.Optional(Type.Enum(OfferStatus)),
+  }),
+]);
+
+export const ProfileSchema = Type.Intersect([
+  BaseSchema,
+  Type.Object({
+    userId: Type.String(),
+    provider: Type.Object({
+      title: Type.String(), // Provider's title
+
+      defaults: Type.Object({
+        audienceDescription: Type.Optional(Type.String()), // General audience description
+        trafficSources: Type.Optional(Type.String()), // Specific sources for THIS proposal (may differ from profile)
+        pitch: Type.Optional(Type.String()), // Provider's sales pitch/message explaining their offer
+      }),
+
+      performanceStats: Type.Optional(
+        Type.Object({
+          campaignsCompleted: Type.Number({ default: 0 }), // Number of campaigns completed
+          completionRate: Type.Number({ default: 0 }), // % of promised traffic delivered in past campaigns
+          averageRating: Type.Number({ default: 0 }), // Average rating from past campaigns
+        })
+      ),
+    }),
+  }),
+]);
+
 /**
  * MODEL
  */
 export type Demand = Static<typeof DemandSchema> & IEntity;
 
+export type Offer = Static<typeof OfferSchema> & IEntity;
 /**
  * DTO
  */
 export type DemandDto = Static<typeof DemandDtoSchema>;
+
+export type OfferDto = Static<typeof OfferDtoSchema>;
