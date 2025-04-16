@@ -1,17 +1,17 @@
-import { ObjectId, type Db } from 'mongodb';
 import * as assert from 'node:assert';
 import { test } from 'node:test';
 
-import { build, clearDatabase } from '../../helper';
+import { DemandRepository } from '../../../src/features/marketplace/demand.repository';
 import { Demand, DemandStatus, Offer, OfferDto } from '../../../src/features/marketplace/marketplace.types';
 import { OfferRepository } from '../../../src/features/marketplace/offer.repository';
-import { DemandRepository } from '../../../src/features/marketplace/demand.repository';
+import { build, clearDatabase } from '../../helper';
+import { Db, ObjectId } from 'mongodb';
 
 test('offer.routes', async (t) => {
   const fastify = await build(t);
-  const db: Db = fastify.mongo.db;
   const offerRepository: OfferRepository = fastify.repository.offer;
   const demandRepository: DemandRepository = fastify.repository.demand;
+  const db: Db = fastify.mongo.db;
 
   let offer: Offer;
   let demand: Demand;
@@ -36,12 +36,12 @@ test('offer.routes', async (t) => {
     const payload: OfferDto = {
       demandId: demand._id as string,
       providerId: 'unknown',
-      trafficOffer: 1000,
+      trafficVolume: 1000,
       price: 900,
       duration: 30,
       trafficSources: 'source1,source2',
       pitch: 'This is a great offer',
-      audienceDescription: 'Target audience description',
+      audience: 'Target audience description',
     };
 
     const response = await fastify.inject({
@@ -56,7 +56,9 @@ test('offer.routes', async (t) => {
     assert.equal(response.statusCode, 201);
 
     offer = response.json() as Offer;
-    const createdOffer = await offerRepository.findByPrimaryId(offer._id as string);
+    const createdOffer = await db
+      .collection('offers')
+      .findOne({ _id: ObjectId.createFromHexString(offer._id!), demandId: demand._id } as any);
     assert.equal(createdOffer?.providerId, 'offer_user');
   });
 
@@ -64,12 +66,12 @@ test('offer.routes', async (t) => {
     const payload: OfferDto = {
       demandId: demand._id as string,
       providerId: 'offer_user',
-      trafficOffer: 1200,
+      trafficVolume: 1200,
       price: 1100,
       duration: 30,
       trafficSources: 'source1,source2',
       pitch: 'Updated offer',
-      audienceDescription: 'Updated audience description',
+      audience: 'Updated audience description',
     };
 
     const createResponse = await fastify.inject({
@@ -94,7 +96,7 @@ test('offer.routes', async (t) => {
 
     assert.equal(updateResponse.statusCode, 200);
     const updatedOffer = await offerRepository.findByPrimaryId(offer._id as string);
-    assert.equal(updatedOffer?.trafficOffer, 1200);
+    assert.equal(updatedOffer?.trafficVolume, 1200);
   });
 
   await t.test('should return list of offers', async () => {
