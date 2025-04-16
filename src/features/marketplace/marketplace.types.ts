@@ -70,14 +70,14 @@ export const OfferSchema = Type.Intersect([
     providerId: Type.String(), // Provider's user ID
 
     // Core offer details
-    trafficOffer: Type.Number(),
+    trafficVolume: Type.Number(),
     price: Type.Number(),
     duration: Type.Union([Type.Literal(7), Type.Literal(14), Type.Literal(30)]),
 
     // Decision-making assistance fields
     trafficSources: Type.String(),
     pitch: Type.String(),
-    audienceDescription: Type.String(),
+    audience: Type.String(),
 
     status: Type.Enum(OfferStatus, { default: OfferStatus.PENDING }), // Offer status
   }),
