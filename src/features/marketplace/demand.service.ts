@@ -1,7 +1,7 @@
 import { LoggerService } from '../../common';
 import { NotFoundError } from '../../common/errors';
 import { DemandRepository } from './demand.repository';
-import { Demand, DemandDto } from './marketplace.types';
+import { Demand, DemandDto, DemandQueryDto } from './marketplace.types';
 import { ObjectId } from 'mongodb';
 import { DemandStatus } from './marketplace.types';
 
@@ -47,8 +47,8 @@ export class DemandService {
     };
   }
 
-  async findAllByUserId(userId: string): Promise<DemandDto[]> {
-    const demands = await this.demandRepository.query({ userId });
+  async query(query: DemandQueryDto): Promise<DemandDto[]> {
+    const demands = await this.demandRepository.query(query as any);
     return demands.map((demand) => ({
       ...demand,
       createdAt: demand.createdAt?.toISOString(),

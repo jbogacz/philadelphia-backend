@@ -1,5 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
-import { BaseSchema, IEntity, RangeSchema } from '../base.repository';
+import { BaseSchema, IEntity, ObjectIdType, RangeSchema } from '../base.repository';
 
 /**
  * ENUMS
@@ -36,6 +36,12 @@ export const DemandSchema = Type.Intersect([
   }),
 ]);
 
+export const DemandQuerySchema = Type.Object({
+  userId: Type.Optional(Type.String()),
+  status: Type.Optional(Type.Enum(DemandStatus)),
+  hookId: Type.Optional(ObjectIdType),
+});
+
 export const DemandDtoSchema = Type.Composite([
   Type.Omit(DemandSchema, ['createdAt', 'updatedAt', 'budget', 'status']),
   Type.Object({
@@ -67,7 +73,9 @@ export const OfferSchema = Type.Intersect([
   BaseSchema,
   Type.Object({
     demandId: Type.String(),
+    hookId: Type.String(),
     providerId: Type.String(), // Provider's user ID
+    requesterId: Type.String(), // Requester's user ID
 
     // Core offer details
     trafficVolume: Type.Number(),
@@ -84,16 +92,19 @@ export const OfferSchema = Type.Intersect([
 ]);
 
 export const OfferDtoSchema = Type.Composite([
-  Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status']),
+  Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status', 'hookId', 'requesterId']),
   Type.Object({
     createdAt: Type.Optional(Type.String({ format: 'date-time' })),
     updatedAt: Type.Optional(Type.String({ format: 'date-time' })),
     status: Type.Optional(Type.Enum(OfferStatus)),
+    hookId: Type.Optional(Type.String()),
+    requesterId: Type.Optional(Type.String()),
+    demand: Type.Optional(DemandDtoSchema),
   }),
 ]);
 
 export const UpdateOfferDtoSchema = Type.Composite([
-  Type.Partial(Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status'])),
+  Type.Partial(Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status', 'hookId', 'requesterId'])),
   Type.Object({
     createdAt: Type.Optional(Type.String({ format: 'date-time' })),
     updatedAt: Type.Optional(Type.String({ format: 'date-time' })),
@@ -131,9 +142,12 @@ export const ProfileSchema = Type.Intersect([
 export type Demand = Static<typeof DemandSchema> & IEntity;
 
 export type Offer = Static<typeof OfferSchema> & IEntity;
+
 /**
  * DTO
  */
 export type DemandDto = Static<typeof DemandDtoSchema>;
+
+export type DemandQueryDto = Static<typeof DemandQuerySchema>;
 
 export type OfferDto = Static<typeof OfferDtoSchema>;

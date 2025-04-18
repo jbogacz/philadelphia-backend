@@ -20,7 +20,7 @@ test('offer.routes', async (t) => {
     await clearDatabase(fastify);
 
     demand = await demandRepository.create({
-      hookId: '123',
+      hookId: '67c9634c69bc111933f0d4db',
       userId: 'demand_user',
       title: 'foo',
       description: 'bar',

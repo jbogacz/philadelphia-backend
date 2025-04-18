@@ -21,6 +21,12 @@ export const RangeSchema = Type.Object({
   max: Type.Number(),
 });
 
+export const ObjectIdType = Type.Unsafe<ObjectId>({
+  type: 'string',
+  pattern: '^[0-9a-fA-F]{24}$',
+  description: 'MongoDB ObjectId',
+});
+
 export class BaseRepository<T extends IEntity> {
   private logger = LoggerService.getLogger('feature.base.BaseRepository');
 
@@ -31,7 +37,7 @@ export class BaseRepository<T extends IEntity> {
       this.logger.error('Invalid ID format:', id);
       throw new NotFoundError('Record not found: ' + id);
     }
-    
+
     const filter: Filter<any> = {
       _id: id instanceof ObjectId ? id : ObjectId.createFromHexString(id),
     };

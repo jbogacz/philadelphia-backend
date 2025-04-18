@@ -23,6 +23,8 @@ export class OfferService {
       ...dto,
       status: OfferStatus.PENDING,
       demandId: ObjectId.createFromHexString(dto.demandId),
+      hookId: ObjectId.createFromHexString(demand.hookId),
+      requesterId: demand.userId,
     } as any;
     const created = await this.offerRepository.create(offer as Offer);
 
@@ -56,7 +58,27 @@ export class OfferService {
   }
 
   async findAllByUserId(userId: string): Promise<OfferDto[]> {
-    const offers = await this.offerRepository.query({ providerId: userId });
+    const pipeline = [
+      {
+        $match: {
+          providerId: userId,
+        },
+      },
+      {
+        $lookup: {
+          from: 'demands',
+          localField: 'demandId',
+          foreignField: '_id',
+          as: 'demand',
+        },
+      },
+      {
+        $unwind: '$demand',
+      },
+    ];
+
+    const offers = await this.offerRepository.aggregate(pipeline);
+
     return offers.map((offer) => ({
       ...offer,
       createdAt: offer.createdAt?.toISOString(),
