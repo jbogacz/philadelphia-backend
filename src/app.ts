@@ -4,10 +4,10 @@ import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
 import { FastifyPluginAsync } from 'fastify';
 import { join } from 'path';
+import { setFastifyInstance } from './app.store';
 import { AppOptions } from './app.types';
 import { LoggerService } from './common/logger.service';
-import { clearEnvCache } from './common/utils';
-import { setFastifyInstance } from './app.store';
+import { clearEnvCache, mutateObjectIds } from './common/utils';
 
 clearEnvCache();
 
@@ -79,6 +79,15 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, cliOptions): Promise
       }
       callback(null, corsOptions);
     },
+  });
+
+  // Add a preHandler hook to convert string ObjectId to ObjectId type
+  void fastify.addHook('preHandler', (request, reply, done) => {
+    // Transform query parameters
+    if (request.query && typeof request.query === 'object') {
+      mutateObjectIds(request.query as Record<string, unknown>);
+    }
+    done();
   });
 
   void fastify.register(async (server) => {

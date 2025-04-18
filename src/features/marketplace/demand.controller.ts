@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { DemandDto } from './marketplace.types';
+import { DemandDto, DemandQueryDto } from './marketplace.types';
 import { ErrorDto, NotFoundError } from '../../common/errors';
 import { AppConfig } from '../../app.types';
 import { getAuth } from '@clerk/fastify';
@@ -45,20 +45,15 @@ export class DemandController {
     return reply.code(200).send(demand);
   }
 
-  async findAllByUserId(
-    request: FastifyRequest<{}>,
+  async query(
+    request: FastifyRequest<{ Querystring: DemandQueryDto }>,
     reply: FastifyReply
   ): Promise<
     FastifyReply<{
       Reply: DemandDto[] | ErrorDto;
     }>
   > {
-    const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
-    if (!userId) {
-      return reply.code(401).send({ error: 'Unauthorized', code: 401 });
-    }
-
-    const demands = await this.demandService.findAllByUserId(userId as string);
+    const demands = await this.demandService.query(request.query);
     return reply.code(200).send(demands);
   }
 
