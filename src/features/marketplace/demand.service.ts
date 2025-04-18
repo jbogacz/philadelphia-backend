@@ -33,7 +33,7 @@ export class DemandService {
       userId: demand.userId,
     };
 
-    const updated = await this.demandRepository.updateWhere(updateQuery, demand as Demand);
+    const updated = await this.demandRepository.updateWhere(updateQuery, demand as unknown as Demand);
     if (!updated) {
       this.logger.error('Demand not found:', updateQuery);
       throw new NotFoundError('Demand not found: ' + id);

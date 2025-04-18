@@ -43,7 +43,7 @@ export class OfferService {
       providerId: offer.providerId,
     };
 
-    const updated = await this.offerRepository.updateWhere(updateQuery, offer as Offer);
+    const updated = await this.offerRepository.updateWhere(updateQuery, offer as unknown as Offer);
     if (!updated) {
       this.logger.error('Offer not found:', updateQuery);
       throw new NotFoundError('Offer not found: ' + id);
