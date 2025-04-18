@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { AppConfig } from '../../app.types';
 import { ErrorDto } from '../../common/errors';
-import { OfferDto } from './marketplace.types';
+import { OfferDto, OfferQueryDto } from './marketplace.types';
 import { OfferService } from './offer.service';
 import { getAuth } from '@clerk/fastify';
 
@@ -25,8 +25,8 @@ export class OfferController {
     return reply.code(201).send(created);
   }
 
-  async findAllByUserId(
-    request: FastifyRequest<{}>,
+  async query(
+    request: FastifyRequest<{ Querystring: OfferQueryDto }>,
     reply: FastifyReply
   ): Promise<
     FastifyReply<{
@@ -34,10 +34,13 @@ export class OfferController {
     }>
   > {
     const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
-    if (!userId) {
+
+    const { providerId, requesterId } = request.query;
+    if ((providerId && providerId !== userId) || (requesterId && requesterId !== userId)) {
       return reply.code(401).send({ error: 'Unauthorized', code: 401 });
     }
-    const offers = await this.offerService.findAllByUserId(userId as string);
+
+    const offers = await this.offerService.query(request.query);
     return reply.code(200).send(offers);
   }
 

@@ -1,5 +1,5 @@
 import { ObjectId } from '@fastify/mongodb';
-import { Offer, OfferDto, OfferStatus } from './marketplace.types';
+import { Offer, OfferDto, OfferQueryDto, OfferStatus } from './marketplace.types';
 import { OfferRepository } from './offer.repository';
 import { LoggerService } from '../../common';
 import { NotFoundError } from '../../common/errors';
@@ -57,12 +57,10 @@ export class OfferService {
     };
   }
 
-  async findAllByUserId(userId: string): Promise<OfferDto[]> {
+  async query(query: OfferQueryDto): Promise<OfferDto[]> {
     const pipeline = [
       {
-        $match: {
-          providerId: userId,
-        },
+        $match: query,
       },
       {
         $lookup: {

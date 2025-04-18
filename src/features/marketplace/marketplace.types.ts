@@ -91,6 +91,12 @@ export const OfferSchema = Type.Intersect([
   }),
 ]);
 
+export const OfferQuerySchema = Type.Object({
+  providerId: Type.Optional(Type.String()),
+  requesterId: Type.Optional(Type.String()),
+  status: Type.Optional(Type.Enum(OfferStatus)),
+});
+
 export const OfferDtoSchema = Type.Composite([
   Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status', 'hookId', 'requesterId']),
   Type.Object({
@@ -151,3 +157,5 @@ export type DemandDto = Static<typeof DemandDtoSchema>;
 export type DemandQueryDto = Static<typeof DemandQuerySchema>;
 
 export type OfferDto = Static<typeof OfferDtoSchema>;
+
+export type OfferQueryDto = Static<typeof OfferQuerySchema>;

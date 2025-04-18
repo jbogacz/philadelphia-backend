@@ -62,6 +62,20 @@ test('offer.routes', async (t) => {
     assert.equal(createdOffer?.providerId, 'offer_user');
   });
 
+  await t.test('should find by query', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `/api/offers?providerId=offer_user`,
+      headers: {
+        'x-user-id': 'offer_user',
+      },
+    });
+
+    assert.equal(response.statusCode, 200);
+    const offers = response.json() as Offer[];
+    assert.ok(offers.length > 0);
+  });
+
   await t.test('should update existing document', async () => {
     const payload: OfferDto = {
       demandId: demand._id as string,
