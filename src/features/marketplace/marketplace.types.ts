@@ -74,8 +74,8 @@ export const OfferSchema = Type.Intersect([
   Type.Object({
     demandId: Type.String(),
     hookId: Type.String(),
-    providerId: Type.String(), // Provider's user ID
-    requesterId: Type.String(), // Requester's user ID
+    providerId: Type.String(), // Provider's user ID (offer provider)
+    requesterId: Type.String(), // Seeker's user ID (demand seeker)
 
     // Core offer details
     trafficVolume: Type.Number(),
