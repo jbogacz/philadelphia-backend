@@ -56,8 +56,8 @@ export class DemandService {
     }));
   }
 
-  async findById(id: string, userId: string): Promise<DemandDto | null> {
-    const demand = await this.demandRepository.findByPrimaryId(id, userId);
+  async findById(id: string): Promise<DemandDto | null> {
+    const demand = await this.demandRepository.findByPrimaryId(id);
     return (
       demand && {
         ...demand,
