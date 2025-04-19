@@ -70,7 +70,7 @@ export class DemandController {
       return reply.code(401).send({ error: 'Unauthorized', code: 401 });
     }
 
-    const demand = await this.demandService.findById(request.params.id, userId as string);
+    const demand = await this.demandService.findById(request.params.id);
     if (!demand) {
       return reply.code(404).send({ error: 'NotFoundError', message: 'Demand not found: ' + request.params.id, code: 404 });
     }
