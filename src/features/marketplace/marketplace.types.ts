@@ -1,5 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
-import { BaseSchema, DateTimeType, IEntity, ObjectIdType, RangeSchema } from '../base.repository';
+import { BaseSchema, BaseSchemaV2, DateTimeType, IEntity, IEntityV2, ObjectIdType, RangeSchema } from '../base.repository';
 
 /**
  * ENUMS
@@ -16,6 +16,14 @@ export enum OfferStatus {
   PENDING = 'pending', // Awaiting decision
   ACCEPTED = 'accepted', // Accepted by requester
   REJECTED = 'rejected', // Rejected by requester
+}
+
+export enum CampaignStatus {
+  PENDING = 'pending', // Created but not started
+  ACTIVE = 'active', // Currently running
+  PAUSED = 'paused', // Temporarily on hold
+  COMPLETED = 'completed', // Successfully finished
+  CANCELLED = 'cancelled', // Terminated early
 }
 
 /**
@@ -118,6 +126,33 @@ export const UpdateOfferDtoSchema = Type.Composite([
   }),
 ]);
 
+export const CampaignSchema = Type.Intersect([
+  BaseSchemaV2,
+  Type.Object({
+    demandId: ObjectIdType,
+    offerId: ObjectIdType,
+    hookId: ObjectIdType,
+
+    // Core participants
+    providerId: Type.String(),
+    requesterId: Type.String(),
+
+    // Tracking
+    trackingUrl: Type.Optional(Type.String()),
+    startDate: Type.Optional(DateTimeType),
+    endDate: Type.Optional(DateTimeType),
+
+    // Status management
+    status: Type.Optional(Type.Enum(CampaignStatus)),
+  }),
+]);
+
+export const CampaignQuerySchema = Type.Object({
+  providerId: Type.Optional(Type.String()),
+  requesterId: Type.Optional(Type.String()),
+  status: Type.Optional(Type.Enum(CampaignStatus)),
+});
+
 export const ProfileSchema = Type.Intersect([
   BaseSchema,
   Type.Object({
@@ -149,6 +184,8 @@ export type Demand = Static<typeof DemandSchema> & IEntity;
 
 export type Offer = Static<typeof OfferSchema> & IEntity;
 
+export type Campaign = Static<typeof CampaignSchema> & IEntityV2;
+
 /**
  * DTO
  */
@@ -159,3 +196,7 @@ export type DemandQueryDto = Static<typeof DemandQuerySchema>;
 export type OfferDto = Static<typeof OfferDtoSchema>;
 
 export type OfferQueryDto = Static<typeof OfferQuerySchema>;
+
+export type CampaignDto = Static<typeof CampaignSchema>;
+
+export type CampaignQueryDto = Static<typeof CampaignQuerySchema>;

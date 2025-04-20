@@ -16,8 +16,20 @@ export const BaseSchema = Type.Object({
   updatedAt: Type.Optional(Type.Date()),
 });
 
+export const BaseSchemaV2 = Type.Object({
+  _id: Type.Optional(Type.String()),
+  createdAt: Type.Optional(Type.Date()),
+  updatedAt: Type.Optional(Type.Date()),
+});
+
 export interface IEntity {
   _id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface IEntityV2 {
+  _id?: ObjectId | string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -85,6 +97,27 @@ export class BaseRepository<T extends IEntity> {
     return upsert as T;
   }
 
+  async createV2(data: Partial<T>, options?: any): Promise<T> {
+    const now = new Date();
+
+    const upsert = await this.collection.findOneAndUpdate(
+      { _id: new ObjectId() } as Filter<T>,
+      { $setOnInsert: { ...data, createdAt: now, updatedAt: now } },
+      {
+        upsert: true,
+        returnDocument: 'after',
+        session: options?.session,
+      }
+    );
+
+    if (!upsert) {
+      this.logger.error('Failed to insert document:', data);
+      throw new MongoError('Failed to insert document: ' + JSON.stringify(data));
+    }
+
+    return upsert as T;
+  }
+
   async update<P extends Partial<T>>(id: any, data: P, options?: any): Promise<T | null> {
     if (!is24Hex(id)) {
       this.logger.error('Invalid ID format:', id);
@@ -102,6 +135,26 @@ export class BaseRepository<T extends IEntity> {
       }
     );
     return result && (result as T);
+  }
+
+  async updateV2<P extends Partial<T>>(id: string | ObjectId, data: P, options?: any): Promise<T | null> {
+    if (!(id instanceof ObjectId) && !is24Hex(id)) {
+      this.logger.error('Invalid ID format:', id);
+      throw new NotFoundError('Record not found: ' + id);
+    }
+
+    const _id = id instanceof ObjectId ? id : new ObjectId(id)
+    const result = await this.collection.findOneAndUpdate(
+      { _id: _id } as Filter<T>,
+      {
+        $set: { ...data, updatedAt: new Date() },
+      },
+      {
+        returnDocument: 'after',
+        session: options?.session,
+      }
+    );
+    return (result as T);
   }
 
   async updateWhere<P extends Partial<T>>(query: any, data: P, options?: any): Promise<T | null> {
@@ -131,6 +184,10 @@ export class BaseRepository<T extends IEntity> {
   }
 
   async query(query: any, options?: any): Promise<WithId<T>[]> {
+    return this.collection.find(query, { session: options?.session }).toArray();
+  }
+
+  async queryV2<P extends Filter<T>>(query: P, options?: any): Promise<WithId<T>[]> {
     return this.collection.find(query, { session: options?.session }).toArray();
   }
 
