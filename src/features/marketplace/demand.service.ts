@@ -40,7 +40,7 @@ export class DemandService {
   }
 
   async query(query: DemandQueryDto): Promise<DemandDto[]> {
-    return this.demandRepository.query(query as any);
+    return this.demandRepository.query(query);
   }
 
   async findById(id: string): Promise<DemandDto | null> {
