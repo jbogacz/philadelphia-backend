@@ -34,7 +34,7 @@ test('offer.routes', async (t) => {
 
   await t.test('should create new document', async () => {
     const payload: OfferDto = {
-      demandId: demand._id as string,
+      demandId: new ObjectId(demand._id),
       providerId: 'unknown',
       trafficVolume: 1000,
       price: 900,
@@ -78,7 +78,7 @@ test('offer.routes', async (t) => {
 
   await t.test('should update existing document', async () => {
     const payload: OfferDto = {
-      demandId: demand._id as string,
+      demandId: new ObjectId(demand._id),
       providerId: 'offer_user',
       trafficVolume: 1200,
       price: 1100,

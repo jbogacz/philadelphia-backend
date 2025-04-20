@@ -1,5 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
-import { BaseSchema, IEntity, ObjectIdType, RangeSchema } from '../base.repository';
+import { BaseSchema, DateTimeType, IEntity, ObjectIdType, RangeSchema } from '../base.repository';
 
 /**
  * ENUMS
@@ -45,8 +45,8 @@ export const DemandQuerySchema = Type.Object({
 export const DemandDtoSchema = Type.Composite([
   Type.Omit(DemandSchema, ['createdAt', 'updatedAt', 'budget', 'status']),
   Type.Object({
-    createdAt: Type.Optional(Type.String({ format: 'date-time' })),
-    updatedAt: Type.Optional(Type.String({ format: 'date-time' })),
+    createdAt: Type.Optional(DateTimeType),
+    updatedAt: Type.Optional(DateTimeType),
     budget: Type.Object({
       min: Type.Number(),
       max: Type.Number(),
@@ -58,8 +58,8 @@ export const DemandDtoSchema = Type.Composite([
 export const UpdateDemandDtoSchema = Type.Composite([
   Type.Partial(Type.Omit(DemandSchema, ['createdAt', 'updatedAt', 'budget'])),
   Type.Object({
-    createdAt: Type.Optional(Type.String({ format: 'date-time' })),
-    updatedAt: Type.Optional(Type.String({ format: 'date-time' })),
+    createdAt: Type.Optional(DateTimeType),
+    updatedAt: Type.Optional(DateTimeType),
     budget: Type.Optional(
       Type.Object({
         min: Type.Optional(Type.Number()),
@@ -72,8 +72,8 @@ export const UpdateDemandDtoSchema = Type.Composite([
 export const OfferSchema = Type.Intersect([
   BaseSchema,
   Type.Object({
-    demandId: Type.String(),
-    hookId: Type.String(),
+    demandId: ObjectIdType,
+    hookId: ObjectIdType,
     providerId: Type.String(), // Provider's user ID (offer provider)
     requesterId: Type.String(), // Seeker's user ID (demand seeker)
 
@@ -100,8 +100,8 @@ export const OfferQuerySchema = Type.Object({
 export const OfferDtoSchema = Type.Composite([
   Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status', 'hookId', 'requesterId']),
   Type.Object({
-    createdAt: Type.Optional(Type.String({ format: 'date-time' })),
-    updatedAt: Type.Optional(Type.String({ format: 'date-time' })),
+    createdAt: Type.Optional(DateTimeType),
+    updatedAt: Type.Optional(DateTimeType),
     status: Type.Optional(Type.Enum(OfferStatus)),
     hookId: Type.Optional(Type.String()),
     requesterId: Type.Optional(Type.String()),

@@ -19,11 +19,7 @@ export class DemandService {
     const created = await this.demandRepository.create(demand as Demand);
 
     this.logger.info('Created demand:', created);
-    return {
-      ...created,
-      createdAt: created.createdAt?.toISOString(),
-      updatedAt: created.updatedAt?.toISOString(),
-    };
+    return created;
   }
 
   async update(id: string, demand: DemandDto): Promise<DemandDto> {
@@ -40,31 +36,15 @@ export class DemandService {
     }
 
     this.logger.info('Updated demand:', updated);
-    return {
-      ...updated,
-      createdAt: updated.createdAt?.toISOString(),
-      updatedAt: updated.updatedAt?.toISOString(),
-    };
+    return updated;
   }
 
   async query(query: DemandQueryDto): Promise<DemandDto[]> {
-    const demands = await this.demandRepository.query(query as any);
-    return demands.map((demand) => ({
-      ...demand,
-      createdAt: demand.createdAt?.toISOString(),
-      updatedAt: demand.updatedAt?.toISOString(),
-    }));
+    return this.demandRepository.query(query as any);
   }
 
   async findById(id: string): Promise<DemandDto | null> {
-    const demand = await this.demandRepository.findByPrimaryId(id);
-    return (
-      demand && {
-        ...demand,
-        createdAt: demand.createdAt?.toISOString(),
-        updatedAt: demand.updatedAt?.toISOString(),
-      }
-    );
+    return this.demandRepository.findByPrimaryId(id);
   }
 
   async delete(id: string, userId: string): Promise<void> {

@@ -4,6 +4,7 @@ import { OfferRepository } from './offer.repository';
 import { LoggerService } from '../../common';
 import { NotFoundError } from '../../common/errors';
 import { DemandRepository } from './demand.repository';
+import { Filter } from 'mongodb';
 
 export class OfferService {
   private logger = LoggerService.getLogger('feature.marketplace.OfferService');
@@ -22,23 +23,19 @@ export class OfferService {
     const offer = {
       ...dto,
       status: OfferStatus.PENDING,
-      demandId: ObjectId.createFromHexString(dto.demandId),
-      hookId: ObjectId.createFromHexString(demand.hookId),
+      demandId: new ObjectId(dto.demandId),
+      hookId: new ObjectId(demand.hookId),
       requesterId: demand.userId,
-    } as any;
+    } as Offer;
     const created = await this.offerRepository.create(offer as Offer);
 
     this.logger.info('Created offer:', created);
-    return {
-      ...created,
-      createdAt: created.createdAt?.toISOString(),
-      updatedAt: created.updatedAt?.toISOString(),
-    };
+    return created as unknown as OfferDto;
   }
 
   async update(id: string, offer: OfferDto): Promise<OfferDto> {
     // Allow updating only if the providerId matches
-    const updateQuery: any = {
+    const updateQuery = {
       _id: ObjectId.createFromHexString(id),
       providerId: offer.providerId,
     };
@@ -50,11 +47,7 @@ export class OfferService {
     }
 
     this.logger.info('Updated offer:', updated);
-    return {
-      ...updated,
-      createdAt: updated.createdAt?.toISOString(),
-      updatedAt: updated.updatedAt?.toISOString(),
-    };
+    return updated as unknown as OfferDto;
   }
 
   async query(query: OfferQueryDto): Promise<OfferDto[]> {
@@ -74,29 +67,15 @@ export class OfferService {
         $unwind: '$demand',
       },
     ];
-
-    const offers = await this.offerRepository.aggregate(pipeline);
-
-    return offers.map((offer) => ({
-      ...offer,
-      createdAt: offer.createdAt?.toISOString(),
-      updatedAt: offer.updatedAt?.toISOString(),
-    }));
+    return this.offerRepository.aggregate(pipeline);
   }
 
   async findById(id: string): Promise<OfferDto | null> {
-    const offer = await this.offerRepository.findByPrimaryId(id);
-    return (
-      offer && {
-        ...offer,
-        createdAt: offer.createdAt?.toISOString(),
-        updatedAt: offer.updatedAt?.toISOString(),
-      }
-    );
+    return this.offerRepository.findByPrimaryId(id) as unknown as OfferDto;
   }
 
   async delete(id: string, providerId: string): Promise<void> {
-    const offer = await this.offerRepository.queryOne({ _id: ObjectId.createFromHexString(id), providerId } as any);
+    const offer = await this.offerRepository.queryOne({ _id: ObjectId.createFromHexString(id), providerId });
     if (!offer) {
       this.logger.error('Offer not found:', id);
       throw new NotFoundError('Offer not found: ' + id);

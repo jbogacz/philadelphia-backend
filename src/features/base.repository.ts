@@ -4,6 +4,12 @@ import { LoggerService } from '../common';
 import { NotFoundError } from '../common/errors';
 import { is24Hex } from '../common/utils';
 
+export const ObjectIdType = Type.Unsafe<ObjectId>({
+  type: 'string',
+  pattern: '^[0-9a-fA-F]{24}$',
+  description: 'MongoDB ObjectId',
+});
+
 export const BaseSchema = Type.Object({
   _id: Type.Optional(Type.String()),
   createdAt: Type.Optional(Type.Date()),
@@ -21,10 +27,10 @@ export const RangeSchema = Type.Object({
   max: Type.Number(),
 });
 
-export const ObjectIdType = Type.Unsafe<ObjectId>({
+export const DateTimeType = Type.Unsafe<Date>({
   type: 'string',
-  pattern: '^[0-9a-fA-F]{24}$',
-  description: 'MongoDB ObjectId',
+  format: 'date-time',
+  description: 'ISO 8601 date-time format',
 });
 
 export class BaseRepository<T extends IEntity> {
@@ -79,7 +85,7 @@ export class BaseRepository<T extends IEntity> {
     return upsert as T;
   }
 
-  async update(id: any, data: T, options?: any): Promise<T | null> {
+  async update<P extends Partial<T>>(id: any, data: P, options?: any): Promise<T | null> {
     if (!is24Hex(id)) {
       this.logger.error('Invalid ID format:', id);
       throw new NotFoundError('Record not found: ' + id);
@@ -98,7 +104,7 @@ export class BaseRepository<T extends IEntity> {
     return result && (result as T);
   }
 
-  async updateWhere(query: Filter<T>, data: T, options?: any): Promise<T | null> {
+  async updateWhere<P extends Partial<T>>(query: any, data: P, options?: any): Promise<T | null> {
     const result = await this.collection.findOneAndUpdate(
       query,
       {
@@ -124,17 +130,22 @@ export class BaseRepository<T extends IEntity> {
     return result && (result as T);
   }
 
-  async query(query: Filter<T>, options?: any): Promise<WithId<T>[]> {
+  async query(query: any, options?: any): Promise<WithId<T>[]> {
     return this.collection.find(query, { session: options?.session }).toArray();
   }
 
-  async queryOne(query: Filter<T>, options?: any): Promise<WithId<T> | null> {
+  async queryOne(query: any, options?: any): Promise<WithId<T> | null> {
     return this.collection.findOne(query, { session: options?.session });
   }
 
-  async aggregate(pipeline: any[], options?: any): Promise<T[]> {
+  async aggregate<R = T>(pipeline: any[], options?: any): Promise<R[]> {
     const result = await this.collection.aggregate(pipeline, { session: options?.session }).toArray();
-    return result as T[];
+    return result as R[];
+  }
+
+  async aggregateOne<R = T>(pipeline: any[], options?: any): Promise<R | null> {
+    const results = await this.aggregate<R>(pipeline, options);
+    return results.length > 0 ? results[0] : null;
   }
 }
 
