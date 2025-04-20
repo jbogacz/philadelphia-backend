@@ -1,8 +1,10 @@
 import { FastifyPluginAsync } from 'fastify';
 import { ErrorDtoSchema } from '../../common/errors';
-import { DemandDtoSchema, UpdateDemandDtoSchema } from './marketplace.types';
+import { DemandDtoSchema, DemandQuerySchema, UpdateDemandDtoSchema } from './marketplace.types';
 
 export const demandRoutes: FastifyPluginAsync = async (fastify) => {
+  // const fastify = instance.getTyped();
+
   fastify.post(
     '/demands',
     {
@@ -44,6 +46,8 @@ export const demandRoutes: FastifyPluginAsync = async (fastify) => {
     '/demands',
     {
       schema: {
+        querystring: DemandQuerySchema,
+        description: 'Query demands',
         tags: ['demands'],
         response: {
           200: {
@@ -54,7 +58,7 @@ export const demandRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
     },
-    fastify.controller.demand.findAllByUserId.bind(fastify.controller.demand)
+    fastify.controller.demand.query.bind(fastify.controller.demand)
   );
 
   fastify.get(

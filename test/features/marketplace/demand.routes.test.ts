@@ -88,6 +88,18 @@ test('demand.routes', async (t) => {
     assert.ok(response.json().length > 0);
   });
 
+  await t.test('should find by query', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `/api/demands?userId=${user.userId}&status=open&hookId=${hook._id}`,
+      headers: {
+        'x-user-id': user.userId,
+      },
+    });
+    assert.equal(response.statusCode, 200);
+    assert.ok(response.json().length > 0);
+  });
+
   await t.test('should update document', async () => {
     const response = await fastify.inject({
       method: 'PUT',

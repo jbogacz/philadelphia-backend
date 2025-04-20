@@ -1,9 +1,10 @@
 import { ObjectId } from '@fastify/mongodb';
-import { Offer, OfferDto, OfferStatus } from './marketplace.types';
+import { Offer, OfferDto, OfferQueryDto, OfferStatus } from './marketplace.types';
 import { OfferRepository } from './offer.repository';
 import { LoggerService } from '../../common';
 import { NotFoundError } from '../../common/errors';
 import { DemandRepository } from './demand.repository';
+import { Filter } from 'mongodb';
 
 export class OfferService {
   private logger = LoggerService.getLogger('feature.marketplace.OfferService');
@@ -22,61 +23,60 @@ export class OfferService {
     const offer = {
       ...dto,
       status: OfferStatus.PENDING,
-      demandId: ObjectId.createFromHexString(dto.demandId),
-    } as any;
+      demandId: new ObjectId(dto.demandId),
+      hookId: new ObjectId(demand.hookId),
+      requesterId: demand.userId,
+    } as Offer;
     const created = await this.offerRepository.create(offer as Offer);
 
     this.logger.info('Created offer:', created);
-    return {
-      ...created,
-      createdAt: created.createdAt?.toISOString(),
-      updatedAt: created.updatedAt?.toISOString(),
-    };
+    return created as unknown as OfferDto;
   }
 
   async update(id: string, offer: OfferDto): Promise<OfferDto> {
     // Allow updating only if the providerId matches
-    const updateQuery: any = {
-      _id: ObjectId.createFromHexString(id),
+    const updateQuery = {
+      _id: new ObjectId(id),
       providerId: offer.providerId,
     };
 
-    const updated = await this.offerRepository.updateWhere(updateQuery, offer as Offer);
+    const toUpdate: Partial<Omit<Offer, 'hookId' | 'demandId'>> = offer;
+    const updated = await this.offerRepository.updateWhere(updateQuery, toUpdate);
     if (!updated) {
       this.logger.error('Offer not found:', updateQuery);
       throw new NotFoundError('Offer not found: ' + id);
     }
 
     this.logger.info('Updated offer:', updated);
-    return {
-      ...updated,
-      createdAt: updated.createdAt?.toISOString(),
-      updatedAt: updated.updatedAt?.toISOString(),
-    };
+    return updated as unknown as OfferDto;
   }
 
-  async findAllByUserId(userId: string): Promise<OfferDto[]> {
-    const offers = await this.offerRepository.query({ providerId: userId });
-    return offers.map((offer) => ({
-      ...offer,
-      createdAt: offer.createdAt?.toISOString(),
-      updatedAt: offer.updatedAt?.toISOString(),
-    }));
+  async query(query: OfferQueryDto): Promise<OfferDto[]> {
+    const pipeline = [
+      {
+        $match: query,
+      },
+      {
+        $lookup: {
+          from: 'demands',
+          localField: 'demandId',
+          foreignField: '_id',
+          as: 'demand',
+        },
+      },
+      {
+        $unwind: '$demand',
+      },
+    ];
+    return this.offerRepository.aggregate(pipeline);
   }
 
   async findById(id: string): Promise<OfferDto | null> {
-    const offer = await this.offerRepository.findByPrimaryId(id);
-    return (
-      offer && {
-        ...offer,
-        createdAt: offer.createdAt?.toISOString(),
-        updatedAt: offer.updatedAt?.toISOString(),
-      }
-    );
+    return this.offerRepository.findByPrimaryId(id) as unknown as OfferDto;
   }
 
   async delete(id: string, providerId: string): Promise<void> {
-    const offer = await this.offerRepository.queryOne({ _id: ObjectId.createFromHexString(id), providerId } as any);
+    const offer = await this.offerRepository.queryOne({ _id: ObjectId.createFromHexString(id), providerId });
     if (!offer) {
       this.logger.error('Offer not found:', id);
       throw new NotFoundError('Offer not found: ' + id);

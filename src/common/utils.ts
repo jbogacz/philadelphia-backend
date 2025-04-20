@@ -1,3 +1,4 @@
+import { ObjectId } from '@fastify/mongodb';
 import { createHash } from 'crypto';
 
 export const randomId = (): string => Math.random().toString(36).substring(2, 9);
@@ -44,4 +45,15 @@ export function generateDailyNumber(min: number = 50, max: number = 100, date: D
 
   // Scale the random number to be between min and max (inclusive)
   return Math.floor(seedRandom * (max - min + 1)) + min;
+}
+
+// Mutate all string ObjectId fields to ObjectId type
+export function mutateObjectIds(object: Record<string, unknown>) {
+  for (const key in object) {
+    const value = object[key];
+    // Check if it's a string and matches ObjectId pattern
+    if (typeof value === 'string' && /^[0-9a-fA-F]{24}$/.test(value)) {
+      object[key] = new ObjectId(value);
+    }
+  }
 }

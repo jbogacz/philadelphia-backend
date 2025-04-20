@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { OfferDtoSchema, UpdateOfferDtoSchema } from './marketplace.types';
+import { OfferDtoSchema, OfferQuerySchema, UpdateOfferDtoSchema } from './marketplace.types';
 import { ErrorDtoSchema } from '../../common/errors';
 
 export const offerRoutes: FastifyPluginAsync = async (fastify) => {
@@ -44,6 +44,8 @@ export const offerRoutes: FastifyPluginAsync = async (fastify) => {
     '/offers',
     {
       schema: {
+        querystring: OfferQuerySchema,
+        description: 'Query offers',
         tags: ['offers'],
         response: {
           200: {
@@ -54,7 +56,7 @@ export const offerRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
     },
-    fastify.controller.offer.findAllByUserId.bind(fastify.controller.offer)
+    fastify.controller.offer.query.bind(fastify.controller.offer)
   );
 
   fastify.get(

@@ -20,7 +20,7 @@ test('offer.routes', async (t) => {
     await clearDatabase(fastify);
 
     demand = await demandRepository.create({
-      hookId: '123',
+      hookId: '67c9634c69bc111933f0d4db',
       userId: 'demand_user',
       title: 'foo',
       description: 'bar',
@@ -34,7 +34,7 @@ test('offer.routes', async (t) => {
 
   await t.test('should create new document', async () => {
     const payload: OfferDto = {
-      demandId: demand._id as string,
+      demandId: new ObjectId(demand._id),
       providerId: 'unknown',
       trafficVolume: 1000,
       price: 900,
@@ -62,9 +62,23 @@ test('offer.routes', async (t) => {
     assert.equal(createdOffer?.providerId, 'offer_user');
   });
 
+  await t.test('should find by query', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `/api/offers?providerId=offer_user`,
+      headers: {
+        'x-user-id': 'offer_user',
+      },
+    });
+
+    assert.equal(response.statusCode, 200);
+    const offers = response.json() as Offer[];
+    assert.ok(offers.length > 0);
+  });
+
   await t.test('should update existing document', async () => {
     const payload: OfferDto = {
-      demandId: demand._id as string,
+      demandId: new ObjectId(demand._id),
       providerId: 'offer_user',
       trafficVolume: 1200,
       price: 1100,
