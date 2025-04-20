@@ -26,22 +26,21 @@ export class OfferService {
       demandId: new ObjectId(dto.demandId),
       hookId: new ObjectId(demand.hookId),
       requesterId: demand.userId,
-    } as Offer;
-    const created = await this.offerRepository.create(offer as Offer);
+    };
+    const created = await this.offerRepository.createV2(offer);
 
     this.logger.info('Created offer:', created);
     return created as unknown as OfferDto;
   }
 
-  async update(id: string, offer: OfferDto): Promise<OfferDto> {
+  async update(id: string, dto: OfferDto): Promise<OfferDto> {
     // Allow updating only if the providerId matches
     const updateQuery = {
       _id: new ObjectId(id),
-      providerId: offer.providerId,
-    };
+      providerId: dto.providerId,
+    } as Filter<any>;
 
-    const toUpdate: Partial<Omit<Offer, 'hookId' | 'demandId'>> = offer;
-    const updated = await this.offerRepository.updateWhere(updateQuery, toUpdate);
+    const updated = await this.offerRepository.updateWhereV2(updateQuery, dto);
     if (!updated) {
       this.logger.error('Offer not found:', updateQuery);
       throw new NotFoundError('Offer not found: ' + id);

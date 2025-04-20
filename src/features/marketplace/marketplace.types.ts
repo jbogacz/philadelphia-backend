@@ -78,7 +78,7 @@ export const UpdateDemandDtoSchema = Type.Composite([
 ]);
 
 export const OfferSchema = Type.Intersect([
-  BaseSchema,
+  BaseSchemaV2,
   Type.Object({
     demandId: ObjectIdType,
     hookId: ObjectIdType,
@@ -105,17 +105,17 @@ export const OfferQuerySchema = Type.Object({
   status: Type.Optional(Type.Enum(OfferStatus)),
 });
 
-export const OfferDtoSchema = Type.Composite([
-  Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status', 'hookId', 'requesterId']),
-  Type.Object({
-    createdAt: Type.Optional(DateTimeType),
-    updatedAt: Type.Optional(DateTimeType),
-    status: Type.Optional(Type.Enum(OfferStatus)),
-    hookId: Type.Optional(Type.String()),
-    requesterId: Type.Optional(Type.String()),
-    demand: Type.Optional(DemandDtoSchema),
-  }),
-]);
+// export const OfferDtoSchema = Type.Composite([
+//   Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status', 'hookId', 'requesterId']),
+//   Type.Object({
+//     createdAt: Type.Optional(DateTimeType),
+//     updatedAt: Type.Optional(DateTimeType),
+//     status: Type.Optional(Type.Enum(OfferStatus)),
+//     hookId: Type.Optional(Type.String()),
+//     requesterId: Type.Optional(Type.String()),
+//     demand: Type.Optional(DemandDtoSchema),
+//   }),
+// ]);
 
 export const UpdateOfferDtoSchema = Type.Composite([
   Type.Partial(Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status', 'hookId', 'requesterId'])),
@@ -193,7 +193,7 @@ export type DemandDto = Static<typeof DemandDtoSchema>;
 
 export type DemandQueryDto = Static<typeof DemandQuerySchema>;
 
-export type OfferDto = Static<typeof OfferDtoSchema>;
+export type OfferDto = Static<typeof OfferSchema>;
 
 export type OfferQueryDto = Static<typeof OfferQuerySchema>;
 

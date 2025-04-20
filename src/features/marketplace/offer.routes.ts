@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { OfferDtoSchema, OfferQuerySchema, UpdateOfferDtoSchema } from './marketplace.types';
+import { OfferQuerySchema, OfferSchema, UpdateOfferDtoSchema } from './marketplace.types';
 import { ErrorDtoSchema } from '../../common/errors';
 
 export const offerRoutes: FastifyPluginAsync = async (fastify) => {
@@ -7,10 +7,10 @@ export const offerRoutes: FastifyPluginAsync = async (fastify) => {
     '/offers',
     {
       schema: {
-        body: OfferDtoSchema,
+        body: OfferSchema,
         tags: ['offers'],
         response: {
-          201: OfferDtoSchema,
+          201: OfferSchema,
           401: ErrorDtoSchema,
         },
       },
@@ -31,7 +31,7 @@ export const offerRoutes: FastifyPluginAsync = async (fastify) => {
         body: UpdateOfferDtoSchema,
         tags: ['offers'],
         response: {
-          200: OfferDtoSchema,
+          200: OfferSchema,
           404: ErrorDtoSchema,
           401: ErrorDtoSchema,
         },
@@ -50,7 +50,7 @@ export const offerRoutes: FastifyPluginAsync = async (fastify) => {
         response: {
           200: {
             type: 'array',
-            items: OfferDtoSchema,
+            items: OfferSchema,
           },
           401: ErrorDtoSchema,
         },
@@ -71,7 +71,7 @@ export const offerRoutes: FastifyPluginAsync = async (fastify) => {
         },
         tags: ['offers'],
         response: {
-          200: OfferDtoSchema,
+          200: OfferSchema,
           404: ErrorDtoSchema,
           401: ErrorDtoSchema,
         },

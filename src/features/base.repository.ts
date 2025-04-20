@@ -10,6 +10,12 @@ export const ObjectIdType = Type.Unsafe<ObjectId>({
   description: 'MongoDB ObjectId',
 });
 
+export const DateTimeType = Type.Unsafe<Date>({
+  type: 'string',
+  format: 'date-time',
+  description: 'ISO 8601 date-time format',
+});
+
 export const BaseSchema = Type.Object({
   _id: Type.Optional(Type.String()),
   createdAt: Type.Optional(Type.Date()),
@@ -18,8 +24,8 @@ export const BaseSchema = Type.Object({
 
 export const BaseSchemaV2 = Type.Object({
   _id: Type.Optional(Type.String()),
-  createdAt: Type.Optional(Type.Date()),
-  updatedAt: Type.Optional(Type.Date()),
+  createdAt: Type.Optional(DateTimeType),
+  updatedAt: Type.Optional(DateTimeType),
 });
 
 export interface IEntity {
@@ -39,11 +45,7 @@ export const RangeSchema = Type.Object({
   max: Type.Number(),
 });
 
-export const DateTimeType = Type.Unsafe<Date>({
-  type: 'string',
-  format: 'date-time',
-  description: 'ISO 8601 date-time format',
-});
+
 
 export class BaseRepository<T extends IEntity> {
   private logger = LoggerService.getLogger('feature.base.BaseRepository');
@@ -158,6 +160,20 @@ export class BaseRepository<T extends IEntity> {
   }
 
   async updateWhere<P extends Partial<T>>(query: any, data: P, options?: any): Promise<T | null> {
+    const result = await this.collection.findOneAndUpdate(
+      query,
+      {
+        $set: { ...data, updatedAt: new Date() },
+      },
+      {
+        returnDocument: 'after',
+        session: options?.session,
+      }
+    );
+    return result && (result as T);
+  }
+
+  async updateWhereV2<F extends Filter<T>, P extends Partial<T>>(query: F, data: P, options?: any): Promise<T | null> {
     const result = await this.collection.findOneAndUpdate(
       query,
       {

@@ -33,9 +33,11 @@ test('offer.routes', async (t) => {
   });
 
   await t.test('should create new document', async () => {
-    const payload: OfferDto = {
+    const payload: Partial<OfferDto> = {
       demandId: new ObjectId(demand._id),
+      hookId: new ObjectId(demand.hookId),
       providerId: 'unknown',
+      requesterId: demand.userId,
       trafficVolume: 1000,
       price: 900,
       duration: 30,
@@ -77,9 +79,11 @@ test('offer.routes', async (t) => {
   });
 
   await t.test('should update existing document', async () => {
-    const payload: OfferDto = {
+    const payload: Partial<OfferDto> = {
       demandId: new ObjectId(demand._id),
+      hookId: new ObjectId(demand.hookId),
       providerId: 'offer_user',
+      requesterId: demand.userId,
       trafficVolume: 1200,
       price: 1100,
       duration: 30,
