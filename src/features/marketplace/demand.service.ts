@@ -24,12 +24,13 @@ export class DemandService {
 
   async update(id: string, demand: DemandDto): Promise<DemandDto> {
     // Allow updating only if the userId matches
-    const updateQuery: any = {
+    const updateQuery = {
       _id: ObjectId.createFromHexString(id),
       userId: demand.userId,
     };
 
-    const updated = await this.demandRepository.updateWhere(updateQuery, demand as unknown as Demand);
+    const toUpdate: Partial<Omit<Demand, 'hookId' | 'userId'>> = demand
+    const updated = await this.demandRepository.updateWhere(updateQuery, toUpdate);
     if (!updated) {
       this.logger.error('Demand not found:', updateQuery);
       throw new NotFoundError('Demand not found: ' + id);
