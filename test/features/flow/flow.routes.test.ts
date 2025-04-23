@@ -8,7 +8,7 @@ import { PublisherRepository } from '../../../src/features/publisher/publisher.r
 
 test('flow:routes', async (t) => {
   const fastify = await build(t);
-  const campaignRepository: CampaignRepository = fastify.repository.campaign;
+  const campaignRepository: CampaignRepository = fastify.repository.campaignDeprecated;
   const publisherRepository: PublisherRepository = fastify.repository.publisher;
 
   const CAMPAIGN_ID = 'campaign-1';

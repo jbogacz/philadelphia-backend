@@ -20,7 +20,7 @@ test('offer.routes', async (t) => {
     await clearDatabase(fastify);
 
     demand = await demandRepository.create({
-      hookId: '67c9634c69bc111933f0d4db',
+      hookId: new ObjectId('67c9634c69bc111933f0d4db'),
       userId: 'demand_user',
       title: 'foo',
       description: 'bar',
@@ -60,7 +60,7 @@ test('offer.routes', async (t) => {
     offer = response.json() as Offer;
     const createdOffer = await db
       .collection('offers')
-      .findOne({ _id: ObjectId.createFromHexString(offer._id!), demandId: demand._id } as any);
+      .findOne({ _id: new ObjectId(offer._id), demandId: demand._id } as any);
     assert.equal(createdOffer?.providerId, 'offer_user');
   });
 
@@ -146,7 +146,7 @@ test('offer.routes', async (t) => {
   await t.test('should return 404 for non-existing offer', async () => {
     const response = await fastify.inject({
       method: 'GET',
-      url: `/api/offers/invalid_id`,
+      url: `/api/offers/67c321a841daebc2af9aa684`,
       headers: {
         'x-user-id': 'offer_user',
       },
@@ -179,5 +179,8 @@ test('offer.routes', async (t) => {
     });
 
     assert.equal(response.statusCode, 404);
+  });
+
+  await t.test('should create campaign when offer is accepted', async () => {
   });
 });

@@ -1,16 +1,30 @@
-import { CampaignRepository } from './campaign.repository';
-import { CampaignDto, CampaignQueryDto, CampaignStatus } from './marketplace.types';
 import { ObjectId } from '@fastify/mongodb';
+import { CampaignRepository } from './campaign.repository';
+import { DemandRepository } from './demand.repository';
+import { Campaign, CampaignDto, CampaignQueryDto, CampaignStatus, Offer, OfferDto } from './marketplace.types';
+import { OfferRepository } from './offer.repository';
 
 export class CampaignService {
-  constructor(private readonly campaignRepository: CampaignRepository) {}
+  constructor(
+    private readonly campaignRepository: CampaignRepository,
+    private readonly demandRepository: DemandRepository,
+    private readonly offerRepository: OfferRepository
+  ) {}
 
-  async create(dto: CampaignDto): Promise<CampaignDto> {
-    const campaign = {
-      ...dto,
-      hookId: new ObjectId(dto.hookId),
-      demandId: new ObjectId(dto.demandId),
-      offerId: new ObjectId(dto.offerId),
+  async createFromOffer(offer: OfferDto): Promise<Campaign | null> {
+    const demand = await this.demandRepository.findByPrimaryId(offer.demandId);
+    const campaign: Campaign = {
+      demandId: offer.demandId,
+      offerId: new ObjectId(offer._id),
+      hookId: offer.hookId,
+      goal: offer.trafficVolume,
+      price: offer.price,
+      duration: offer.duration,
+      trafficSources: offer.trafficSources,
+      title: demand?.title || 'Missing title',
+      providerId: offer.providerId,
+      requesterId: offer.requesterId,
+      trackingUrl: 'TODO: generate tracking URL',
       status: CampaignStatus.PENDING,
     };
     return this.campaignRepository.createV2(campaign);

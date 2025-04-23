@@ -1,5 +1,5 @@
 import { ObjectId, type Collection } from 'mongodb';
-import assert from 'node:assert';
+import * as assert from 'node:assert';
 import { test } from 'node:test';
 import { CampaignRepository } from '../../../src/features/campaign/campaign.repository';
 import {
@@ -27,7 +27,7 @@ const randomTrace = (): CampaignTrace => ({
 test('campaign:repository', async t => {
   const fastify = await build(t);
   const collection: Collection = fastify.mongo.db.collection('campaigns');
-  const campaignRepository: CampaignRepository = fastify.repository.campaign;
+  const campaignRepository: CampaignRepository = fastify.repository.campaignDeprecated;
 
   t.before(async () => {
     await clearDatabase(fastify);

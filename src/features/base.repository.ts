@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox';
 import { ClientSession, Collection, Filter, MongoClient, MongoError, ObjectId, WithId } from 'mongodb';
 import { LoggerService } from '../common';
-import { NotFoundError } from '../common/errors';
+import { BadRequestError, NotFoundError } from '../common/errors';
 import { is24Hex } from '../common/utils';
 
 export const ObjectIdType = Type.Unsafe<ObjectId>({
@@ -23,7 +23,7 @@ export const BaseSchema = Type.Object({
 });
 
 export const BaseSchemaV2 = Type.Object({
-  _id: Type.Optional(Type.String()),
+  _id: Type.Optional(ObjectIdType),
   createdAt: Type.Optional(DateTimeType),
   updatedAt: Type.Optional(DateTimeType),
 });
@@ -45,21 +45,20 @@ export const RangeSchema = Type.Object({
   max: Type.Number(),
 });
 
-
-
-export class BaseRepository<T extends IEntity> {
+export class BaseRepository<T extends IEntity | IEntityV2> {
   private logger = LoggerService.getLogger('feature.base.BaseRepository');
 
   constructor(protected collection: Collection<T>) {}
 
-  async findByPrimaryId(id: any, userId?: string): Promise<WithId<T> | null> {
-    if (!is24Hex(id)) {
+  async findByPrimaryId(id: string | ObjectId, userId?: string): Promise<WithId<T> | null> {
+    if (!(id instanceof ObjectId) && !is24Hex(id)) {
       this.logger.error('Invalid ID format:', id);
-      throw new NotFoundError('Record not found: ' + id);
+      throw new BadRequestError('Invalid ID format:' + id);
     }
 
+    const _id = id instanceof ObjectId ? id : new ObjectId(id);
     const filter: Filter<any> = {
-      _id: id instanceof ObjectId ? id : ObjectId.createFromHexString(id),
+      _id: _id,
     };
 
     // Restrict access to the document if userId is provided
@@ -142,10 +141,10 @@ export class BaseRepository<T extends IEntity> {
   async updateV2<P extends Partial<T>>(id: string | ObjectId, data: P, options?: any): Promise<T | null> {
     if (!(id instanceof ObjectId) && !is24Hex(id)) {
       this.logger.error('Invalid ID format:', id);
-      throw new NotFoundError('Record not found: ' + id);
+      throw new BadRequestError('Invalid ID format:' + id);
     }
 
-    const _id = id instanceof ObjectId ? id : new ObjectId(id)
+    const _id = id instanceof ObjectId ? id : new ObjectId(id);
     const result = await this.collection.findOneAndUpdate(
       { _id: _id } as Filter<T>,
       {
@@ -156,7 +155,7 @@ export class BaseRepository<T extends IEntity> {
         session: options?.session,
       }
     );
-    return (result as T);
+    return result as T;
   }
 
   async updateWhere<P extends Partial<T>>(query: any, data: P, options?: any): Promise<T | null> {

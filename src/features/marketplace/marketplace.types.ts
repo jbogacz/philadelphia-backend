@@ -32,7 +32,7 @@ export enum CampaignStatus {
 export const DemandSchema = Type.Intersect([
   BaseSchema,
   Type.Object({
-    hookId: Type.String(),
+    hookId: ObjectIdType,
     userId: Type.String(),
     title: Type.String(),
     description: Type.String(),
@@ -133,6 +133,13 @@ export const CampaignSchema = Type.Intersect([
     offerId: ObjectIdType,
     hookId: ObjectIdType,
 
+    // Campaign details
+    goal: Type.Number(),
+    price: Type.Number(),
+    duration: Type.Union([Type.Literal(7), Type.Literal(14), Type.Literal(30)]),
+    trafficSources: Type.String(),
+    title: Type.String(),
+
     // Core participants
     providerId: Type.String(),
     requesterId: Type.String(),
@@ -182,7 +189,7 @@ export const ProfileSchema = Type.Intersect([
  */
 export type Demand = Static<typeof DemandSchema> & IEntity;
 
-export type Offer = Static<typeof OfferSchema> & IEntity;
+export type Offer = Static<typeof OfferSchema> & IEntityV2;
 
 export type Campaign = Static<typeof CampaignSchema> & IEntityV2;
 

@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
 import { OfferQuerySchema, OfferSchema, UpdateOfferDtoSchema } from './marketplace.types';
 import { ErrorDtoSchema } from '../../common/errors';
+import { Type } from '@sinclair/typebox';
 
 export const offerRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post(
@@ -32,8 +33,32 @@ export const offerRoutes: FastifyPluginAsync = async (fastify) => {
         tags: ['offers'],
         response: {
           200: OfferSchema,
-          404: ErrorDtoSchema,
           401: ErrorDtoSchema,
+          403: ErrorDtoSchema,
+          404: ErrorDtoSchema,
+        },
+      },
+    },
+    fastify.controller.offer.update.bind(fastify.controller.offer)
+  );
+
+  fastify.patch(
+    '/offers/:id',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+          },
+        },
+        body: Type.Partial(OfferSchema),
+        tags: ['offers'],
+        response: {
+          200: OfferSchema,
+          401: ErrorDtoSchema,
+          403: ErrorDtoSchema,
+          404: ErrorDtoSchema,
         },
       },
     },
