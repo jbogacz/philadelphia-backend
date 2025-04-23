@@ -39,7 +39,7 @@ test('demand.routes', async (t) => {
 
   await t.test('should create new document', async () => {
     const payload: DemandDto = {
-      hookId: hook._id as string,
+      hookId: new ObjectId(hook._id),
       userId: user.userId as string,
       title: 'foo',
       description: 'bar',

@@ -2,14 +2,19 @@ import { ObjectId } from '@fastify/mongodb';
 import { Offer, OfferDto, OfferQueryDto, OfferStatus } from './marketplace.types';
 import { OfferRepository } from './offer.repository';
 import { LoggerService } from '../../common';
-import { NotFoundError } from '../../common/errors';
+import { ForbiddenError, NotFoundError } from '../../common/errors';
 import { DemandRepository } from './demand.repository';
 import { Filter } from 'mongodb';
+import { CampaignService } from './campaign.service';
 
 export class OfferService {
   private logger = LoggerService.getLogger('feature.marketplace.OfferService');
 
-  constructor(private readonly offerRepository: OfferRepository, private readonly demandRepository: DemandRepository) {}
+  constructor(
+    private readonly campaignService: CampaignService,
+    private readonly offerRepository: OfferRepository,
+    private readonly demandRepository: DemandRepository
+  ) {}
 
   async create(dto: OfferDto): Promise<OfferDto> {
     this.logger.info('Creating offer:', dto);
@@ -27,28 +32,52 @@ export class OfferService {
       hookId: new ObjectId(demand.hookId),
       requesterId: demand.userId,
     } as Offer;
-    const created = await this.offerRepository.create(offer as Offer);
+    const created = await this.offerRepository.createV2(offer);
 
     this.logger.info('Created offer:', created);
-    return created as unknown as OfferDto;
+    return created as OfferDto;
   }
 
-  async update(id: string, offer: OfferDto): Promise<OfferDto> {
-    // Allow updating only if the providerId matches
-    const updateQuery = {
-      _id: new ObjectId(id),
-      providerId: offer.providerId,
-    };
-
-    const toUpdate: Partial<Omit<Offer, 'hookId' | 'demandId'>> = offer;
-    const updated = await this.offerRepository.updateWhere(updateQuery, toUpdate);
-    if (!updated) {
-      this.logger.error('Offer not found:', updateQuery);
-      throw new NotFoundError('Offer not found: ' + id);
+  async update(offerId: string, userId: string, dto: Partial<OfferDto>): Promise<OfferDto | null> {
+    const offer = await this.offerRepository.findByPrimaryId(new ObjectId(offerId));
+    if (!offer) {
+      throw new NotFoundError('Offer not found: ' + offerId);
     }
 
-    this.logger.info('Updated offer:', updated);
-    return updated as unknown as OfferDto;
+    if (dto.status) {
+      if (userId !== offer.requesterId) {
+        throw new ForbiddenError('Only requester can update offer status');
+      }
+      if (dto.status === OfferStatus.ACCEPTED) {
+        await this.campaignService.createFromOffer(offer);
+      }
+      return this.updateStatus(offerId, userId, dto.status);
+    }
+
+    // Allow updating offer data only if the providerId (author) matches
+    if (userId !== offer.providerId) {
+      throw new ForbiddenError('Only provider can update offer');
+    }
+
+    const updated = await this.offerRepository.updateV2(offerId, dto);
+    this.logger.info('Updated offer:', updated!);
+    return updated;
+  }
+
+  async updateStatus(id: string, userId: string, status: OfferStatus): Promise<OfferDto | null> {
+    const updateQuery = {
+      _id: new ObjectId(id),
+      requesterId: userId,
+    } as Filter<Offer>;
+    const updated = await this.offerRepository.updateWhereV2(updateQuery, { status });
+
+    if (!updated) {
+      this.logger.error('User not allowed to change offer status:', updateQuery);
+      throw new ForbiddenError('You are not allowed to change offer status: ' + id);
+    }
+
+    this.logger.info('Updated offer status:', updated);
+    return updated;
   }
 
   async query(query: OfferQueryDto): Promise<OfferDto[]> {
@@ -72,7 +101,7 @@ export class OfferService {
   }
 
   async findById(id: string): Promise<OfferDto | null> {
-    return this.offerRepository.findByPrimaryId(id) as unknown as OfferDto;
+    return this.offerRepository.findByPrimaryId(id);
   }
 
   async delete(id: string, providerId: string): Promise<void> {

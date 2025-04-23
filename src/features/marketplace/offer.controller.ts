@@ -57,7 +57,7 @@ export class OfferController {
       return reply.code(401).send({ error: 'Unauthorized', code: 401 });
     }
     const offerId = request.params.id;
-    const offer = await this.offerService.update(offerId, { ...request.body, providerId: userId as string });
+    const offer = await this.offerService.update(offerId, userId as string, request.body);
     if (!offer) {
       return reply.code(404).send({ error: 'NotFoundError', message: 'Offer not found: ' + offerId, code: 404 });
     }

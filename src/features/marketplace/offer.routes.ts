@@ -1,16 +1,17 @@
 import { FastifyPluginAsync } from 'fastify';
-import { OfferDtoSchema, OfferQuerySchema, UpdateOfferDtoSchema } from './marketplace.types';
+import { OfferQuerySchema, OfferSchema, UpdateOfferDtoSchema } from './marketplace.types';
 import { ErrorDtoSchema } from '../../common/errors';
+import { Type } from '@sinclair/typebox';
 
 export const offerRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post(
     '/offers',
     {
       schema: {
-        body: OfferDtoSchema,
+        body: OfferSchema,
         tags: ['offers'],
         response: {
-          201: OfferDtoSchema,
+          201: OfferSchema,
           401: ErrorDtoSchema,
         },
       },
@@ -31,9 +32,33 @@ export const offerRoutes: FastifyPluginAsync = async (fastify) => {
         body: UpdateOfferDtoSchema,
         tags: ['offers'],
         response: {
-          200: OfferDtoSchema,
-          404: ErrorDtoSchema,
+          200: OfferSchema,
           401: ErrorDtoSchema,
+          403: ErrorDtoSchema,
+          404: ErrorDtoSchema,
+        },
+      },
+    },
+    fastify.controller.offer.update.bind(fastify.controller.offer)
+  );
+
+  fastify.patch(
+    '/offers/:id',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+          },
+        },
+        body: Type.Partial(OfferSchema),
+        tags: ['offers'],
+        response: {
+          200: OfferSchema,
+          401: ErrorDtoSchema,
+          403: ErrorDtoSchema,
+          404: ErrorDtoSchema,
         },
       },
     },
@@ -50,7 +75,7 @@ export const offerRoutes: FastifyPluginAsync = async (fastify) => {
         response: {
           200: {
             type: 'array',
-            items: OfferDtoSchema,
+            items: OfferSchema,
           },
           401: ErrorDtoSchema,
         },
@@ -71,7 +96,7 @@ export const offerRoutes: FastifyPluginAsync = async (fastify) => {
         },
         tags: ['offers'],
         response: {
-          200: OfferDtoSchema,
+          200: OfferSchema,
           404: ErrorDtoSchema,
           401: ErrorDtoSchema,
         },

@@ -14,7 +14,7 @@ export class DemandService {
     const demand = {
       ...dto,
       status: DemandStatus.OPEN,
-      hookId: ObjectId.createFromHexString(dto.hookId),
+      hookId: new ObjectId(dto.hookId),
     } as any;
     const created = await this.demandRepository.create(demand as Demand);
 
