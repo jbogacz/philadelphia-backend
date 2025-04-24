@@ -16,8 +16,13 @@ export class CampaignController {
       Reply: CampaignDto | ErrorDto;
     }>
   > {
+    const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized', code: 401 });
+    }
+
     const campaignId = request.params.id;
-    const updated = await this.campaignService.update(campaignId, request.body);
+    const updated = await this.campaignService.update(campaignId, request.body, userId as string);
     return reply.code(200).send(updated);
   }
 
@@ -34,7 +39,30 @@ export class CampaignController {
       return reply.code(401).send({ error: 'Unauthorized', code: 401 });
     }
 
-    const campaigns = await this.campaignService.query(userId as string, request.query);
+    const campaigns = await this.campaignService.query(request.query, userId as string);
     return reply.code(200).send(campaigns);
+  }
+
+  async findById(
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply
+  ): Promise<
+    FastifyReply<{
+      Reply: CampaignDto | ErrorDto;
+    }>
+  > {
+    const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized', code: 401 });
+    }
+
+    const campaign = await this.campaignService.findById(request.params.id);
+    if (!campaign) {
+      return reply.code(404).send({ error: 'Campaign not found', code: 404 });
+    }
+    if (campaign.providerId !== userId && campaign.requesterId !== userId) {
+      return reply.code(403).send({ error: 'Forbidden', code: 403 });
+    }
+    return reply.code(200).send(campaign);
   }
 }

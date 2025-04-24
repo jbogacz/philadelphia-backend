@@ -10,13 +10,14 @@ test('campaign.routes', async (t) => {
   const db: Db = fastify.mongo.db;
   const campaignRepository: CampaignRepository = fastify.repository.campaign;
 
+  let testCampaign: Campaign;
+  const testUserId = 'provider_user';
+
   t.before(async () => {
     await clearDatabase(fastify);
-  });
 
-  await t.test('should query by provider or requester', async () => {
-    // given
-    const campaign1: Campaign = {
+    // Create a test campaign
+    testCampaign = await campaignRepository.createV2({
       demandId: new ObjectId(),
       offerId: new ObjectId(),
       hookId: new ObjectId(),
@@ -24,14 +25,16 @@ test('campaign.routes', async (t) => {
       price: 10,
       duration: 30,
       trafficSources: 'source1',
-      title: 'Campaign 1',
-      providerId: 'provider_user',
+      title: 'Test Campaign',
+      providerId: testUserId,
       requesterId: 'requester_user',
       trackingUrl: 'http://example.com/tracking1',
       status: CampaignStatus.PENDING,
-    };
-    await campaignRepository.createV2(campaign1);
+    });
+  });
 
+  await t.test('should query by provider or requester', async () => {
+    // given
     const campaign2: Campaign = {
       demandId: new ObjectId(),
       offerId: new ObjectId(),
@@ -62,5 +65,86 @@ test('campaign.routes', async (t) => {
     const campaigns = response.json();
     assert.ok(campaigns);
     assert.ok(campaigns.length === 2);
+  });
+
+  await t.test('should query campaigns by provider ID', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/api/campaigns?providerId=' + testUserId,
+      headers: {
+        'x-user-id': testUserId,
+      },
+    });
+
+    assert.equal(response.statusCode, 200);
+    const campaigns = response.json();
+    assert.ok(Array.isArray(campaigns));
+    assert.equal(campaigns.length, 1);
+    assert.equal(campaigns[0].providerId, testUserId);
+  });
+
+  await t.test('should find campaign by ID', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `/api/campaigns/${testCampaign._id}`,
+      headers: {
+        'x-user-id': testUserId,
+      },
+    });
+
+    assert.equal(response.statusCode, 200);
+    const campaign = response.json();
+    assert.equal(campaign._id.toString(), testCampaign._id?.toString());
+    assert.equal(campaign.title, testCampaign.title);
+  });
+
+  await t.test('should return 404 for non-existent campaign', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `/api/campaigns/${new ObjectId()}`,
+      headers: {
+        'x-user-id': testUserId,
+      },
+    });
+
+    assert.equal(response.statusCode, 404);
+  });
+
+  await t.test('should update campaign status', async () => {
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `/api/campaigns/${testCampaign._id}`,
+      headers: {
+        'x-user-id': 'requester_user',
+      },
+      payload: {
+        status: CampaignStatus.ACTIVE,
+      },
+    });
+
+    assert.equal(response.statusCode, 200);
+    const updatedCampaign = response.json();
+    assert.equal(updatedCampaign.status, CampaignStatus.ACTIVE);
+  });
+
+  await t.test('should return 401 when user is not authenticated', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/api/campaigns',
+    });
+
+    assert.equal(response.statusCode, 401);
+  });
+
+  await t.test('should return 403 when user is not campaign owner (requester)', async () => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `/api/campaigns/${testCampaign._id}`,
+      headers: {
+        'x-user-id': 'unauthorized_user',
+      },
+    });
+
+    assert.equal(response.statusCode, 403);
   });
 });

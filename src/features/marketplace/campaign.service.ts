@@ -4,6 +4,7 @@ import { DemandRepository } from './demand.repository';
 import { Campaign, CampaignDto, CampaignQueryDto, CampaignStatus, Offer, OfferDto } from './marketplace.types';
 import { OfferRepository } from './offer.repository';
 import { Filter } from 'mongodb';
+import { ForbiddenError, NotFoundError } from '../../common/errors';
 
 export class CampaignService {
   constructor(
@@ -31,11 +32,24 @@ export class CampaignService {
     return this.campaignRepository.createV2(campaign);
   }
 
-  async update(id: string, campaign: CampaignDto): Promise<CampaignDto | null> {
+  async update(id: string, campaign: CampaignDto, userId: string): Promise<CampaignDto | null> {
+    const existingCampaign = await this.campaignRepository.findById(id);
+    if (!existingCampaign) {
+      throw new NotFoundError('Campaign not found: ' + id);
+    }
+    if (userId !== existingCampaign.providerId && userId !== existingCampaign.requesterId) {
+      throw new ForbiddenError('Only provider or requester can update campaign');
+    }
+    if (campaign.status && campaign.status !== existingCampaign.status && userId !== existingCampaign.requesterId) {
+      throw new ForbiddenError('Only requester can update campaign status');
+    }
+    if (existingCampaign.status === CampaignStatus.CANCELLED || existingCampaign.status === CampaignStatus.COMPLETED) {
+      throw new ForbiddenError('Cannot update campaign in final status');
+    }
     return this.campaignRepository.updateV2(id, campaign);
   }
 
-  async query(userId: string, query: CampaignQueryDto): Promise<CampaignDto[]> {
+  async query(query: CampaignQueryDto, userId: string): Promise<CampaignDto[]> {
     const filter: Filter<Campaign> = {
       ...query,
       ...{ $or: [{ providerId: userId }, { requesterId: userId }] },
