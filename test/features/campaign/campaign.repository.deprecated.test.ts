@@ -24,7 +24,7 @@ const randomTrace = (): CampaignTrace => ({
   created: new Date(),
 });
 
-test('campaign:repository', async t => {
+test('campaign:repository:deprecated', async t => {
   const fastify = await build(t);
   const collection: Collection = fastify.mongo.db.collection('campaigns');
   const campaignRepository: CampaignRepository = fastify.repository.campaignDeprecated;

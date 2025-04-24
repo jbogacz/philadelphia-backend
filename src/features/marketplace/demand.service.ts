@@ -29,7 +29,7 @@ export class DemandService {
       userId: demand.userId,
     };
 
-    const toUpdate: Partial<Omit<Demand, 'hookId' | 'userId'>> = demand
+    const toUpdate: Partial<Omit<Demand, 'hookId' | 'userId'>> = demand;
     const updated = await this.demandRepository.updateWhere(updateQuery, toUpdate);
     if (!updated) {
       this.logger.error('Demand not found:', updateQuery);
@@ -45,11 +45,11 @@ export class DemandService {
   }
 
   async findById(id: string): Promise<DemandDto | null> {
-    return this.demandRepository.findByPrimaryId(id);
+    return this.demandRepository.findById(id);
   }
 
   async delete(id: string, userId: string): Promise<void> {
-    const demand = await this.demandRepository.findByPrimaryId(id, userId);
+    const demand = await this.demandRepository.findById(id, userId);
     if (!demand) {
       this.logger.error('Demand not found:', id);
       throw new NotFoundError('Demand not found: ' + id);

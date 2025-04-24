@@ -2,9 +2,11 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { CampaignService } from './campaign.service';
 import { CampaignDto, CampaignQueryDto } from './marketplace.types';
 import { ErrorDto } from '../../common/errors';
+import { AppConfig } from '../../app.types';
+import { getAuth } from '@clerk/fastify';
 
 export class CampaignController {
-  constructor(private readonly campaignService: CampaignService) {}
+  constructor(private readonly campaignService: CampaignService, private readonly config: AppConfig) {}
 
   async update(
     request: FastifyRequest<{ Params: { id: string }; Body: CampaignDto }>,
@@ -27,7 +29,12 @@ export class CampaignController {
       Reply: CampaignDto[] | ErrorDto;
     }>
   > {
-    const campaigns = await this.campaignService.query(request.query);
+    const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized', code: 401 });
+    }
+
+    const campaigns = await this.campaignService.query(userId as string, request.query);
     return reply.code(200).send(campaigns);
   }
 }

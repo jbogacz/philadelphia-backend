@@ -18,7 +18,7 @@ export class HookService {
   ) {}
 
   async findById(id: string): Promise<HookDto | null> {
-    const hook = await this.hookRepository.findByPrimaryId(id);
+    const hook = await this.hookRepository.findById(id);
     return (
       hook && {
         ...hook,

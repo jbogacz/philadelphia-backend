@@ -50,7 +50,7 @@ export class BaseRepository<T extends IEntity | IEntityV2> {
 
   constructor(protected collection: Collection<T>) {}
 
-  async findByPrimaryId(id: string | ObjectId, userId?: string): Promise<WithId<T> | null> {
+  async findById(id: string | ObjectId, userId?: string): Promise<WithId<T> | null> {
     if (!(id instanceof ObjectId) && !is24Hex(id)) {
       this.logger.error('Invalid ID format:', id);
       throw new BadRequestError('Invalid ID format:' + id);

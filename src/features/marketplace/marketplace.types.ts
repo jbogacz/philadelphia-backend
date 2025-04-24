@@ -157,6 +157,7 @@ export const CampaignSchema = Type.Intersect([
 export const CampaignQuerySchema = Type.Object({
   providerId: Type.Optional(Type.String()),
   requesterId: Type.Optional(Type.String()),
+  userId: Type.Optional(Type.String()),
   status: Type.Optional(Type.Enum(CampaignStatus)),
 });
 

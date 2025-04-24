@@ -65,7 +65,7 @@ export class WidgetService {
   }
 
   async findById(_id: string): Promise<WidgetDto | null> {
-    const widget = await this.widgetRepository.findByPrimaryId(_id);
+    const widget = await this.widgetRepository.findById(_id);
     if (!widget) {
       this.logger.error('Widget not found:', _id);
       throw new NotFoundError('Widget not found: ' + _id);

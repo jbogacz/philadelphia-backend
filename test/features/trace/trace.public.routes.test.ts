@@ -96,10 +96,10 @@ test('trace:public:routes', async (t) => {
   });
 
   await t.test('should activate widget and hook if pending', async () => {
-    const dbWidget: Widget = await widgetRepository.findByPrimaryId(widget._id!);
+    const dbWidget: Widget = await widgetRepository.findById(widget._id!);
     assert.equal(dbWidget?.status, WidgetStatus.ACTIVE);
 
-    const dbHook: Hook = await hookRepository.findByPrimaryId(hook._id!);
+    const dbHook: Hook = await hookRepository.findById(hook._id!);
     assert.equal(dbHook?.status, HookStatus.ACTIVE);
     assert.equal(dbHook?.domain, 'https://example.com');
   });

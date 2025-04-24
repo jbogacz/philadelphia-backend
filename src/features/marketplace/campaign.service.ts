@@ -3,6 +3,7 @@ import { CampaignRepository } from './campaign.repository';
 import { DemandRepository } from './demand.repository';
 import { Campaign, CampaignDto, CampaignQueryDto, CampaignStatus, Offer, OfferDto } from './marketplace.types';
 import { OfferRepository } from './offer.repository';
+import { Filter } from 'mongodb';
 
 export class CampaignService {
   constructor(
@@ -12,7 +13,7 @@ export class CampaignService {
   ) {}
 
   async createFromOffer(offer: OfferDto): Promise<Campaign | null> {
-    const demand = await this.demandRepository.findByPrimaryId(offer.demandId);
+    const demand = await this.demandRepository.findById(offer.demandId);
     const campaign: Campaign = {
       demandId: offer.demandId,
       offerId: new ObjectId(offer._id),
@@ -34,7 +35,15 @@ export class CampaignService {
     return this.campaignRepository.updateV2(id, campaign);
   }
 
-  async query(query: CampaignQueryDto): Promise<CampaignDto[]> {
-    return this.campaignRepository.queryV2(query);
+  async query(userId: string, query: CampaignQueryDto): Promise<CampaignDto[]> {
+    const filter: Filter<Campaign> = {
+      ...query,
+      ...{ $or: [{ providerId: userId }, { requesterId: userId }] },
+    };
+    return this.campaignRepository.queryV2(filter);
+  }
+
+  async findById(id: string): Promise<Campaign | null> {
+    return this.campaignRepository.findById(id);
   }
 }

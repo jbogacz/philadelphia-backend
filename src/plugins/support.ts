@@ -33,6 +33,7 @@ import { WidgetComponentService } from '../features/widget/widget.component.serv
 import { WidgetController } from '../features/widget/widget.controller';
 import { WidgetRepository } from '../features/widget/widget.repository';
 import { WidgetService } from '../features/widget/widget.service';
+import { CampaignController } from '../features/marketplace/campaign.controller';
 
 export default fp<AppOptions>(async (fastify, opts) => {
   const { config } = opts;
@@ -81,6 +82,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     partner: new PartnerController(fastify.service.partner),
     demand: new DemandController(fastify.service.demand, config),
     offer: new OfferController(fastify.service.offer, config),
+    campaign: new CampaignController(fastify.service.campaign, config),
   });
 });
 
@@ -122,6 +124,7 @@ declare module 'fastify' {
       partner: PartnerController;
       demand: DemandController;
       offer: OfferController;
+      campaign: CampaignController;
     };
     cacheManager: any;
   }

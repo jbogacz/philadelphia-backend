@@ -58,9 +58,7 @@ test('offer.routes', async (t) => {
     assert.equal(response.statusCode, 201);
 
     offer = response.json() as Offer;
-    const createdOffer = await db
-      .collection('offers')
-      .findOne({ _id: new ObjectId(offer._id), demandId: demand._id } as any);
+    const createdOffer = await db.collection('offers').findOne({ _id: new ObjectId(offer._id), demandId: demand._id } as any);
     assert.equal(createdOffer?.providerId, 'offer_user');
   });
 
@@ -113,7 +111,7 @@ test('offer.routes', async (t) => {
     });
 
     assert.equal(updateResponse.statusCode, 200);
-    const updatedOffer = await offerRepository.findByPrimaryId(offer._id as string);
+    const updatedOffer = await offerRepository.findById(offer._id as string);
     assert.equal(updatedOffer?.trafficVolume, 1200);
   });
 
@@ -165,7 +163,7 @@ test('offer.routes', async (t) => {
     });
 
     assert.equal(response.statusCode, 204);
-    const deletedOffer = await offerRepository.findByPrimaryId(offer._id as string);
+    const deletedOffer = await offerRepository.findById(offer._id as string);
     assert.equal(deletedOffer, null);
   });
 
@@ -181,6 +179,5 @@ test('offer.routes', async (t) => {
     assert.equal(response.statusCode, 404);
   });
 
-  await t.test('should create campaign when offer is accepted', async () => {
-  });
+  await t.test('should create campaign when offer is accepted', async () => {});
 });
