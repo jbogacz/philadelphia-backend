@@ -5,6 +5,9 @@ import { Campaign, CampaignDto, CampaignQueryDto, CampaignStatus, Offer, OfferDt
 import { OfferRepository } from './offer.repository';
 import { Filter } from 'mongodb';
 import { ForbiddenError, NotFoundError } from '../../common/errors';
+import { startOfDay } from 'date-fns/startOfDay';
+import { endOfDay } from 'date-fns/endOfDay';
+import { addDays } from 'date-fns/addDays';
 
 export class CampaignService {
   constructor(
@@ -13,8 +16,24 @@ export class CampaignService {
     private readonly offerRepository: OfferRepository
   ) {}
 
+  static START_DAY_OFFSET = 7;
+
+  /**
+   * Create a campaign from an offer where startDate is set as default 7 days from now
+   * and endDate is set as the duration of the offer.
+   *
+   * @param offer
+   * @returns
+   */
   async createFromOffer(offer: OfferDto): Promise<Campaign | null> {
     const demand = await this.demandRepository.findById(offer.demandId);
+
+    // Start at the beginning of the day
+    const startDate = startOfDay(addDays(new Date(), CampaignService.START_DAY_OFFSET));
+
+    // Close before end of the day
+    const endDate = endOfDay(addDays(startDate, offer.duration - 1));
+
     const campaign: Campaign = {
       demandId: offer.demandId,
       offerId: new ObjectId(offer._id),
@@ -28,10 +47,24 @@ export class CampaignService {
       requesterId: offer.requesterId,
       trackingUrl: 'TODO: generate tracking URL',
       status: CampaignStatus.PENDING,
+      startDate: startDate,
+      endDate: endDate,
     };
     return this.campaignRepository.createV2(campaign);
   }
 
+  /**
+   * Update a campaign
+   * - Only provider or requester can update the campaign
+   * - Only requester can update the status
+   * - Cannot update the campaign if it is in final status (CANCELLED or COMPLETED)
+   * - Mostly, owners will update startDate and endDate
+   * 
+   * @param id
+   * @param campaign
+   * @param userId
+   * @returns
+   */
   async update(id: string, campaign: CampaignDto, userId: string): Promise<CampaignDto | null> {
     const existingCampaign = await this.campaignRepository.findById(id);
     if (!existingCampaign) {
