@@ -30,7 +30,7 @@ export class OfferService {
       status: OfferStatus.PENDING,
       demandId: new ObjectId(dto.demandId),
       hookId: new ObjectId(demand.hookId),
-      requesterId: demand.userId,
+      seekerId: demand.userId,
     } as Offer;
     const created = await this.offerRepository.createV2(offer);
 
@@ -45,8 +45,8 @@ export class OfferService {
     }
 
     if (dto.status) {
-      if (userId !== offer.requesterId) {
-        throw new ForbiddenError('Only requester can update offer status');
+      if (userId !== offer.seekerId) {
+        throw new ForbiddenError('Only seeker can update offer status');
       }
       if (dto.status === OfferStatus.ACCEPTED) {
         await this.campaignService.createFromOffer(offer);
@@ -67,7 +67,7 @@ export class OfferService {
   async updateStatus(id: string, userId: string, status: OfferStatus): Promise<OfferDto | null> {
     const updateQuery = {
       _id: new ObjectId(id),
-      requesterId: userId,
+      seekerId: userId,
     } as Filter<Offer>;
     const updated = await this.offerRepository.updateWhereV2(updateQuery, { status });
 

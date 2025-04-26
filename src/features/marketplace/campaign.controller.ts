@@ -60,7 +60,7 @@ export class CampaignController {
     if (!campaign) {
       return reply.code(404).send({ error: 'Campaign not found', code: 404 });
     }
-    if (campaign.providerId !== userId && campaign.requesterId !== userId) {
+    if (campaign.providerId !== userId && campaign.seekerId !== userId) {
       return reply.code(403).send({ error: 'Forbidden', code: 403 });
     }
     return reply.code(200).send(campaign);

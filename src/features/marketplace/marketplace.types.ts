@@ -14,8 +14,8 @@ export enum DemandStatus {
 
 export enum OfferStatus {
   PENDING = 'pending', // Awaiting decision
-  ACCEPTED = 'accepted', // Accepted by requester
-  REJECTED = 'rejected', // Rejected by requester
+  ACCEPTED = 'accepted', // Accepted by seeker
+  REJECTED = 'rejected', // Rejected by seeker
 }
 
 export enum CampaignStatus {
@@ -83,7 +83,7 @@ export const OfferSchema = Type.Intersect([
     demandId: ObjectIdType,
     hookId: ObjectIdType,
     providerId: Type.String(), // Provider's user ID (offer provider)
-    requesterId: Type.String(), // Seeker's user ID (demand seeker)
+    seekerId: Type.String(), // Seeker's user ID (demand seeker)
 
     // Core offer details
     trafficVolume: Type.Number(),
@@ -101,24 +101,12 @@ export const OfferSchema = Type.Intersect([
 
 export const OfferQuerySchema = Type.Object({
   providerId: Type.Optional(Type.String()),
-  requesterId: Type.Optional(Type.String()),
+  seekerId: Type.Optional(Type.String()),
   status: Type.Optional(Type.Enum(OfferStatus)),
 });
 
-// export const OfferDtoSchema = Type.Composite([
-//   Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status', 'hookId', 'requesterId']),
-//   Type.Object({
-//     createdAt: Type.Optional(DateTimeType),
-//     updatedAt: Type.Optional(DateTimeType),
-//     status: Type.Optional(Type.Enum(OfferStatus)),
-//     hookId: Type.Optional(Type.String()),
-//     requesterId: Type.Optional(Type.String()),
-//     demand: Type.Optional(DemandDtoSchema),
-//   }),
-// ]);
-
 export const UpdateOfferDtoSchema = Type.Composite([
-  Type.Partial(Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status', 'hookId', 'requesterId'])),
+  Type.Partial(Type.Omit(OfferSchema, ['createdAt', 'updatedAt', 'status', 'hookId', 'seekerId'])),
   Type.Object({
     createdAt: Type.Optional(Type.String({ format: 'date-time' })),
     updatedAt: Type.Optional(Type.String({ format: 'date-time' })),
@@ -143,7 +131,7 @@ export const CampaignSchema = Type.Intersect([
 
     // Core participants
     providerId: Type.String(),
-    requesterId: Type.String(),
+    seekerId: Type.String(),
 
     // Tracking
     trackingUrl: Type.Optional(Type.String()),
@@ -157,7 +145,7 @@ export const CampaignSchema = Type.Intersect([
 
 export const CampaignQuerySchema = Type.Object({
   providerId: Type.Optional(Type.String()),
-  requesterId: Type.Optional(Type.String()),
+  seekerId: Type.Optional(Type.String()),
   userId: Type.Optional(Type.String()),
   status: Type.Optional(Type.Enum(CampaignStatus)),
 });

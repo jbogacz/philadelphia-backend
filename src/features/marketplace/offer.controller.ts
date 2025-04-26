@@ -35,8 +35,8 @@ export class OfferController {
   > {
     const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
 
-    const { providerId, requesterId } = request.query;
-    if ((providerId && providerId !== userId) || (requesterId && requesterId !== userId)) {
+    const { providerId, seekerId } = request.query;
+    if ((providerId && providerId !== userId) || (seekerId && seekerId !== userId)) {
       return reply.code(401).send({ error: 'Unauthorized', code: 401 });
     }
 

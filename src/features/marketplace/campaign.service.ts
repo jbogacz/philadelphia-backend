@@ -50,7 +50,7 @@ export class CampaignService {
       utmCampaign: utmCampaign,
       trackingUrl: this.config.apiUrl + '/flows?utm_campaign=' + utmCampaign,
       providerId: offer.providerId,
-      requesterId: offer.requesterId,
+      seekerId: offer.seekerId,
       status: CampaignStatus.PENDING,
       startDate: startDate,
       endDate: endDate,
@@ -60,8 +60,8 @@ export class CampaignService {
 
   /**
    * Update a campaign
-   * - Only provider or requester can update the campaign
-   * - Only requester can update the status
+   * - Only provider or seeker can update the campaign
+   * - Only seeker can update the status
    * - Cannot update the campaign if it is in final status (CANCELLED or COMPLETED)
    * - Mostly, owners will update startDate and endDate
    *
@@ -75,11 +75,11 @@ export class CampaignService {
     if (!existingCampaign) {
       throw new NotFoundError('Campaign not found: ' + id);
     }
-    if (userId !== existingCampaign.providerId && userId !== existingCampaign.requesterId) {
-      throw new ForbiddenError('Only provider or requester can update campaign');
+    if (userId !== existingCampaign.providerId && userId !== existingCampaign.seekerId) {
+      throw new ForbiddenError('Only provider or seeker can update campaign');
     }
-    if (campaign.status && campaign.status !== existingCampaign.status && userId !== existingCampaign.requesterId) {
-      throw new ForbiddenError('Only requester can update campaign status');
+    if (campaign.status && campaign.status !== existingCampaign.status && userId !== existingCampaign.seekerId) {
+      throw new ForbiddenError('Only seeker can update campaign status');
     }
     if (existingCampaign.status === CampaignStatus.CANCELLED || existingCampaign.status === CampaignStatus.COMPLETED) {
       throw new ForbiddenError('Cannot update campaign in final status');
@@ -90,7 +90,7 @@ export class CampaignService {
   async query(query: CampaignQueryDto, userId: string): Promise<CampaignDto[]> {
     const filter: Filter<Campaign> = {
       ...query,
-      $or: [{ providerId: userId }, { requesterId: userId }],
+      $or: [{ providerId: userId }, { seekerId: userId }],
     };
     return this.campaignRepository.queryV2(filter);
   }

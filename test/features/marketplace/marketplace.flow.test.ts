@@ -51,7 +51,7 @@ test('marketplace:flow', async (t) => {
       demandId: new ObjectId(demand._id),
       hookId: new ObjectId(demand.hookId),
       providerId: 'offer_user',
-      requesterId: demand.userId,
+      seekerId: demand.userId,
       trafficVolume: 1000,
       price: 900,
       duration: 7,
@@ -62,12 +62,12 @@ test('marketplace:flow', async (t) => {
     });
   });
 
-  await t.test('should fail when status update is done by non-requester', async () => {
+  await t.test('should fail when status update is done by non-seeker', async () => {
     const response = await fastify.inject({
       method: 'PATCH',
       url: `/api/offers/${offer._id}`,
       headers: {
-        'x-user-id': 'non_requester_user',
+        'x-user-id': 'non_seeker_user',
       },
       payload: {
         status: OfferStatus.REJECTED,
@@ -82,7 +82,7 @@ test('marketplace:flow', async (t) => {
       method: 'PATCH',
       url: `/api/offers/${offer._id}`,
       headers: {
-        'x-user-id': offer.requesterId,
+        'x-user-id': offer.seekerId,
       },
       payload: {
         status: OfferStatus.REJECTED,
@@ -101,7 +101,7 @@ test('marketplace:flow', async (t) => {
       method: 'PATCH',
       url: `/api/offers/${offer._id}`,
       headers: {
-        'x-user-id': offer.requesterId,
+        'x-user-id': offer.seekerId,
       },
       payload: {
         status: OfferStatus.PENDING,
@@ -119,7 +119,7 @@ test('marketplace:flow', async (t) => {
       method: 'PATCH',
       url: `/api/offers/${offer._id}`,
       headers: {
-        'x-user-id': offer.requesterId,
+        'x-user-id': offer.seekerId,
       },
       payload: {
         status: OfferStatus.ACCEPTED,
@@ -136,7 +136,7 @@ test('marketplace:flow', async (t) => {
     assert.equal(campaign.demandId.toString(), demand._id);
     assert.equal(campaign.hookId.toString(), demand.hookId);
     assert.equal(campaign.providerId, offer.providerId);
-    assert.equal(campaign.requesterId, offer.requesterId);
+    assert.equal(campaign.seekerId, offer.seekerId);
     assert.equal(campaign.title, demand.title);
     assert.equal(campaign.goal, offer.trafficVolume);
     assert.equal(campaign.price, offer.price);
