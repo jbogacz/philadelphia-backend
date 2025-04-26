@@ -178,6 +178,4 @@ test('offer.routes', async (t) => {
 
     assert.equal(response.statusCode, 404);
   });
-
-  await t.test('should create campaign when offer is accepted', async () => {});
 });

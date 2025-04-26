@@ -59,7 +59,7 @@ export class CampaignService {
    * - Only requester can update the status
    * - Cannot update the campaign if it is in final status (CANCELLED or COMPLETED)
    * - Mostly, owners will update startDate and endDate
-   * 
+   *
    * @param id
    * @param campaign
    * @param userId
@@ -85,7 +85,7 @@ export class CampaignService {
   async query(query: CampaignQueryDto, userId: string): Promise<CampaignDto[]> {
     const filter: Filter<Campaign> = {
       ...query,
-      ...{ $or: [{ providerId: userId }, { requesterId: userId }] },
+      $or: [{ providerId: userId }, { requesterId: userId }],
     };
     return this.campaignRepository.queryV2(filter);
   }
