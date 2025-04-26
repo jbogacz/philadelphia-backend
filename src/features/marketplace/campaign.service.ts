@@ -8,12 +8,13 @@ import { ForbiddenError, NotFoundError } from '../../common/errors';
 import { startOfDay } from 'date-fns/startOfDay';
 import { endOfDay } from 'date-fns/endOfDay';
 import { addDays } from 'date-fns/addDays';
+import { AppConfig } from '../../app.types';
 
 export class CampaignService {
   constructor(
     private readonly campaignRepository: CampaignRepository,
     private readonly demandRepository: DemandRepository,
-    private readonly offerRepository: OfferRepository
+    private readonly config: AppConfig
   ) {}
 
   static START_DAY_OFFSET = 7;
@@ -34,6 +35,9 @@ export class CampaignService {
     // Close before end of the day
     const endDate = endOfDay(addDays(startDate, offer.duration - 1));
 
+    // We don't want to expose any id to public
+    const utmCampaign = crypto.randomUUID();
+
     const campaign: Campaign = {
       demandId: offer.demandId,
       offerId: new ObjectId(offer._id),
@@ -43,9 +47,10 @@ export class CampaignService {
       duration: offer.duration,
       trafficSources: offer.trafficSources,
       title: demand?.title || 'Missing title',
+      utmCampaign: utmCampaign,
+      trackingUrl: this.config.apiUrl + '/flows?utm_campaign=' + utmCampaign,
       providerId: offer.providerId,
       requesterId: offer.requesterId,
-      trackingUrl: 'TODO: generate tracking URL',
       status: CampaignStatus.PENDING,
       startDate: startDate,
       endDate: endDate,

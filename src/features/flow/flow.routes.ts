@@ -3,7 +3,7 @@ import { randomId } from '../../common/utils';
 
 export const flowRoutes: FastifyPluginAsync = async fastify => {
   fastify.get(
-    '/flow',
+    '/flows',
     {
       schema: {
         querystring: {
@@ -22,7 +22,7 @@ export const flowRoutes: FastifyPluginAsync = async fastify => {
   );
 
   fastify.post(
-    '/flow',
+    '/flows',
     {
       schema: {
         body: {
