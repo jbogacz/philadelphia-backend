@@ -7,6 +7,9 @@ import { DemandRepository } from '../../../src/features/marketplace/demand.repos
 import { Demand, DemandStatus, Offer, OfferStatus } from '../../../src/features/marketplace/marketplace.types';
 import { OfferRepository } from '../../../src/features/marketplace/offer.repository';
 import { build, clearDatabase } from '../../helper';
+import { startOfDay } from 'date-fns/startOfDay';
+import { endOfDay } from 'date-fns/endOfDay';
+import { addDays } from 'date-fns/addDays';
 
 test('marketplace:flow', async (t) => {
   const fastify = await build(t);
@@ -39,7 +42,7 @@ test('marketplace:flow', async (t) => {
       description: 'bar',
       goal: 1000,
       budget: { min: 100, max: 1000 },
-      duration: 30,
+      duration: 7,
       audience: 'baz',
       status: DemandStatus.OPEN,
     });
@@ -51,7 +54,7 @@ test('marketplace:flow', async (t) => {
       requesterId: demand.userId,
       trafficVolume: 1000,
       price: 900,
-      duration: 30,
+      duration: 7,
       trafficSources: 'source1,source2',
       pitch: 'This is a great offer',
       audience: 'Target audience description',
@@ -90,7 +93,7 @@ test('marketplace:flow', async (t) => {
     const updatedOffer = response.json() as Offer;
     assert.equal(updatedOffer.status, OfferStatus.REJECTED);
     const campaign = await db.collection('campaigns').findOne({ offerId: new ObjectId(offer._id) } as any);
-    assert.ok(!campaign)
+    assert.ok(!campaign);
   });
 
   await t.test('should update only status when status is passed', async () => {
@@ -141,5 +144,11 @@ test('marketplace:flow', async (t) => {
     assert.equal(campaign.trafficSources, offer.trafficSources);
     assert.equal(campaign.status, 'pending');
     assert.ok(campaign.trackingUrl);
+
+    const expectedStartDate = startOfDay(addDays(new Date(), 7));
+    assert.equal(campaign.startDate.getTime(), expectedStartDate.getTime());
+
+    const expectedEndDate = endOfDay(addDays(new Date(), 7 + offer.duration - 1));
+    assert.equal(campaign.endDate.getTime(), expectedEndDate.getTime());
   });
 });

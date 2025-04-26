@@ -120,7 +120,7 @@ async function seedPartnerships(hookName: string, fastify: FastifyInstance): Pro
     return;
   }
 
-  const sourceWidget = await widgetRepository.findByPrimaryId(sourceHook.widgetId);
+  const sourceWidget = await widgetRepository.findById(sourceHook.widgetId);
   if (!sourceWidget) {
     fastify.log.error('Widget not found:', sourceHook.widgetId);
     return;
@@ -131,9 +131,9 @@ async function seedPartnerships(hookName: string, fastify: FastifyInstance): Pro
       continue;
     }
 
-    targetHook = await hookRepository.queryOne({ name: targetHook.name }) ?? targetHook;
+    targetHook = (await hookRepository.queryOne({ name: targetHook.name })) ?? targetHook;
 
-    const targetWidget = await widgetRepository.findByPrimaryId(targetHook.widgetId);
+    const targetWidget = await widgetRepository.findById(targetHook.widgetId);
     if (!targetWidget) {
       fastify.log.error('Widget not found:', targetHook.widgetId);
       continue;

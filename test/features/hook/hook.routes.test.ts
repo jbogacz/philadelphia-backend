@@ -76,7 +76,7 @@ test('hook:routes', async (t) => {
   });
 
   await t.test('should link hook with widget', async () => {
-    const widgetWithHook = await widgetRepository.findByPrimaryId(widget._id);
+    const widgetWithHook = await widgetRepository.findById(widget._id);
     assert.equal(widgetWithHook.hookId, created._id);
 
     // hook.widgetId is stored as ObjectId
@@ -184,7 +184,7 @@ test('hook:routes', async (t) => {
       url: '/api/hooks/' + created._id,
       payload: updatedHook,
     });
-    const updated = await fastify.repository.hook.findByPrimaryId(created._id?.toString());
+    const updated = await fastify.repository.hook.findById(created._id?.toString());
     assert.equal(updated?.description, 'qux');
   });
 
@@ -196,10 +196,10 @@ test('hook:routes', async (t) => {
 
     assert.equal(response.statusCode, 204);
 
-    const deleted = await fastify.repository.hook.findByPrimaryId(created._id);
+    const deleted = await fastify.repository.hook.findById(created._id);
     assert.equal(deleted, null);
 
-    const widgetWithDeletedHook = await widgetRepository.findByPrimaryId(widget._id);
+    const widgetWithDeletedHook = await widgetRepository.findById(widget._id);
     assert.equal(widgetWithDeletedHook.hookId, created._id);
     assert.equal(widgetWithDeletedHook.status, WidgetStatus.DELETED);
   });

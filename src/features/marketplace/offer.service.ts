@@ -19,7 +19,7 @@ export class OfferService {
   async create(dto: OfferDto): Promise<OfferDto> {
     this.logger.info('Creating offer:', dto);
 
-    const demand = await this.demandRepository.findByPrimaryId(dto.demandId);
+    const demand = await this.demandRepository.findById(dto.demandId);
     if (!demand) {
       this.logger.error('Demand not found:', dto.demandId);
       throw new NotFoundError('Demand not found: ' + dto.demandId);
@@ -39,7 +39,7 @@ export class OfferService {
   }
 
   async update(offerId: string, userId: string, dto: Partial<OfferDto>): Promise<OfferDto | null> {
-    const offer = await this.offerRepository.findByPrimaryId(new ObjectId(offerId));
+    const offer = await this.offerRepository.findById(new ObjectId(offerId));
     if (!offer) {
       throw new NotFoundError('Offer not found: ' + offerId);
     }
@@ -101,7 +101,7 @@ export class OfferService {
   }
 
   async findById(id: string): Promise<OfferDto | null> {
-    return this.offerRepository.findByPrimaryId(id);
+    return this.offerRepository.findById(id);
   }
 
   async delete(id: string, providerId: string): Promise<void> {
