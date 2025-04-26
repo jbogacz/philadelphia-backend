@@ -27,7 +27,8 @@ test('campaign.routes', async (t) => {
       title: 'Test Campaign',
       providerId: "provider_user",
       requesterId: 'requester_user',
-      trackingUrl: 'http://example.com/tracking1',
+      utmCampaign: 'test-campaign-1',
+      trackingUrl: 'http://backend.com/api/flows?utm_campaign=test-campaign-1',
       status: CampaignStatus.PENDING,
     });
   });
@@ -45,7 +46,8 @@ test('campaign.routes', async (t) => {
       title: 'Campaign 2',
       providerId: 'requester_user',
       requesterId: 'provider_user',
-      trackingUrl: 'http://example.com/tracking2',
+      utmCampaign: 'test-campaign-2',
+      trackingUrl: 'http://backend.com/api/flows?utm_campaign=test-campaign-2',
       status: CampaignStatus.PENDING,
     };
     await campaignRepository.createV2(campaign2);

@@ -139,6 +139,7 @@ export const CampaignSchema = Type.Intersect([
     duration: Type.Union([Type.Literal(7), Type.Literal(14), Type.Literal(30)]),
     trafficSources: Type.String(),
     title: Type.String(),
+    utmCampaign: Type.String(), // Unique identifier for the campaign
 
     // Core participants
     providerId: Type.String(),

@@ -35,7 +35,7 @@ test('flow:routes', async (t) => {
   await t.test('should return dynamic code', async () => {
     const response = await fastify.inject({
       method: 'GET',
-      url: `/api/flow?utm_campaign=${CAMPAIGN_ID}&utm_source=instagram&utm_content=${PUBLISHER_ID}`,
+      url: `/api/flows?utm_campaign=${CAMPAIGN_ID}&utm_source=instagram&utm_content=${PUBLISHER_ID}`,
     });
 
     assert.equal(response.statusCode, 200);
@@ -55,7 +55,7 @@ test('flow:routes', async (t) => {
 
     const response = await fastify.inject({
       method: 'POST',
-      url: '/api/flow',
+      url: '/api/flows',
       payload: flowEvent,
     });
 
@@ -79,7 +79,7 @@ test('flow:routes', async (t) => {
 
     const response = await fastify.inject({
       method: 'POST',
-      url: '/api/flow',
+      url: '/api/flows',
       payload: flowEvent,
     });
 
@@ -94,7 +94,7 @@ test('flow:routes', async (t) => {
   await t.test('should return 400 for invalid payload', async () => {
     const response = await fastify.inject({
       method: 'POST',
-      url: '/api/flow',
+      url: '/api/flows',
       payload: {},
     });
 
