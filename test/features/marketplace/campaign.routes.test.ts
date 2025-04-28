@@ -203,20 +203,17 @@ test('campaign.routes', async (t) => {
     assert.equal(response.statusCode, 403);
   });
 
-  await t.test('should return 404 when invalid campaign ID is provided', async () => {
-    const response = await fastify.inject({
+  await t.test('should fail validation when proposing new start date', async () => {
+    let response = await fastify.inject({
       method: 'GET',
       url: `/api/campaigns/${new ObjectId()}/propose-date`,
       headers: {
         'x-user-id': 'provider_user',
       },
     });
-
     assert.equal(response.statusCode, 404);
-  });
 
-  await t.test('should fail validation when proposing new start date', async () => {
-    let response = await fastify.inject({
+    response = await fastify.inject({
       method: 'POST',
       url: `/api/campaigns/${testCampaign2._id}/propose-date`,
       headers: {
@@ -289,11 +286,84 @@ test('campaign.routes', async (t) => {
     assert.equal(currentDateProposal.proposedStartDate, startOfDay(addDays(new Date(), 8)).toISOString());
     assert.equal(currentDateProposal.status, 'pending');
 
-    const updatedCampaign: Campaign = await campaignRepository.findById(new ObjectId(testCampaign2._id)) as Campaign;
+    const updatedCampaign: Campaign = (await campaignRepository.findById(new ObjectId(testCampaign2._id))) as Campaign;
     assert.equal(updatedCampaign.currentDateProposal?.proposedByUserId, 'provider_user');
     assert.equal(updatedCampaign.currentDateProposal?.proposedByRole, 'provider');
     assert.equal(updatedCampaign.currentDateProposal?.proposedByName, 'provider@test.pl');
     assert.equal(updatedCampaign.currentDateProposal?.proposedStartDate.toISOString(), startOfDay(addDays(new Date(), 8)).toISOString());
     assert.equal(updatedCampaign.currentDateProposal?.status, 'pending');
+  });
+
+  await t.test('should fail validation when responding to date proposal', async () => {
+    let response = await fastify.inject({
+      method: 'PUT',
+      url: `/api/campaigns/${new ObjectId()}/respond-to-date`,
+      headers: {
+        'x-user-id': 'provider_user',
+      },
+      payload: {
+        status: 'accepted',
+      },
+    });
+    assert.equal(response.statusCode, 404);
+
+    response = await fastify.inject({
+      method: 'PUT',
+      url: `/api/campaigns/${testCampaign2._id}/respond-to-date`,
+      headers: {
+        'x-user-id': 'other_user',
+      },
+      payload: {
+        status: 'accepted',
+      },
+    });
+    assert.equal(response.statusCode, 403);
+    assert.equal(response.json().message, 'Only provider or seeker can respond to date proposal');
+
+    response = await fastify.inject({
+      method: 'PUT',
+      url: `/api/campaigns/${testCampaign1._id}/respond-to-date`,
+      headers: {
+        'x-user-id': 'provider_user',
+      },
+      payload: {
+        status: 'accepted',
+      },
+    });
+    assert.equal(response.statusCode, 400);
+    assert.equal(response.json().message, 'Date proposal is not pending');
+
+    response = await fastify.inject({
+      method: 'PUT',
+      url: `/api/campaigns/${testCampaign2._id}/respond-to-date`,
+      headers: {
+        'x-user-id': 'provider_user',
+      },
+      payload: {
+        status: 'accepted',
+      },
+    });
+    assert.equal(response.statusCode, 403);
+    assert.equal(response.json().message, 'User cannot respond to their own date proposal');
+  });
+
+  await t.test('should accept new start date proposal', async () => {
+    const response = await fastify.inject({
+      method: 'PUT',
+      url: `/api/campaigns/${testCampaign2._id}/respond-to-date`,
+      headers: {
+        'x-user-id': 'seeker_user',
+      },
+      payload: {
+        status: 'accepted',
+      },
+    });
+
+    assert.equal(response.statusCode, 200);
+    const updatedDateProposal = response.json();
+    assert.equal(updatedDateProposal.status, 'accepted');
+
+    const updatedCampaign: Campaign = (await campaignRepository.findById(new ObjectId(testCampaign2._id))) as Campaign;
+    assert.equal(updatedCampaign.currentDateProposal?.status, 'accepted');
   });
 });

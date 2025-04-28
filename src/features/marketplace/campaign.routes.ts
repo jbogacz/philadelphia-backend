@@ -105,7 +105,7 @@ export const campaignRoutes: FastifyPluginAsync = async (fastify) => {
           },
         },
         body: Type.Object({
-          status: Type.Union([Type.Literal('accept'), Type.Literal('reject')]),
+          status: Type.Union([Type.Literal('accepted'), Type.Literal('rejected')]),
         }),
         tags: ['campaigns'],
         response: {
