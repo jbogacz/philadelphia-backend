@@ -26,6 +26,11 @@ export enum CampaignStatus {
   CANCELLED = 'cancelled', // Terminated early
 }
 
+export enum CampaignRole {
+  PROVIDER = 'provider',
+  SEEKER = 'seeker',
+}
+
 /**
  * SCHEMA
  */
@@ -114,6 +119,33 @@ export const UpdateOfferDtoSchema = Type.Composite([
   }),
 ]);
 
+export const CampaignDateProposalSchema = Type.Object({
+  proposedByUserId: Type.String(),
+  proposedByName: Type.String(),
+  proposedByRole: Type.Union([Type.Literal('provider'), Type.Literal('seeker')]),
+  proposedStartDate: DateTimeType,
+  reason: Type.Optional(Type.String()),
+  status: Type.Union([Type.Literal('pending'), Type.Literal('accepted'), Type.Literal('rejected')]),
+  proposedAt: DateTimeType,
+});
+
+export const CampaignContactInfoSchema = Type.Optional(
+  Type.Object({
+    seeker: Type.Optional(
+      Type.Object({
+        phoneNumber: Type.String(),
+        sharedAt: DateTimeType,
+      })
+    ),
+    provider: Type.Optional(
+      Type.Object({
+        phoneNumber: Type.String(),
+        sharedAt: DateTimeType,
+      })
+    ),
+  })
+);
+
 export const CampaignSchema = Type.Intersect([
   BaseSchemaV2,
   Type.Object({
@@ -128,6 +160,7 @@ export const CampaignSchema = Type.Intersect([
     trafficSources: Type.String(),
     title: Type.String(),
     utmCampaign: Type.String(), // Unique identifier for the campaign
+    destinationUrl: Type.String(), // Get the URL from the hook
 
     // Core participants
     providerId: Type.String(),
@@ -140,6 +173,10 @@ export const CampaignSchema = Type.Intersect([
 
     // Status management
     status: Type.Optional(Type.Enum(CampaignStatus)),
+
+    currentDateProposal: Type.Optional(CampaignDateProposalSchema),
+
+    contactInfo: CampaignContactInfoSchema,
   }),
 ]);
 
@@ -166,8 +203,8 @@ export const ProfileSchema = Type.Intersect([
       performanceStats: Type.Optional(
         Type.Object({
           campaignsCompleted: Type.Number({ default: 0 }), // Number of campaigns completed
-          completionRate: Type.Number({ default: 0 }), // % of promised traffic delivered in past campaigns
           averageRating: Type.Number({ default: 0 }), // Average rating from past campaigns
+          completionRate: Type.Number({ default: 0 }), // % of promised traffic delivered in past campaigns
         })
       ),
     }),
@@ -183,6 +220,10 @@ export type Offer = Static<typeof OfferSchema> & IEntityV2;
 
 export type Campaign = Static<typeof CampaignSchema> & IEntityV2;
 
+export type CampaignDateProposal = Static<typeof CampaignDateProposalSchema>;
+
+export type CampaignContactInfo = Static<typeof CampaignContactInfoSchema>;
+
 /**
  * DTO
  */
@@ -197,3 +238,7 @@ export type OfferQueryDto = Static<typeof OfferQuerySchema>;
 export type CampaignDto = Static<typeof CampaignSchema>;
 
 export type CampaignQueryDto = Static<typeof CampaignQuerySchema>;
+
+export type CampaignDateProposalDto = Static<typeof CampaignDateProposalSchema>;
+
+export type CampaignContactInfoDto = Static<typeof CampaignContactInfoSchema>;

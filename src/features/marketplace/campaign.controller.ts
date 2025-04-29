@@ -1,9 +1,10 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { CampaignService } from './campaign.service';
-import { CampaignDto, CampaignQueryDto } from './marketplace.types';
-import { ErrorDto } from '../../common/errors';
-import { AppConfig } from '../../app.types';
 import { getAuth } from '@clerk/fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
+import { AppConfig } from '../../app.types';
+import { ErrorDto } from '../../common/errors';
+import { CampaignService } from './campaign.service';
+import { CampaignContactInfoDto, CampaignDateProposalDto, CampaignDto, CampaignQueryDto } from './marketplace.types';
+import { startOfDay } from 'date-fns/startOfDay';
 
 export class CampaignController {
   constructor(private readonly campaignService: CampaignService, private readonly config: AppConfig) {}
@@ -64,5 +65,61 @@ export class CampaignController {
       return reply.code(403).send({ error: 'Forbidden', code: 403 });
     }
     return reply.code(200).send(campaign);
+  }
+
+  async proposeStartDate(
+    request: FastifyRequest<{ Params: { id: string }; Body: { startDate: Date } }>,
+    reply: FastifyReply
+  ): Promise<
+    FastifyReply<{
+      Reply: CampaignDateProposalDto | ErrorDto;
+    }>
+  > {
+    const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized', code: 401 });
+    }
+    const campaignId = request.params.id;
+    const startDate = startOfDay(new Date(request.body.startDate));
+    const proposition = await this.campaignService.proposeStartDate(campaignId, { startDate }, userId as string);
+
+    return reply.code(200).send(proposition);
+  }
+
+  async respondToDateProposal(
+    request: FastifyRequest<{ Params: { id: string }; Body: { status: 'accepted' | 'rejected' } }>,
+    reply: FastifyReply
+  ): Promise<
+    FastifyReply<{
+      Reply: { startDate: Date; status: 'pending' | 'accepted' | 'rejected' } | ErrorDto;
+    }>
+  > {
+    const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized', code: 401 });
+    }
+    const campaignId = request.params.id;
+    const { status } = request.body;
+    const proposition = await this.campaignService.respondToDateProposal(campaignId, { status }, userId as string);
+
+    return reply.code(200).send(proposition);
+  }
+
+  async updateContactInfo(
+    request: FastifyRequest<{ Params: { id: string }; Body: { phoneNumber: string } }>,
+    reply: FastifyReply
+  ): Promise<
+    FastifyReply<{
+      Reply: CampaignContactInfoDto | ErrorDto;
+    }>
+  > {
+    const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized', code: 401 });
+    }
+    const campaignId = request.params.id;
+    const contactInfo = await this.campaignService.updateContactInfo(campaignId, request.body, userId as string);
+
+    return reply.code(200).send(contactInfo);
   }
 }
