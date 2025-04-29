@@ -1,13 +1,13 @@
+import { addDays } from 'date-fns/addDays';
+import { startOfDay } from 'date-fns/startOfDay';
 import { ObjectId } from 'mongodb';
 import * as assert from 'node:assert';
 import { test } from 'node:test';
 import { CampaignRepository } from '../../../src/features/marketplace/campaign.repository';
 import { Campaign, CampaignStatus } from '../../../src/features/marketplace/marketplace.types';
-import { build, clearDatabase } from '../../helper';
 import { UserRepository } from '../../../src/features/user/user.repository';
 import { UserRole } from '../../../src/features/user/user.types';
-import { addDays } from 'date-fns/addDays';
-import { startOfDay } from 'date-fns/startOfDay';
+import { build, clearDatabase } from '../../helper';
 
 test('campaign.routes', async (t) => {
   const fastify = await build(t);
@@ -365,5 +365,59 @@ test('campaign.routes', async (t) => {
 
     const updatedCampaign: Campaign = (await campaignRepository.findById(new ObjectId(testCampaign2._id))) as Campaign;
     assert.equal(updatedCampaign.currentDateProposal?.status, 'accepted');
+  });
+
+  await t.test('should fail to update contact info for non-existent campaign', async () => {
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `/api/campaigns/${new ObjectId()}/contact-info`,
+      headers: {
+        'x-user-id': 'provider_user',
+      },
+      payload: {
+        phoneNumber: '+48123456789',
+      },
+    });
+    assert.equal(response.statusCode, 404);
+  });
+
+  await t.test('should update contact info of provider', async () => {
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `/api/campaigns/${testCampaign2._id}/contact-info`,
+      headers: {
+        'x-user-id': 'provider_user',
+      },
+      payload: {
+        phoneNumber: '+48123456789',
+      },
+    });
+
+    assert.equal(response.statusCode, 200);
+    const contactInfo = response.json();
+    assert.equal(contactInfo?.provider?.phoneNumber, '+48123456789');
+
+    const campaignFromDb = await campaignRepository.findById(new ObjectId(testCampaign2._id));
+    assert.equal(campaignFromDb?.contactInfo?.provider?.phoneNumber, '+48123456789');
+  });
+
+  await t.test('should update contact info of seeker', async () => {
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `/api/campaigns/${testCampaign2._id}/contact-info`,
+      headers: {
+        'x-user-id': 'seeker_user',
+      },
+      payload: {
+        phoneNumber: '+48987654321',
+      },
+    });
+
+    assert.equal(response.statusCode, 200);
+    const contactInfo = response.json();
+    assert.equal(contactInfo?.seeker?.phoneNumber, '+48987654321');
+
+    const campaignFromDb = await campaignRepository.findById(new ObjectId(testCampaign2._id));
+    assert.equal(campaignFromDb?.contactInfo?.seeker?.phoneNumber, '+48987654321');
   });
 });

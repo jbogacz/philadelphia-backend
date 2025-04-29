@@ -3,7 +3,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { AppConfig } from '../../app.types';
 import { ErrorDto } from '../../common/errors';
 import { CampaignService } from './campaign.service';
-import { CampaignDateProposalDto, CampaignDto, CampaignQueryDto } from './marketplace.types';
+import { CampaignContactInfoDto, CampaignDateProposalDto, CampaignDto, CampaignQueryDto } from './marketplace.types';
 import { startOfDay } from 'date-fns/startOfDay';
 
 export class CampaignController {
@@ -103,5 +103,23 @@ export class CampaignController {
     const proposition = await this.campaignService.respondToDateProposal(campaignId, { status }, userId as string);
 
     return reply.code(200).send(proposition);
+  }
+
+  async updateContactInfo(
+    request: FastifyRequest<{ Params: { id: string }; Body: { phoneNumber: string } }>,
+    reply: FastifyReply
+  ): Promise<
+    FastifyReply<{
+      Reply: CampaignContactInfoDto | ErrorDto;
+    }>
+  > {
+    const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized', code: 401 });
+    }
+    const campaignId = request.params.id;
+    const contactInfo = await this.campaignService.updateContactInfo(campaignId, request.body, userId as string);
+
+    return reply.code(200).send(contactInfo);
   }
 }

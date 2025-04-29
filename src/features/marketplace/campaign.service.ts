@@ -8,7 +8,16 @@ import { LoggerService } from '../../common';
 import { BadRequestError, ForbiddenError, NotFoundError } from '../../common/errors';
 import { CampaignRepository } from './campaign.repository';
 import { DemandRepository } from './demand.repository';
-import { Campaign, CampaignDateProposal, CampaignDto, CampaignQueryDto, CampaignStatus, OfferDto } from './marketplace.types';
+import {
+  Campaign,
+  CampaignContactInfoDto,
+  CampaignDateProposal,
+  CampaignDto,
+  CampaignQueryDto,
+  CampaignRole,
+  CampaignStatus,
+  OfferDto,
+} from './marketplace.types';
 import { UserRepository } from '../user/user.repository';
 import { stat } from 'fs';
 
@@ -207,7 +216,37 @@ export class CampaignService {
     const updatedCampaign = await this.campaignRepository.updateV2(campaignId, campaignUpdate);
     this.logger.info('Updated campaign with date proposal response:', { updatedCampaign });
 
-    return updatedCampaign?.currentDateProposal!
+    return updatedCampaign?.currentDateProposal!;
+  }
+
+  async updateContactInfo(
+    campaignId: string,
+    { phoneNumber }: { phoneNumber: string },
+    userId: string
+  ): Promise<CampaignContactInfoDto | null> {
+    const campaign = await this.campaignRepository.findById(campaignId);
+    if (!campaign) {
+      this.logger.error('Campaign not found:', campaignId);
+      throw new NotFoundError('Campaign not found: ' + campaignId);
+    }
+
+    const role = this.resolveRole(userId, campaign);
+
+    const contactInfo: CampaignContactInfoDto = {
+      [role]: {
+        phoneNumber: phoneNumber,
+        sharedAt: new Date(),
+      },
+    };
+    const updatedCampaign = await this.campaignRepository.updateV2(campaignId, {
+      contactInfo: {
+        ...campaign.contactInfo,
+        ...contactInfo,
+      },
+    });
+
+    this.logger.info('Updated campaign with contact info:', { updatedCampaign });
+    return updatedCampaign?.contactInfo!;
   }
 
   /**
@@ -241,5 +280,15 @@ export class CampaignService {
       this.logger.error(`Cannot change start date for campaign in ${campaign.status} status`, { campaignId: campaign._id });
       throw new BadRequestError(`Cannot change start date for campaign in ${campaign.status} status`);
     }
+  }
+
+  private resolveRole(userId: string, campaign: Campaign): CampaignRole {
+    if (userId === campaign.providerId) {
+      return CampaignRole.PROVIDER;
+    }
+    if (userId === campaign.seekerId) {
+      return CampaignRole.SEEKER;
+    }
+    throw new ForbiddenError('User not allowed to access campaign');
   }
 }

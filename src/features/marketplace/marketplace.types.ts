@@ -26,6 +26,11 @@ export enum CampaignStatus {
   CANCELLED = 'cancelled', // Terminated early
 }
 
+export enum CampaignRole {
+  PROVIDER = 'provider',
+  SEEKER = 'seeker',
+}
+
 /**
  * SCHEMA
  */
@@ -124,6 +129,23 @@ export const CampaignDateProposalSchema = Type.Object({
   proposedAt: DateTimeType,
 });
 
+export const CampaignContactInfoSchema = Type.Optional(
+  Type.Object({
+    seeker: Type.Optional(
+      Type.Object({
+        phoneNumber: Type.String(),
+        sharedAt: DateTimeType,
+      })
+    ),
+    provider: Type.Optional(
+      Type.Object({
+        phoneNumber: Type.String(),
+        sharedAt: DateTimeType,
+      })
+    ),
+  })
+);
+
 export const CampaignSchema = Type.Intersect([
   BaseSchemaV2,
   Type.Object({
@@ -152,6 +174,8 @@ export const CampaignSchema = Type.Intersect([
     status: Type.Optional(Type.Enum(CampaignStatus)),
 
     currentDateProposal: Type.Optional(CampaignDateProposalSchema),
+
+    contactInfo: CampaignContactInfoSchema,
   }),
 ]);
 
@@ -197,6 +221,8 @@ export type Campaign = Static<typeof CampaignSchema> & IEntityV2;
 
 export type CampaignDateProposal = Static<typeof CampaignDateProposalSchema>;
 
+export type CampaignContactInfo = Static<typeof CampaignContactInfoSchema>;
+
 /**
  * DTO
  */
@@ -213,3 +239,5 @@ export type CampaignDto = Static<typeof CampaignSchema>;
 export type CampaignQueryDto = Static<typeof CampaignQuerySchema>;
 
 export type CampaignDateProposalDto = Static<typeof CampaignDateProposalSchema>;
+
+export type CampaignContactInfoDto = Static<typeof CampaignContactInfoSchema>;
