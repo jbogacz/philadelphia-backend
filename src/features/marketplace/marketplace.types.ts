@@ -160,6 +160,7 @@ export const CampaignSchema = Type.Intersect([
     trafficSources: Type.String(),
     title: Type.String(),
     utmCampaign: Type.String(), // Unique identifier for the campaign
+    destinationUrl: Type.String(), // Get the URL from the hook
 
     // Core participants
     providerId: Type.String(),

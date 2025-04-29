@@ -19,6 +19,7 @@ import {
   OfferDto,
 } from './marketplace.types';
 import { UserRepository } from '../user/user.repository';
+import { HookRepository } from '../hook/hook.repository';
 
 export class CampaignService {
   private logger = LoggerService.getLogger('feature.marketplace.CampaignService');
@@ -26,6 +27,7 @@ export class CampaignService {
   constructor(
     private readonly campaignRepository: CampaignRepository,
     private readonly demandRepository: DemandRepository,
+    private readonly hookRepository: HookRepository,
     private readonly userRepository: UserRepository,
     private readonly config: AppConfig
   ) {}
@@ -41,6 +43,7 @@ export class CampaignService {
    */
   async createFromOffer(offer: OfferDto): Promise<Campaign | null> {
     const demand = await this.demandRepository.findById(offer.demandId);
+    const hook = await this.hookRepository.findById(offer.hookId);
 
     // Start at the beginning of the day
     const startDate = startOfDay(addDays(new Date(), CampaignService.START_DAY_OFFSET));
@@ -61,6 +64,7 @@ export class CampaignService {
       trafficSources: offer.trafficSources,
       title: demand?.title || 'Missing title',
       utmCampaign: utmCampaign,
+      destinationUrl: hook?.domain || 'Missing URL',
       trackingUrl: this.config.apiUrl + '/flows?utm_campaign=' + utmCampaign,
       providerId: offer.providerId,
       seekerId: offer.seekerId,

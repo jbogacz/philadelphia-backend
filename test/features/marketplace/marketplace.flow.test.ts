@@ -144,6 +144,7 @@ test('marketplace:flow', async (t) => {
     assert.equal(campaign.trafficSources, offer.trafficSources);
     assert.equal(campaign.status, 'pending');
     assert.equal(campaign.trackingUrl, `http://backend.com/api/flows?utm_campaign=${campaign.utmCampaign}`);
+    assert.equal(campaign.destinationUrl, hook.domain);
 
     const expectedStartDate = startOfDay(addDays(new Date(), 7));
     assert.equal(campaign.startDate.getTime(), expectedStartDate.getTime());
