@@ -19,7 +19,6 @@ import {
   OfferDto,
 } from './marketplace.types';
 import { UserRepository } from '../user/user.repository';
-import { stat } from 'fs';
 
 export class CampaignService {
   private logger = LoggerService.getLogger('feature.marketplace.CampaignService');
