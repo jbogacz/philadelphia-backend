@@ -104,6 +104,14 @@ export const OfferSchema = Type.Intersect([
   }),
 ]);
 
+export const OfferDtoSchema = Type.Composite([
+  Type.Omit(OfferSchema, ['hookId', 'seekerId']),
+  Type.Object({
+    hookId: Type.Optional(ObjectIdType),
+    seekerId: Type.Optional(Type.String()),
+  }),
+]);
+
 export const OfferQuerySchema = Type.Object({
   providerId: Type.Optional(Type.String()),
   seekerId: Type.Optional(Type.String()),
@@ -134,12 +142,14 @@ export const CampaignContactInfoSchema = Type.Optional(
     seeker: Type.Optional(
       Type.Object({
         phoneNumber: Type.String(),
+        email: Type.Optional(Type.String()),
         sharedAt: DateTimeType,
       })
     ),
     provider: Type.Optional(
       Type.Object({
         phoneNumber: Type.String(),
+        email: Type.Optional(Type.String()),
         sharedAt: DateTimeType,
       })
     ),
@@ -231,7 +241,7 @@ export type DemandDto = Static<typeof DemandDtoSchema>;
 
 export type DemandQueryDto = Static<typeof DemandQuerySchema>;
 
-export type OfferDto = Static<typeof OfferSchema>;
+export type OfferDto = Static<typeof OfferDtoSchema>;
 
 export type OfferQueryDto = Static<typeof OfferQuerySchema>;
 
