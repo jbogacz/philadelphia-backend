@@ -350,7 +350,7 @@ test('campaign.routes', async (t) => {
     assert.equal(response.json().message, 'User cannot respond to their own date proposal');
   });
 
-  await t.test('should accept new start date proposal', async () => {
+  await t.test('should accept and set new start date proposal', async () => {
     const response = await fastify.inject({
       method: 'PUT',
       url: `/api/campaigns/${testCampaign2._id}/respond-to-date`,
@@ -368,6 +368,61 @@ test('campaign.routes', async (t) => {
 
     const updatedCampaign: Campaign = (await campaignRepository.findById(new ObjectId(testCampaign2._id))) as Campaign;
     assert.equal(updatedCampaign.currentDateProposal?.status, 'accepted');
+    assert.equal(updatedCampaign.startDate?.toISOString(), updatedDateProposal.proposedStartDate);
+  });
+
+  await t.test('should fail if date proposal is not pending', async () => {
+    const response = await fastify.inject({
+      method: 'PUT',
+      url: `/api/campaigns/${testCampaign2._id}/respond-to-date`,
+      headers: {
+        'x-user-id': 'seeker_user',
+      },
+      payload: {
+        status: 'rejected',
+      },
+    });
+    assert.equal(response.statusCode, 400);
+    assert.equal(response.json().message, 'Date proposal is not pending');
+  });
+
+  await t.test('should reject and do not set new start date proposal', async () => {
+    // Keep the current date proposal to check if it is not updated
+    const currCampaign: Campaign = (await campaignRepository.findById(new ObjectId(testCampaign2._id))) as Campaign;
+
+    // Propose a new date as provider
+    await fastify.inject({
+      method: 'POST',
+      url: `/api/campaigns/${testCampaign2._id}/propose-date`,
+      headers: {
+        'x-user-id': 'provider_user',
+      },
+      payload: {
+        startDate: addDays(new Date(), 8).toISOString(),
+      },
+    });
+
+    // Reject the current date proposal as seeker
+    const response = await fastify.inject({
+      method: 'PUT',
+      url: `/api/campaigns/${testCampaign2._id}/respond-to-date`,
+      headers: {
+        'x-user-id': 'seeker_user',
+      },
+      payload: {
+        status: 'rejected',
+      },
+    });
+
+    // Check if the response is correct
+    assert.equal(response.statusCode, 200);
+    const updatedDateProposal = response.json();
+    assert.equal(updatedDateProposal.status, 'rejected');
+
+    // Check if the start date is not changed
+    const updatedCampaign: Campaign = (await campaignRepository.findById(new ObjectId(testCampaign2._id))) as Campaign;
+    assert.equal(updatedCampaign.currentDateProposal?.status, 'rejected');
+    assert.equal(updatedCampaign.startDate?.toISOString(), currCampaign.currentDateProposal?.proposedStartDate.toISOString());
   });
 
   await t.test('should fail to update contact info for non-existent campaign', async () => {

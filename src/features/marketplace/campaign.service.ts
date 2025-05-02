@@ -42,7 +42,15 @@ export class CampaignService {
    * @returns
    */
   async createFromOffer(offer: OfferDto): Promise<Campaign | null> {
+    if (!offer.hookId) {
+      this.logger.error('Offer does not have a hookId:', offer);
+      throw new BadRequestError('Offer does not have a hookId');
+    }
     const demand = await this.demandRepository.findById(offer.demandId);
+    if (!demand) {
+      this.logger.error('Demand not found:', offer.demandId);
+      throw new NotFoundError('Demand not found: ' + offer.demandId);
+    }
     const hook = await this.hookRepository.findById(offer.hookId);
 
     // Start at the beginning of the day
@@ -67,7 +75,7 @@ export class CampaignService {
       destinationUrl: hook?.domain || 'Missing URL',
       trackingUrl: this.config.apiUrl + '/flows?utm_campaign=' + utmCampaign,
       providerId: offer.providerId,
-      seekerId: offer.seekerId,
+      seekerId: demand?.userId,
       status: CampaignStatus.PENDING,
       startDate: startDate,
       endDate: endDate,
@@ -209,16 +217,21 @@ export class CampaignService {
       throw new ForbiddenError('User cannot respond to their own date proposal');
     }
 
+    const isAccepted = status === 'accepted';
+
     const campaignUpdate: Partial<Campaign> = {
+      ...(isAccepted && {
+        startDate: startOfDay(campaign.currentDateProposal.proposedStartDate),
+      }),
       currentDateProposal: {
         ...campaign.currentDateProposal,
-        status: status,
+        status,
       },
     };
 
-    const updatedCampaign = await this.campaignRepository.updateV2(campaignId, campaignUpdate);
-    this.logger.info('Updated campaign with date proposal response:', { updatedCampaign });
+    this.logger.info('Updating campaign with date proposal:', { campaignId, campaignUpdate });
 
+    const updatedCampaign = await this.campaignRepository.updateV2(campaignId, campaignUpdate);
     return updatedCampaign?.currentDateProposal!;
   }
 
