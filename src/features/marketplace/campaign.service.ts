@@ -222,6 +222,7 @@ export class CampaignService {
     const campaignUpdate: Partial<Campaign> = {
       ...(isAccepted && {
         startDate: startOfDay(campaign.currentDateProposal.proposedStartDate),
+        endDate: endOfDay(addDays(campaign.currentDateProposal.proposedStartDate, campaign.duration - 1)),
       }),
       currentDateProposal: {
         ...campaign.currentDateProposal,
