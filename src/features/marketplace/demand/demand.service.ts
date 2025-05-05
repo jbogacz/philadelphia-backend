@@ -1,12 +1,11 @@
-import { LoggerService } from '../../common';
-import { NotFoundError } from '../../common/errors';
+import { LoggerService } from '../../../common';
+import { NotFoundError } from '../../../common/errors';
 import { DemandRepository } from './demand.repository';
-import { Demand, DemandDto, DemandQueryDto } from './marketplace.types';
+import { Demand, DemandDto, DemandQueryDto, DemandStatus } from '../marketplace.types';
 import { ObjectId } from 'mongodb';
-import { DemandStatus } from './marketplace.types';
 
 export class DemandService {
-  private logger = LoggerService.getLogger('feature.marketplace.DemandService');
+  private logger = LoggerService.getLogger('feature.marketplace.demand.DemandService');
 
   constructor(private readonly demandRepository: DemandRepository) {}
 

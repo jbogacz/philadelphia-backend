@@ -22,7 +22,7 @@ import { UserRepository } from '../../user/user.repository';
 import { HookRepository } from '../../hook/hook.repository';
 
 export class CampaignService {
-  private logger = LoggerService.getLogger('feature.marketplace.CampaignService');
+  private logger = LoggerService.getLogger('feature.marketplace.campaign.CampaignService');
 
   constructor(
     private readonly campaignRepository: CampaignRepository,

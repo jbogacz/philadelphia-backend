@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
-import { demandRoutes } from './demand.routes';
-import { offerRoutes } from './offer.routes';
+import { demandRoutes } from './demand/demand.routes';
+import { offerRoutes } from './offer/offer.routes';
 import { campaignRoutes } from './campaign/campaign.routes';
 
 const plugin: FastifyPluginAsync = async (fastify) => {

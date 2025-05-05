@@ -31,7 +31,7 @@
       "request": "launch",
       "name": "Philadelphia Test",
       "skipFiles": ["<node_internals>/**"],
-      "args": ["--enable-source-maps", "--test", "--inspect-port=9229", "${workspaceFolder}/test/features/marketplace/campaign.routes.test.ts"],
+      "args": ["--enable-source-maps", "--test", "--inspect-port=9229", "${workspaceFolder}/test/features/marketplace/campaign.scheduler.test.ts"],
       "runtimeArgs": ["-r", "ts-node/register"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

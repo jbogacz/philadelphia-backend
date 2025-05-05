@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
-import { OfferDtoSchema, OfferQuerySchema, OfferSchema, UpdateOfferDtoSchema } from './marketplace.types';
-import { ErrorDtoSchema } from '../../common/errors';
+import { OfferDtoSchema, OfferQuerySchema, OfferSchema, UpdateOfferDtoSchema } from '../marketplace.types';
+import { ErrorDtoSchema } from '../../../common/errors';
 import { Type } from '@sinclair/typebox';
 
 export const offerRoutes: FastifyPluginAsync = async (fastify) => {

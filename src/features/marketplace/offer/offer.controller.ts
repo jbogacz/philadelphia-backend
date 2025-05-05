@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { AppConfig } from '../../app.types';
-import { ErrorDto } from '../../common/errors';
-import { OfferDto, OfferQueryDto } from './marketplace.types';
+import { AppConfig } from '../../../app.types';
+import { ErrorDto } from '../../../common/errors';
+import { OfferDto, OfferQueryDto } from '../marketplace.types';
 import { OfferService } from './offer.service';
 import { getAuth } from '@clerk/fastify';
 

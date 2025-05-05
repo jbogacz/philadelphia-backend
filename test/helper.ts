@@ -49,6 +49,12 @@ async function createTestConfig() {
       apiUrl: 'http://backend.com/api',
       isProduction: () => false,
       isDevelopment: () => true,
+      scheduler: {
+        campaign: {
+          enabled: false,
+          cron: '',
+        },
+      },
     },
     // This is the most important bit that provides configuration from app.ts
     skipOverride: true,
