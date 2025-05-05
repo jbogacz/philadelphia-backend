@@ -3,7 +3,7 @@ import { startOfDay } from 'date-fns/startOfDay';
 import { ObjectId } from 'mongodb';
 import * as assert from 'node:assert';
 import { test } from 'node:test';
-import { CampaignRepository } from '../../../src/features/marketplace/campaign.repository';
+import { CampaignRepository } from '../../../src/features/marketplace/campaign/campaign.repository';
 import { Campaign, CampaignStatus } from '../../../src/features/marketplace/marketplace.types';
 import { UserRepository } from '../../../src/features/user/user.repository';
 import { UserRole } from '../../../src/features/user/user.types';

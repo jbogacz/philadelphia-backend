@@ -3,11 +3,11 @@ import { addDays } from 'date-fns/addDays';
 import { endOfDay } from 'date-fns/endOfDay';
 import { startOfDay } from 'date-fns/startOfDay';
 import { Filter } from 'mongodb';
-import { AppConfig } from '../../app.types';
-import { LoggerService } from '../../common';
-import { BadRequestError, ForbiddenError, NotFoundError } from '../../common/errors';
+import { AppConfig } from '../../../app.types';
+import { LoggerService } from '../../../common';
+import { BadRequestError, ForbiddenError, NotFoundError } from '../../../common/errors';
 import { CampaignRepository } from './campaign.repository';
-import { DemandRepository } from './demand.repository';
+import { DemandRepository } from '../demand/demand.repository';
 import {
   Campaign,
   CampaignContactInfoDto,
@@ -17,9 +17,9 @@ import {
   CampaignRole,
   CampaignStatus,
   OfferDto,
-} from './marketplace.types';
-import { UserRepository } from '../user/user.repository';
-import { HookRepository } from '../hook/hook.repository';
+} from '../marketplace.types';
+import { UserRepository } from '../../user/user.repository';
+import { HookRepository } from '../../hook/hook.repository';
 
 export class CampaignService {
   private logger = LoggerService.getLogger('feature.marketplace.CampaignService');

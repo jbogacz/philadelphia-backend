@@ -5,7 +5,7 @@ import { LoggerService } from '../../common';
 import { ForbiddenError, NotFoundError } from '../../common/errors';
 import { DemandRepository } from './demand.repository';
 import { Filter } from 'mongodb';
-import { CampaignService } from './campaign.service';
+import { CampaignService } from './campaign/campaign.service';
 
 export class OfferService {
   private logger = LoggerService.getLogger('feature.marketplace.OfferService');

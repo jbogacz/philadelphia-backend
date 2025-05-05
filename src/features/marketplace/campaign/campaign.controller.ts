@@ -1,10 +1,10 @@
 import { getAuth } from '@clerk/fastify';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { AppConfig } from '../../app.types';
-import { ErrorDto } from '../../common/errors';
-import { CampaignService } from './campaign.service';
-import { CampaignContactInfoDto, CampaignDateProposalDto, CampaignDto, CampaignQueryDto } from './marketplace.types';
+import { AppConfig } from '../../../app.types';
+import { ErrorDto } from '../../../common/errors';
+import { CampaignContactInfoDto, CampaignDateProposalDto, CampaignDto, CampaignQueryDto } from '../marketplace.types';
 import { startOfDay } from 'date-fns/startOfDay';
+import { CampaignService } from './campaign.service';
 
 export class CampaignController {
   constructor(private readonly campaignService: CampaignService, private readonly config: AppConfig) {}

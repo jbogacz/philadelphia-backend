@@ -10,8 +10,8 @@ import { HookRepository } from '../features/hook/hook.repository';
 import { HookService } from '../features/hook/hook.service';
 import { InsightController } from '../features/insight/insight.controller';
 import { InsightService } from '../features/insight/insight.service';
-import { CampaignRepository } from '../features/marketplace/campaign.repository';
-import { CampaignService } from '../features/marketplace/campaign.service';
+import { CampaignRepository } from '../features/marketplace/campaign/campaign.repository';
+import { CampaignService } from '../features/marketplace/campaign/campaign.service';
 import { DemandController } from '../features/marketplace/demand.controller';
 import { DemandRepository } from '../features/marketplace/demand.repository';
 import { DemandService } from '../features/marketplace/demand.service';
@@ -33,7 +33,7 @@ import { WidgetComponentService } from '../features/widget/widget.component.serv
 import { WidgetController } from '../features/widget/widget.controller';
 import { WidgetRepository } from '../features/widget/widget.repository';
 import { WidgetService } from '../features/widget/widget.service';
-import { CampaignController } from '../features/marketplace/campaign.controller';
+import { CampaignController } from '../features/marketplace/campaign/campaign.controller';
 
 export default fp<AppOptions>(async (fastify, opts) => {
   const { config } = opts;
