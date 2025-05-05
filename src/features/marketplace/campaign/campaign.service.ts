@@ -293,7 +293,7 @@ export class CampaignService {
       this.logger.error(`Start date cannot be less than ${CampaignService.START_DAY_OFFSET} days from now:`, startDate);
       throw new BadRequestError(`Start date cannot be less than ${CampaignService.START_DAY_OFFSET} days from now`);
     }
-    if (campaign.status !== CampaignStatus.PENDING && campaign.status !== CampaignStatus.PAUSED) {
+    if (campaign.status !== CampaignStatus.PENDING) {
       this.logger.error(`Cannot change start date for campaign in ${campaign.status} status`, { campaignId: campaign._id });
       throw new BadRequestError(`Cannot change start date for campaign in ${campaign.status} status`);
     }

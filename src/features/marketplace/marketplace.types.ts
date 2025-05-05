@@ -21,7 +21,6 @@ export enum OfferStatus {
 export enum CampaignStatus {
   PENDING = 'pending', // Created but not started
   ACTIVE = 'active', // Currently running
-  PAUSED = 'paused', // Temporarily on hold
   COMPLETED = 'completed', // Successfully finished
   CANCELLED = 'cancelled', // Terminated early
 }

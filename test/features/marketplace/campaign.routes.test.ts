@@ -183,7 +183,7 @@ test('campaign.routes', async (t) => {
         'x-user-id': 'provider_user',
       },
       payload: {
-        status: CampaignStatus.PAUSED,
+        status: CampaignStatus.CANCELLED,
       },
     });
 
