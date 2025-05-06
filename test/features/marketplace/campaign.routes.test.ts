@@ -3,11 +3,12 @@ import { startOfDay } from 'date-fns/startOfDay';
 import { ObjectId } from 'mongodb';
 import * as assert from 'node:assert';
 import { test } from 'node:test';
-import { CampaignRepository } from '../../../src/features/marketplace/campaign.repository';
+import { CampaignRepository } from '../../../src/features/marketplace/campaign/campaign.repository';
 import { Campaign, CampaignStatus } from '../../../src/features/marketplace/marketplace.types';
 import { UserRepository } from '../../../src/features/user/user.repository';
 import { UserRole } from '../../../src/features/user/user.types';
 import { build, clearDatabase } from '../../helper';
+import { endOfDay } from 'date-fns/endOfDay';
 
 test('campaign.routes', async (t) => {
   const fastify = await build(t);
@@ -53,6 +54,8 @@ test('campaign.routes', async (t) => {
       seekerId: 'seeker_user',
       utmCampaign: 'test-campaign-1',
       trackingUrl: 'http://backend.com/api/flows?utm_campaign=test-campaign-1',
+      startDate: new Date(),
+      endDate: endOfDay(addDays(new Date(), 29)),
       status: CampaignStatus.PENDING,
     });
 
@@ -70,6 +73,8 @@ test('campaign.routes', async (t) => {
       seekerId: 'seeker_user',
       utmCampaign: 'test-campaign-2',
       trackingUrl: 'http://backend.com/api/flows?utm_campaign=test-campaign-2',
+      startDate: new Date(),
+      endDate: endOfDay(addDays(new Date(), 29)),
       status: CampaignStatus.PENDING,
     });
   });
@@ -178,7 +183,7 @@ test('campaign.routes', async (t) => {
         'x-user-id': 'provider_user',
       },
       payload: {
-        status: CampaignStatus.PAUSED,
+        status: CampaignStatus.CANCELLED,
       },
     });
 
@@ -369,6 +374,8 @@ test('campaign.routes', async (t) => {
     const updatedCampaign: Campaign = (await campaignRepository.findById(new ObjectId(testCampaign2._id))) as Campaign;
     assert.equal(updatedCampaign.currentDateProposal?.status, 'accepted');
     assert.equal(updatedCampaign.startDate?.toISOString(), updatedDateProposal.proposedStartDate);
+    const endDate = endOfDay(addDays(updatedDateProposal.proposedStartDate, updatedCampaign.duration - 1));
+    assert.equal(updatedCampaign.endDate?.toISOString(), endDate.toISOString());
   });
 
   await t.test('should fail if date proposal is not pending', async () => {

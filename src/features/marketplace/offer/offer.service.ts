@@ -1,14 +1,14 @@
 import { ObjectId } from '@fastify/mongodb';
-import { Offer, OfferDto, OfferQueryDto, OfferStatus } from './marketplace.types';
+import { Offer, OfferDto, OfferQueryDto, OfferStatus } from '../marketplace.types';
 import { OfferRepository } from './offer.repository';
-import { LoggerService } from '../../common';
-import { ForbiddenError, NotFoundError } from '../../common/errors';
-import { DemandRepository } from './demand.repository';
+import { LoggerService } from '../../../common';
+import { ForbiddenError, NotFoundError } from '../../../common/errors';
+import { DemandRepository } from '../demand/demand.repository';
 import { Filter } from 'mongodb';
-import { CampaignService } from './campaign.service';
+import { CampaignService } from '../campaign/campaign.service';
 
 export class OfferService {
-  private logger = LoggerService.getLogger('feature.marketplace.OfferService');
+  private logger = LoggerService.getLogger('feature.marketplace.offer.OfferService');
 
   constructor(
     private readonly campaignService: CampaignService,

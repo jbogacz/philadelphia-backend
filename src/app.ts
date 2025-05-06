@@ -18,6 +18,12 @@ const appOptions: AppOptions = {
     apiUrl: process.env.API_URL!,
     isProduction: () => process.env.NODE_ENV === 'production',
     isDevelopment: () => process.env.NODE_ENV === 'development',
+    scheduler: {
+      campaign: {
+        enabled: process.env.SCHEDULER_CAMPAIGN_ENABLED === 'true',
+        cron: process.env.SCHEDULER_CAMPAIGN_CRON || '',
+      },
+    },
   },
   mongodb: {
     url: process.env.MONGODB_URL!,

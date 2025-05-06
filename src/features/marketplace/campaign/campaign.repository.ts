@@ -1,5 +1,5 @@
-import { BaseRepository } from '../base.repository';
-import { Campaign } from './marketplace.types';
+import { BaseRepository } from '../../base.repository';
+import { Campaign } from '../marketplace.types';
 import { Collection } from 'mongodb';
 
 export class CampaignRepository extends BaseRepository<Campaign> {

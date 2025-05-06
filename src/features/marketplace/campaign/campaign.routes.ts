@@ -1,8 +1,8 @@
 import { FastifyPluginAsync } from 'fastify';
-import { ErrorDtoSchema } from '../../common/errors';
-import { CampaignContactInfoSchema, CampaignDateProposalSchema, CampaignQuerySchema, CampaignSchema } from './marketplace.types';
+import { ErrorDtoSchema } from '../../../common/errors';
+import { CampaignContactInfoSchema, CampaignDateProposalSchema, CampaignQuerySchema, CampaignSchema } from '../marketplace.types';
 import { Type } from '@sinclair/typebox';
-import { DateTimeType } from '../base.repository';
+import { DateTimeType } from '../../base.repository';
 
 export const campaignRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get(

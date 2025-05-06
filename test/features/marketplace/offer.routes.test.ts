@@ -1,9 +1,9 @@
 import * as assert from 'node:assert';
 import { test } from 'node:test';
 
-import { DemandRepository } from '../../../src/features/marketplace/demand.repository';
+import { DemandRepository } from '../../../src/features/marketplace/demand/demand.repository';
 import { Demand, DemandStatus, Offer, OfferDto } from '../../../src/features/marketplace/marketplace.types';
-import { OfferRepository } from '../../../src/features/marketplace/offer.repository';
+import { OfferRepository } from '../../../src/features/marketplace/offer/offer.repository';
 import { build, clearDatabase } from '../../helper';
 import { Db, ObjectId } from 'mongodb';
 

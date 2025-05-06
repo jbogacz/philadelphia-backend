@@ -1,5 +1,5 @@
-import { BaseRepository } from '../base.repository';
-import { Demand } from './marketplace.types';
+import { BaseRepository } from '../../base.repository';
+import { Demand } from '../marketplace.types';
 import { Collection } from 'mongodb';
 
 export class DemandRepository extends BaseRepository<Demand> {

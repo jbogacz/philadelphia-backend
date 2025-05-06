@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
-import { ErrorDtoSchema } from '../../common/errors';
-import { DemandDtoSchema, DemandQuerySchema, UpdateDemandDtoSchema } from './marketplace.types';
+import { ErrorDtoSchema } from '../../../common/errors';
+import { DemandDtoSchema, DemandQuerySchema, UpdateDemandDtoSchema } from '../marketplace.types';
 
 export const demandRoutes: FastifyPluginAsync = async (fastify) => {
   // const fastify = instance.getTyped();

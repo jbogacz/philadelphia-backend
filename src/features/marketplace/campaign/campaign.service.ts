@@ -3,11 +3,11 @@ import { addDays } from 'date-fns/addDays';
 import { endOfDay } from 'date-fns/endOfDay';
 import { startOfDay } from 'date-fns/startOfDay';
 import { Filter } from 'mongodb';
-import { AppConfig } from '../../app.types';
-import { LoggerService } from '../../common';
-import { BadRequestError, ForbiddenError, NotFoundError } from '../../common/errors';
+import { AppConfig } from '../../../app.types';
+import { LoggerService } from '../../../common';
+import { BadRequestError, ForbiddenError, NotFoundError } from '../../../common/errors';
 import { CampaignRepository } from './campaign.repository';
-import { DemandRepository } from './demand.repository';
+import { DemandRepository } from '../demand/demand.repository';
 import {
   Campaign,
   CampaignContactInfoDto,
@@ -17,12 +17,12 @@ import {
   CampaignRole,
   CampaignStatus,
   OfferDto,
-} from './marketplace.types';
-import { UserRepository } from '../user/user.repository';
-import { HookRepository } from '../hook/hook.repository';
+} from '../marketplace.types';
+import { UserRepository } from '../../user/user.repository';
+import { HookRepository } from '../../hook/hook.repository';
 
 export class CampaignService {
-  private logger = LoggerService.getLogger('feature.marketplace.CampaignService');
+  private logger = LoggerService.getLogger('feature.marketplace.campaign.CampaignService');
 
   constructor(
     private readonly campaignRepository: CampaignRepository,
@@ -222,6 +222,7 @@ export class CampaignService {
     const campaignUpdate: Partial<Campaign> = {
       ...(isAccepted && {
         startDate: startOfDay(campaign.currentDateProposal.proposedStartDate),
+        endDate: endOfDay(addDays(campaign.currentDateProposal.proposedStartDate, campaign.duration - 1)),
       }),
       currentDateProposal: {
         ...campaign.currentDateProposal,
@@ -292,7 +293,7 @@ export class CampaignService {
       this.logger.error(`Start date cannot be less than ${CampaignService.START_DAY_OFFSET} days from now:`, startDate);
       throw new BadRequestError(`Start date cannot be less than ${CampaignService.START_DAY_OFFSET} days from now`);
     }
-    if (campaign.status !== CampaignStatus.PENDING && campaign.status !== CampaignStatus.PAUSED) {
+    if (campaign.status !== CampaignStatus.PENDING) {
       this.logger.error(`Cannot change start date for campaign in ${campaign.status} status`, { campaignId: campaign._id });
       throw new BadRequestError(`Cannot change start date for campaign in ${campaign.status} status`);
     }

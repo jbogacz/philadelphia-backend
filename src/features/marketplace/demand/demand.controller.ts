@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { DemandDto, DemandQueryDto } from './marketplace.types';
-import { ErrorDto, NotFoundError } from '../../common/errors';
-import { AppConfig } from '../../app.types';
+import { DemandDto, DemandQueryDto } from '../marketplace.types';
+import { ErrorDto, NotFoundError } from '../../../common/errors';
+import { AppConfig } from '../../../app.types';
 import { getAuth } from '@clerk/fastify';
 import { DemandService } from './demand.service';
 

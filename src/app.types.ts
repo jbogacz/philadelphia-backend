@@ -3,6 +3,12 @@ import { FastifyServerOptions } from 'fastify';
 
 export interface AppConfig {
   apiUrl: string;
+  scheduler: {
+    campaign: {
+      enabled: boolean;
+      cron: string;
+    }
+  }
   isProduction: () => boolean;
   isDevelopment: () => boolean;
 
