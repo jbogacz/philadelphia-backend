@@ -1,7 +1,7 @@
+import schedule from '@fastify/schedule';
 import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import schedule from '@fastify/schedule';
-import { CronJob, SimpleIntervalJob, Task } from 'toad-scheduler';
+import { CronJob, Task } from 'toad-scheduler';
 import { AppOptions } from '../app.types';
 import { CampaignSchedulerService } from '../features/marketplace/campaign/campaign.scheduler.service';
 
