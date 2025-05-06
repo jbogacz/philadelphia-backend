@@ -1,10 +1,12 @@
 import { LoggerService } from '../../common';
+import { CampaignStatus } from '../campaign/campaign.types';
 import { HookRepository } from '../hook/hook.repository';
 import { Hook, HookStatus } from '../hook/hook.types';
+import { CampaignRepository } from '../marketplace/campaign/campaign.repository';
 import { WidgetRepository } from '../widget/widget.repository';
 import { Widget, WidgetStatus } from '../widget/widget.types';
 import { TraceRepository } from './trace.repository';
-import { TraceType, VisitTraceDto, WidgetTraceDto } from './trace.types';
+import { FlowTraceDto, TraceType, VisitTraceDto, WidgetTraceDto } from './trace.types';
 
 export class TraceService {
   private logger = LoggerService.getLogger('trace:service');
@@ -12,7 +14,8 @@ export class TraceService {
   constructor(
     private readonly traceRepository: TraceRepository,
     private readonly widgetRepository: WidgetRepository,
-    private readonly hookRepository: HookRepository
+    private readonly hookRepository: HookRepository,
+    private readonly campaignRepository: CampaignRepository
   ) {}
 
   async captureVisitTrace(traceDto: VisitTraceDto): Promise<void> {
@@ -61,7 +64,10 @@ export class TraceService {
   async captureWidgetTrace(traceDto: WidgetTraceDto): Promise<void> {
     const widgetTrace = { ...traceDto, type: TraceType.WIDGET };
 
-    this.logger.info('Processing trace', { ...widgetTrace, fingerprint: { ...widgetTrace.fingerprint, components: '!Large data omitted!' } });
+    this.logger.info('Processing trace', {
+      ...widgetTrace,
+      fingerprint: { ...widgetTrace.fingerprint, components: '!Large data omitted!' },
+    });
 
     const widget = await this.widgetRepository.findByWidgetKey(widgetTrace.widgetKey);
     if (!widget) {
@@ -86,5 +92,31 @@ export class TraceService {
       await this.traceRepository.create(trace);
       this.logger.info('Captured widget trace:', { ...trace, fingerprint: { ...trace.fingerprint, components: '!Large data omitted!' } });
     }
+  }
+
+  async captureFlowTrace(traceDto: FlowTraceDto): Promise<void> {
+    const flowTrace = { ...traceDto, type: TraceType.FLOW };
+
+    this.logger.info('Processing trace', { ...flowTrace, fingerprint: { ...flowTrace.fingerprint, components: '!Large data omitted!' } });
+
+    const campaign = await this.campaignRepository.findByUtmCampaign(flowTrace.utmCampaign);
+    if (!campaign) {
+      this.logger.warn('Received trace with invalid utmCampaign:', flowTrace);
+      return;
+    }
+    if (campaign.status !== CampaignStatus.ACTIVE) {
+      this.logger.warn('Received trace for inactive campaign:', { trace: flowTrace, campaign: campaign });
+      return;
+    }
+    const widget = await this.widgetRepository.queryOne({ hookId: campaign.hookId });
+    const trace = {
+      ...flowTrace,
+      widgetId: widget?._id || '',
+      hookId: widget?.hookId || '',
+      campaignId: campaign._id,
+    };
+
+    await this.traceRepository.create(trace);
+    this.logger.info('Captured flow trace:', { ...trace, fingerprint: { ...trace.fingerprint, components: '!Large data omitted!' } });
   }
 }

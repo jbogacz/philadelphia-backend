@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import { ErrorDtoSchema } from '../../common/errors';
-import { VisitTraceDtoSchema, WidgetTraceDtoSchema } from './trace.types';
+import { FlowTraceDtoSchema, VisitTraceDtoSchema, WidgetTraceDtoSchema } from './trace.types';
 
 export const tracePublicRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post(
@@ -33,5 +33,21 @@ export const tracePublicRoutes: FastifyPluginAsync = async (fastify) => {
       },
     },
     fastify.controller.trace.captureWidgetTrace.bind(fastify.controller.trace)
+  );
+
+  fastify.post(
+    '/public/traces/flow',
+    {
+      schema: {
+        body: FlowTraceDtoSchema,
+        description: 'Capture campaign flow trace',
+        tags: ['public'],
+        response: {
+          201: {},
+          401: ErrorDtoSchema,
+        },
+      },
+    },
+    fastify.controller.trace.captureFlowTrace.bind(fastify.controller.trace)
   );
 };

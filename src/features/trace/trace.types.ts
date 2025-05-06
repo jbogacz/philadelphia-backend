@@ -1,5 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
-import { BaseSchema, IEntity } from '../base.repository';
+import { BaseSchema, IEntity, ObjectIdType } from '../base.repository';
 
 export enum TraceType {
   VISIT = 'visit',
@@ -249,8 +249,8 @@ export const FlowTraceSchema = Type.Intersect([
   TraceSchema,
   Type.Object({
     type: Type.Literal(TraceType.FLOW),
-    partnerId: Type.String(),
-    campaignId: Type.String(),
+    campaignId: ObjectIdType,
+    utmCampaign: Type.String(),
   }),
 ]);
 
@@ -265,27 +265,23 @@ export const WidgetTraceDtoSchema = Type.Omit(WidgetTraceSchema, [
   'sourceWidgetId',
   'sourceHookId',
 ]);
+export const FlowTraceDtoSchema = Type.Omit(FlowTraceSchema, ['_id', 'createdAt', 'updatedAt', 'type', 'widgetId', 'hookId', 'campaignId']);
 
 /**
  * MODEL
  */
 export type Trace = Static<typeof TraceSchema> & IEntity;
-
 export type VisitTrace = Static<typeof VisitTraceSchema> & IEntity;
-
 export type WidgetTrace = Static<typeof WidgetTraceSchema> & IEntity;
-
+export type FlowTrace = Static<typeof FlowTraceSchema> & IEntity;
 export type FingerprintComponents = Static<typeof FingerprintComponentsSchema>;
-
 export type Fingerprint = Static<typeof FingerprintSchema>;
-
 export type Page = Static<typeof PageSchema>;
-
 export type Geo = Static<typeof GeoSchema>;
 
 /**
  * DTO
  */
 export type VisitTraceDto = typeof VisitTraceDtoSchema.static;
-
 export type WidgetTraceDto = typeof WidgetTraceDtoSchema.static;
+export type FlowTraceDto = typeof FlowTraceDtoSchema.static;

@@ -64,10 +64,10 @@ export default fp<AppOptions>(async (fastify, opts) => {
   );
 
   fastify.decorate('service', {
-    trace: new TraceService(fastify.repository.trace, fastify.repository.widget, fastify.repository.hook),
+    trace: new TraceService(fastify.repository.trace, fastify.repository.widget, fastify.repository.hook, fastify.repository.campaign),
     publisher: publisherService,
     campaignDeprecated: campaignServiceDeprecated,
-    flow: new FlowService(publisherService, campaignServiceDeprecated, config),
+    flow: new FlowService(fastify.repository.campaign, fastify.repository.widget, config),
     user: new UserService(fastify.repository.user),
     hook: new HookService(fastify.mongo, fastify.repository.hook, fastify.repository.user, fastify.repository.widget),
     widget: new WidgetService(fastify.mongo, config, fastify.repository.widget, fastify.repository.user),

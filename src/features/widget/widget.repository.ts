@@ -12,4 +12,10 @@ export class WidgetRepository extends BaseRepository<Widget> {
       widgetKey: widgetKey,
     });
   }
+
+  async findByHookId(hookId: string): Promise<Widget | null> {
+    return this.collection.findOne({
+      hookId: hookId,
+    });
+  }
 }
