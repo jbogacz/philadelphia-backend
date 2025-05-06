@@ -3,7 +3,7 @@ import { Campaign, CampaignStatus } from '../marketplace.types';
 import { CampaignRepository } from './campaign.repository';
 
 export class CampaignSchedulerService {
-  private logger = LoggerService.getLogger('feature.marketplace`.campaign`.CampaignSchedulerService');
+  private logger = LoggerService.getLogger('feature.marketplace.campaign.CampaignSchedulerService');
 
   constructor(private readonly campaignRepository: CampaignRepository) {}
 

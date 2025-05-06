@@ -5,11 +5,33 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as test from 'node:test';
 import * as path from 'path';
 import { txTemplate } from '../src/features/base.repository';
+import { TraceRepository } from '../src/features/trace/trace.repository';
+import { PublisherRepository } from '../src/features/publisher/publisher.repository';
+import { UserRepository } from '../src/features/user/user.repository';
+import { HookRepository } from '../src/features/hook/hook.repository';
+import { WidgetRepository } from '../src/features/widget/widget.repository';
+import { PartnershipRepository } from '../src/features/partnership/partnership.repository';
+import { DemandRepository } from '../src/features/marketplace/demand/demand.repository';
+import { OfferRepository } from '../src/features/marketplace/offer/offer.repository';
+import { CampaignRepository as CampaignRepositoryDeprecated } from '../src/features/campaign/campaign.repository';
+import { CampaignRepository } from '../src/features/marketplace/campaign/campaign.repository';
 
 declare module 'fastify' {
   interface FastifyInstance {
     mongo: FastifyMongoObject & FastifyMongoNestedObject;
     cacheManager: any;
+    repository: {
+      trace: TraceRepository;
+      publisher: PublisherRepository;
+      user: UserRepository;
+      hook: HookRepository;
+      widget: WidgetRepository;
+      partnership: PartnershipRepository;
+      demand: DemandRepository;
+      offer: OfferRepository;
+      campaignDeprecated: CampaignRepositoryDeprecated;
+      campaign: CampaignRepository;
+    };
   }
 }
 
@@ -58,7 +80,7 @@ async function createTestConfig() {
     },
     // This is the most important bit that provides configuration from app.ts
     skipOverride: true,
-    seedDemoData: false
+    seedDemoData: false,
   };
 }
 
