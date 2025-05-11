@@ -1,8 +1,8 @@
 import { LoggerService } from '../../common';
-import { CampaignStatus } from '../campaign/campaign.types';
 import { HookRepository } from '../hook/hook.repository';
 import { Hook, HookStatus } from '../hook/hook.types';
 import { CampaignRepository } from '../marketplace/campaign/campaign.repository';
+import { CampaignStatus } from '../marketplace/marketplace.types';
 import { WidgetRepository } from '../widget/widget.repository';
 import { Widget, WidgetStatus } from '../widget/widget.types';
 import { TraceRepository } from './trace.repository';
