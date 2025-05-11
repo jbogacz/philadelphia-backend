@@ -2,16 +2,19 @@ import { test } from 'node:test';
 import * as assert from 'node:assert';
 import { build, clearDatabase } from '../../helper';
 import { TraceRepository } from '../../../src/features/trace/trace.repository';
-import { VisitTrace, VisitTraceDto, WidgetTrace, WidgetTraceDto } from '../../../src/features/trace/trace.types';
+import { FlowTrace, FlowTraceDto, VisitTrace, VisitTraceDto, WidgetTrace, WidgetTraceDto } from '../../../src/features/trace/trace.types';
 import { Widget, WidgetStatus } from '../../../src/features/widget/widget.types';
 import { Hook, HookCategory, HookStatus } from '../../../src/features/hook/hook.types';
 import { randomUUID } from 'node:crypto';
+import { createCampaign, createWidget } from '../../builders';
+import { CampaignStatus } from '../../../src/features/marketplace/marketplace.types';
 
 test('trace:public:routes', async (t) => {
   const fastify = await build(t);
   const traceRepository: TraceRepository = fastify.repository.trace;
   const widgetRepository = fastify.repository.widget;
   const hookRepository = fastify.repository.hook;
+  const campaignRepository = fastify.repository.campaign;
 
   let hook: Hook;
   let widget: Widget;
@@ -178,7 +181,7 @@ test('trace:public:routes', async (t) => {
 
     assert.equal(response.statusCode, 201);
 
-    const dbTrace = await traceRepository.queryOne({ traceId: trace.traceId }) as WidgetTrace;
+    const dbTrace = (await traceRepository.queryOne({ traceId: trace.traceId })) as WidgetTrace;
     assert.ok(dbTrace);
     assert.equal(dbTrace?.type, 'widget');
     assert.equal(dbTrace?.widgetKey, widget.widgetKey);
@@ -188,5 +191,74 @@ test('trace:public:routes', async (t) => {
     assert.equal(dbTrace?.sourceWidgetId, sourceWidget._id?.toString());
     assert.equal(dbTrace?.sourceHookId, sourceHook._id?.toString());
     assert.equal(dbTrace?.fingerprint.fingerprintId, trace.fingerprint.fingerprintId);
+  });
+
+  await t.test('should capture flow trace', async () => {
+    // given
+    const now = new Date();
+    const pastHour = new Date(now.getTime() - 1000 * 60 * 60);
+    const nextHour = new Date(now.getTime() + 1000 * 60 * 60);
+
+    let campaign = createCampaign(pastHour, nextHour, CampaignStatus.ACTIVE);
+    campaign = (await campaignRepository.save(campaign))!;
+    let widget = createWidget(campaign.hookId);
+    widget = (await widgetRepository.save(widget))!;
+
+    const trace: FlowTraceDto = {
+      traceId: randomUUID().toString(),
+      fingerprint: {
+        fingerprintId: randomUUID().toString(),
+      },
+      utmCampaign: campaign.utmCampaign,
+      widgetKey: widget.widgetKey,
+    };
+
+    // when
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/api/public/traces/flows',
+      body: trace,
+    });
+
+    // then
+    assert.equal(response.statusCode, 201);
+    const dbTrace = (await traceRepository.queryOne({ traceId: trace.traceId })) as FlowTrace;
+    assert.ok(dbTrace);
+    assert.equal(dbTrace?.type, 'flow');
+    assert.equal(dbTrace?.utmCampaign, campaign.utmCampaign);
+    assert.equal(dbTrace?.campaignId, campaign._id?.toString());
+  });
+
+  await t.test('should skip flow trace if status is not active', async () => {
+    // given
+    const now = new Date();
+    const pastTwoHours = new Date(now.getTime() - 1000 * 60 * 60);
+    const pastHour = new Date(now.getTime() - 1000 * 60 * 60 * 2);
+
+    let campaign = createCampaign(pastTwoHours, pastHour, CampaignStatus.PENDING);
+    campaign = (await campaignRepository.save(campaign))!;
+    let widget = createWidget(campaign.hookId);
+    widget = (await widgetRepository.save(widget))!;
+
+    const trace: FlowTraceDto = {
+      traceId: randomUUID().toString(),
+      fingerprint: {
+        fingerprintId: randomUUID().toString(),
+      },
+      utmCampaign: campaign.utmCampaign,
+      widgetKey: widget.widgetKey,
+    };
+
+    // when
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/api/public/traces/flows',
+      body: trace,
+    });
+
+    // then
+    assert.equal(response.statusCode, 201);
+    const dbTrace = await traceRepository.query({ traceId: trace.traceId });
+    assert.equal(dbTrace.length, 0);
   });
 });

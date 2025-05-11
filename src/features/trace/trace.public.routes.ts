@@ -36,7 +36,7 @@ export const tracePublicRoutes: FastifyPluginAsync = async (fastify) => {
   );
 
   fastify.post(
-    '/public/traces/flow',
+    '/public/traces/flows',
     {
       schema: {
         body: FlowTraceDtoSchema,

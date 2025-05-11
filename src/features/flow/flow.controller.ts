@@ -1,14 +1,11 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { FlowDto, FlowEventDto } from './flow.types';
 import { FlowService } from './flow.service';
+import { FlowDto } from './flow.types';
 
 export class FlowController {
   constructor(private readonly flowService: FlowService) {}
 
-  async serveCode(
-    request: FastifyRequest<{ Querystring: FlowDto }>,
-    reply: FastifyReply,
-  ): Promise<void> {
+  async serveCode(request: FastifyRequest<{ Querystring: FlowDto }>, reply: FastifyReply): Promise<void> {
     const flowCode = await this.flowService.generateCode(request.query);
 
     const html = `
@@ -36,13 +33,5 @@ export class FlowController {
       </html>
     `;
     reply.code(200).type('text/html').send(html);
-  }
-
-  async capture(
-    request: FastifyRequest<{ Body: FlowEventDto }>,
-    reply: FastifyReply,
-  ): Promise<void> {
-    await this.flowService.captureEvent(request.body);
-    reply.code(204).send();
   }
 }

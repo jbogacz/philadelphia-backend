@@ -1,11 +1,11 @@
 import { AppConfig } from '../../app.types';
 import { LoggerService } from '../../common';
-import { CampaignTrace } from '../campaign/campaign.types';
+import { NotFoundError } from '../../common/errors';
 import { CampaignRepository } from '../marketplace/campaign/campaign.repository';
 import { CampaignStatus } from '../marketplace/marketplace.types';
 import { WidgetRepository } from '../widget/widget.repository';
 import { FlowBuilder } from './flow.builder';
-import { FlowBlueprint, FlowConfig, FlowDto, FlowEventDto } from './flow.types';
+import { FlowBlueprint, FlowConfig, FlowDto } from './flow.types';
 
 export class FlowService {
   private logger = LoggerService.getLogger('feature.flow.FlowService');
@@ -27,7 +27,7 @@ export class FlowService {
 
     if (!campaign) {
       this.logger.error(`Campaign not found for utm_campaign: ${utmCampaign}`);
-      throw new Error(`Campaign not found for utm_campaign: ${utmCampaign}`);
+      throw new NotFoundError(`Campaign not found for utm_campaign: ${utmCampaign}`);
     }
     if (campaign.status !== CampaignStatus.ACTIVE) {
       this.logger.error(`Campaign ${campaign._id} is not active: ${campaign.status}`);
@@ -55,16 +55,5 @@ export class FlowService {
     };
 
     return this.flowBuilder.build(flowBlueprint, flowConfig);
-  }
-
-  async captureEvent(event: FlowEventDto): Promise<void> {
-    this.logger.info('Capturing flow event:', event);
-    const trace: CampaignTrace = {
-      traceId: event.traceId,
-      fingerprint: event.fingerprint,
-      publisherId: event.publisherId,
-      created: new Date(),
-    };
-    // await this.campaignService.appendTrace(event.campaignId, trace);
   }
 }
