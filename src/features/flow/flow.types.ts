@@ -15,10 +15,9 @@ export const valueOfSource = (value: string): FlowSource => {
  * MODEL
  */
 export interface FlowBlueprint extends DynamicBlueprint {
-  publisherId: string;
-  campaignId: string;
+  utmCampaign: string;
   landingPage: string;
-  source: FlowSource;
+  widgetKey: string;
 }
 
 export interface FlowConfig extends DynamicConfig {
@@ -30,8 +29,8 @@ export interface FlowConfig extends DynamicConfig {
  */
 export type FlowDto = {
   utm_campaign: string;
-  utm_source: string;
-  utm_content: string;
+  utm_source?: string;
+  utm_content?: string;
 };
 
 export type FlowEventDto = {

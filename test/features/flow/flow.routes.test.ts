@@ -1,108 +1,66 @@
-import { build, clearDatabase } from '../../helper';
 import * as assert from 'node:assert';
 import { test } from 'node:test';
-import { CampaignRepository } from '../../../src/features/campaign/campaign.repository';
-import { Campaign, CampaignStatus } from '../../../src/features/campaign/campaign.types';
-import { FlowEventDto, FlowSource } from '../../../src/features/flow/flow.types';
-import { PublisherRepository } from '../../../src/features/publisher/publisher.repository';
+import { CampaignRepository } from '../../../src/features/marketplace/campaign/campaign.repository';
+import { CampaignStatus } from '../../../src/features/marketplace/marketplace.types';
+import { createCampaign, createWidget } from '../../builders';
+import { build, clearDatabase } from '../../helper';
+import { ObjectId } from '@fastify/mongodb';
+import { WidgetRepository } from '../../../src/features/widget/widget.repository';
 
 test('flow:routes', async (t) => {
   const fastify = await build(t);
-  const campaignRepository: CampaignRepository = fastify.repository.campaignDeprecated;
-  const publisherRepository: PublisherRepository = fastify.repository.publisher;
+  const campaignRepository: CampaignRepository = fastify.repository.campaign;
+  const widgetRepository: WidgetRepository = fastify.repository.widget;
 
-  const CAMPAIGN_ID = 'campaign-1';
-  const PUBLISHER_ID = 'publisher-1';
-
-  t.before(async () => {
+  t.beforeEach(async () => {
     await clearDatabase(fastify);
-
-    const campaign: Campaign = {
-      campaignId: CAMPAIGN_ID,
-      advertiserId: 'advertiser-1',
-      landingPage: 'https://quip.com/',
-      status: CampaignStatus.ACTIVE,
-      traces: [],
-    };
-    await campaignRepository.save(campaign);
-
-    const publisher = {
-      publisherId: PUBLISHER_ID,
-    };
-    await publisherRepository.save(publisher);
   });
 
   await t.test('should return dynamic code', async () => {
+    // given
+    const now = new Date();
+    const pastHour = new Date(now.getTime() - 1000 * 60 * 60);
+    const nextHour = new Date(now.getTime() + 1000 * 60 * 60);
+
+    let campaign = createCampaign(pastHour, nextHour, CampaignStatus.ACTIVE);
+    campaign = (await campaignRepository.save(campaign))!;
+    let widget = createWidget(campaign.hookId);
+    widget = (await widgetRepository.save(widget))!;
+
     const response = await fastify.inject({
       method: 'GET',
-      url: `/api/flows?utm_campaign=${CAMPAIGN_ID}&utm_source=instagram&utm_content=${PUBLISHER_ID}`,
+      url: `/api/flows?utm_campaign=${campaign?.utmCampaign}`,
     });
 
     assert.equal(response.statusCode, 200);
     assert.ok(response.body);
   });
 
-  await t.test('should capture flow event and append trace to the campaign', async () => {
-    const traceId = crypto.randomUUID();
-    const fingerprintId = crypto.randomUUID();
-    const flowEvent: FlowEventDto = {
-      traceId: traceId,
-      fingerprint: { fingerprintId },
-      publisherId: 'publisher-1',
-      campaignId: CAMPAIGN_ID,
-      source: FlowSource.INSTAGRAM,
-    };
-
+  await t.test('Should return 404 if campaign not found', async () => {
     const response = await fastify.inject({
-      method: 'POST',
-      url: '/api/flows',
-      payload: flowEvent,
+      method: 'GET',
+      url: `/api/flows?utm_campaign=unknown-campaign`,
     });
 
-    assert.equal(response.statusCode, 204);
-
-    const campaign = await campaignRepository.findByCampaignId(CAMPAIGN_ID);
-    assert.ok(campaign);
-    assert.equal(campaign.traces.length, 1);
+    assert.equal(response.statusCode, 404);
   });
 
-  await t.test('should return 400 for invalid campaignId', async () => {
-    const traceId = crypto.randomUUID();
-    const fingerprintId = crypto.randomUUID();
-    const flowEvent: FlowEventDto = {
-      traceId: traceId,
-      fingerprint: { fingerprintId },
-      publisherId: 'publisher-1',
-      campaignId: 'unknown-campaign',
-      source: FlowSource.INSTAGRAM,
-    };
+  await t.test('Should return 400 if campaign is not active', async () => {
+    // given
+    const now = new Date();
+    const pastTwoHours = new Date(now.getTime() - 1000 * 60 * 60 * 2);
+    const pastOneHour = new Date(now.getTime() - 1000 * 60 * 60);
+
+    let campaign = createCampaign(pastTwoHours, pastOneHour, CampaignStatus.PENDING);
+    campaign = (await campaignRepository.save(campaign))!;
+    let widget = createWidget(campaign.hookId);
+    widget = (await widgetRepository.save(widget))!;
 
     const response = await fastify.inject({
-      method: 'POST',
-      url: '/api/flows',
-      payload: flowEvent,
+      method: 'GET',
+      url: `/api/flows?utm_campaign=${campaign?.utmCampaign}`,
     });
 
     assert.equal(response.statusCode, 400);
-    assert.deepEqual(JSON.parse(response.body), {
-      code: 400,
-      error: 'MongoError',
-      message: 'Missing campaign with campaignId: unknown-campaign',
-    });
-  });
-
-  await t.test('should return 400 for invalid payload', async () => {
-    const response = await fastify.inject({
-      method: 'POST',
-      url: '/api/flows',
-      payload: {},
-    });
-
-    assert.equal(response.statusCode, 400);
-    assert.deepEqual(JSON.parse(response.body), {
-      code: 400,
-      error: 'Error',
-      message: "body must have required property 'fingerprint'",
-    });
   });
 });

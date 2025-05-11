@@ -1,8 +1,6 @@
 import fp from 'fastify-plugin';
 import type { Db } from 'mongodb';
 import { AppOptions } from '../app.types';
-import { CampaignRepository as CampaignRepositoryDeprecated } from '../features/campaign/campaign.repository';
-import { CampaignService as CampaignServiceDeprecated } from '../features/campaign/campaign.service';
 import { FlowController } from '../features/flow/flow.controller';
 import { FlowService } from '../features/flow/flow.service';
 import { HookController } from '../features/hook/hook.controller';
@@ -42,7 +40,6 @@ export default fp<AppOptions>(async (fastify, opts) => {
   fastify.decorate('repository', {
     trace: new TraceRepository(db.collection('traces')),
     publisher: new PublisherRepository(db.collection('publishers')),
-    campaignDeprecated: new CampaignRepositoryDeprecated(db.collection('campaigns')),
     user: new UserRepository(db.collection('users')),
     hook: new HookRepository(db.collection('hooks')),
     widget: new WidgetRepository(db.collection('widgets')),
@@ -53,7 +50,6 @@ export default fp<AppOptions>(async (fastify, opts) => {
   });
 
   const publisherService = new PublisherService(fastify.repository.publisher);
-  const campaignServiceDeprecated = new CampaignServiceDeprecated(fastify.repository.campaignDeprecated);
   const widgetCodeService = new WidgetComponentService(fastify.repository.widget, fastify.repository.partnership, config);
   const campaignService = new CampaignService(
     fastify.repository.campaign,
@@ -64,10 +60,9 @@ export default fp<AppOptions>(async (fastify, opts) => {
   );
 
   fastify.decorate('service', {
-    trace: new TraceService(fastify.repository.trace, fastify.repository.widget, fastify.repository.hook),
+    trace: new TraceService(fastify.repository.trace, fastify.repository.widget, fastify.repository.hook, fastify.repository.campaign),
     publisher: publisherService,
-    campaignDeprecated: campaignServiceDeprecated,
-    flow: new FlowService(publisherService, campaignServiceDeprecated, config),
+    flow: new FlowService(fastify.repository.campaign, fastify.repository.widget, config),
     user: new UserService(fastify.repository.user),
     hook: new HookService(fastify.mongo, fastify.repository.hook, fastify.repository.user, fastify.repository.widget),
     widget: new WidgetService(fastify.mongo, config, fastify.repository.widget, fastify.repository.user),
@@ -103,7 +98,6 @@ declare module 'fastify' {
       partnership: PartnershipRepository;
       demand: DemandRepository;
       offer: OfferRepository;
-      campaignDeprecated: CampaignRepositoryDeprecated;
       campaign: CampaignRepository;
     };
     service: {
@@ -117,7 +111,6 @@ declare module 'fastify' {
       partner: PartnerService;
       demand: DemandService;
       offer: OfferService;
-      campaignDeprecated: CampaignServiceDeprecated;
       campaign: CampaignService;
     };
     controller: {

@@ -13,7 +13,6 @@ import { WidgetRepository } from '../src/features/widget/widget.repository';
 import { PartnershipRepository } from '../src/features/partnership/partnership.repository';
 import { DemandRepository } from '../src/features/marketplace/demand/demand.repository';
 import { OfferRepository } from '../src/features/marketplace/offer/offer.repository';
-import { CampaignRepository as CampaignRepositoryDeprecated } from '../src/features/campaign/campaign.repository';
 import { CampaignRepository } from '../src/features/marketplace/campaign/campaign.repository';
 
 declare module 'fastify' {
@@ -29,7 +28,6 @@ declare module 'fastify' {
       partnership: PartnershipRepository;
       demand: DemandRepository;
       offer: OfferRepository;
-      campaignDeprecated: CampaignRepositoryDeprecated;
       campaign: CampaignRepository;
     };
   }

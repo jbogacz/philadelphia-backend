@@ -136,24 +136,22 @@ export const CampaignDateProposalSchema = Type.Object({
   proposedAt: DateTimeType,
 });
 
-export const CampaignContactInfoSchema = Type.Optional(
-  Type.Object({
-    seeker: Type.Optional(
-      Type.Object({
-        phoneNumber: Type.String(),
-        email: Type.Optional(Type.String()),
-        sharedAt: DateTimeType,
-      })
-    ),
-    provider: Type.Optional(
-      Type.Object({
-        phoneNumber: Type.String(),
-        email: Type.Optional(Type.String()),
-        sharedAt: DateTimeType,
-      })
-    ),
-  })
-);
+export const CampaignContactInfoSchema = Type.Object({
+  seeker: Type.Optional(
+    Type.Object({
+      phoneNumber: Type.String(),
+      email: Type.Optional(Type.String()),
+      sharedAt: DateTimeType,
+    })
+  ),
+  provider: Type.Optional(
+    Type.Object({
+      phoneNumber: Type.String(),
+      email: Type.Optional(Type.String()),
+      sharedAt: DateTimeType,
+    })
+  ),
+});
 
 export const CampaignSchema = Type.Intersect([
   BaseSchemaV2,
@@ -185,7 +183,7 @@ export const CampaignSchema = Type.Intersect([
 
     currentDateProposal: Type.Optional(CampaignDateProposalSchema),
 
-    contactInfo: CampaignContactInfoSchema,
+    contactInfo: Type.Optional(CampaignContactInfoSchema),
   }),
 ]);
 
