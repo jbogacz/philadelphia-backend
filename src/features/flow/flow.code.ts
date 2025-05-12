@@ -89,7 +89,7 @@ async function fetchGeolocationData(): Promise<Geo | null> {
 
 async function sendTrace(apiUrl: string, trace: FlowTraceDto): Promise<void> {
   try {
-    await fetch(apiUrl + '/public/traces/flow', {
+    await fetch(apiUrl + '/public/traces/flows', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
