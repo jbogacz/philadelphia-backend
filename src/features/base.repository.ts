@@ -16,6 +16,12 @@ export const DateTimeType = Type.Unsafe<Date>({
   description: 'ISO 8601 date-time format',
 });
 
+export const DateType = Type.Unsafe<Date>({
+  type: 'string',
+  format: 'date',
+  description: 'ISO 8601 date format',
+});
+
 export const BaseSchema = Type.Object({
   _id: Type.Optional(Type.String()),
   createdAt: Type.Optional(Type.Date()),

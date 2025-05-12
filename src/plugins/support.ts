@@ -6,8 +6,10 @@ import { FlowService } from '../features/flow/flow.service';
 import { HookController } from '../features/hook/hook.controller';
 import { HookRepository } from '../features/hook/hook.repository';
 import { HookService } from '../features/hook/hook.service';
+import { CampaignInsightService } from '../features/insight/campaign.insight.service';
 import { InsightController } from '../features/insight/insight.controller';
 import { InsightService } from '../features/insight/insight.service';
+import { CampaignController } from '../features/marketplace/campaign/campaign.controller';
 import { CampaignRepository } from '../features/marketplace/campaign/campaign.repository';
 import { CampaignService } from '../features/marketplace/campaign/campaign.service';
 import { DemandController } from '../features/marketplace/demand/demand.controller';
@@ -31,7 +33,6 @@ import { WidgetComponentService } from '../features/widget/widget.component.serv
 import { WidgetController } from '../features/widget/widget.controller';
 import { WidgetRepository } from '../features/widget/widget.repository';
 import { WidgetService } from '../features/widget/widget.service';
-import { CampaignController } from '../features/marketplace/campaign/campaign.controller';
 
 export default fp<AppOptions>(async (fastify, opts) => {
   const { config } = opts;
@@ -67,6 +68,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     hook: new HookService(fastify.mongo, fastify.repository.hook, fastify.repository.user, fastify.repository.widget),
     widget: new WidgetService(fastify.mongo, config, fastify.repository.widget, fastify.repository.user),
     insight: new InsightService(fastify.mongo),
+    campaignInsight: new CampaignInsightService(fastify.repository.campaign, fastify.repository.trace),
     partner: new PartnerService(fastify.repository.hook, fastify.repository.widget),
     demand: new DemandService(fastify.repository.demand),
     campaign: campaignService,
@@ -79,7 +81,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     user: new UserController(fastify.service.user),
     hook: new HookController(fastify.service.hook, config),
     widget: new WidgetController(fastify.service.widget, widgetCodeService, config),
-    insight: new InsightController(fastify.service.insight),
+    insight: new InsightController(fastify.service.insight, fastify.service.campaignInsight),
     partner: new PartnerController(fastify.service.partner),
     demand: new DemandController(fastify.service.demand, config),
     offer: new OfferController(fastify.service.offer, config),
@@ -108,6 +110,7 @@ declare module 'fastify' {
       hook: HookService;
       widget: WidgetService;
       insight: InsightService;
+      campaignInsight: CampaignInsightService;
       partner: PartnerService;
       demand: DemandService;
       offer: OfferService;
