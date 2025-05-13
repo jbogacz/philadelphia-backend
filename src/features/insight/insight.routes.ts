@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { CampaignInsightsQuerySchema, CampaignInsightsSchema, InsightsOverviewSchema, InsightsQuerySchema } from './insight.type';
+import { CampaignInsightsSchema, InsightsOverviewSchema, InsightsQuerySchema } from './insight.type';
 
 export const insightRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get(
@@ -18,10 +18,9 @@ export const insightRoutes: FastifyPluginAsync = async (fastify) => {
   );
 
   fastify.get(
-    '/insights/campaign',
+    '/insights/campaign/:campaignId',
     {
       schema: {
-        querystring: CampaignInsightsQuerySchema,
         description: 'Get campaign insights',
         tags: ['insights'],
         response: {

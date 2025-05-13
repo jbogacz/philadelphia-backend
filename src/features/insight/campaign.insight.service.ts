@@ -3,25 +3,30 @@ import { NotFoundError } from '../../common/errors';
 import { CampaignRepository } from '../marketplace/campaign/campaign.repository';
 import { TraceRepository } from '../trace/trace.repository';
 import { TraceType } from '../trace/trace.types';
-import { CampaignInsightDto, CampaignInsightsQueryDto } from './insight.type';
+import { CampaignInsightDto } from './insight.type';
 import { endOfDay } from 'date-fns/endOfDay';
 
 export class CampaignInsightService {
   constructor(private readonly campaignRepository: CampaignRepository, private readonly traceRepository: TraceRepository) {}
 
-  async calculateInsights(query: CampaignInsightsQueryDto): Promise<CampaignInsightDto> {
-    const campaign = await this.campaignRepository.findById(query.campaignId);
+  async calculateInsights(campaignId: string): Promise<CampaignInsightDto> {
+    const campaign = await this.campaignRepository.findById(campaignId);
     if (!campaign) {
-      throw new NotFoundError(`Campaign with id ${query.campaignId} not found`);
+      throw new NotFoundError(`Campaign with id ${campaignId} not found`);
     }
+
+    const now = new Date();
+    const startDate = startOfDay(campaign.startDate!);
+    const endDate = now.getTime() < campaign.endDate?.getTime()! ? now : endOfDay(campaign.endDate!);
+
     const dailyVisitsPipeline = [
       {
         $match: {
           campaignId: campaign._id,
           type: TraceType.FLOW,
           createdAt: {
-            $gte: startOfDay(campaign.startDate!),
-            $lte: endOfDay(campaign.endDate!),
+            $gte: startDate,
+            $lte: endDate,
           },
         },
       },
