@@ -9,7 +9,7 @@ const scheduler: FastifyPluginAsync<AppOptions> = async (fastify, opts) => {
   const { config } = opts;
   void fastify.register(schedule);
 
-  fastify.ready().then(() => {
+  fastify.after().then(() => {
     // Scheduler for campaign activation and completion
     if (config.scheduler.campaign.enabled) {
       if (config.scheduler.campaign.cron === '') {

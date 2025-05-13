@@ -1,4 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
+import { ObjectIdType } from '../base.repository';
 
 /**
  * SCHEMA
@@ -48,9 +49,24 @@ export const InsightsOverviewSchema = Type.Object({
   }),
 });
 
+export const CampaignInsightsSchema = Type.Object({
+  campaignId: ObjectIdType,
+  daily: Type.Array(
+    Type.Object({
+      date: Type.String(),
+      uniqueVisitors: Type.Number(),
+    })
+  ),
+  summary: Type.Object({
+    uniqueVisitors: Type.Number(),
+  }),
+});
+
 /**
  * DTO
  */
 export type InsightsQueryDto = Static<typeof InsightsQuerySchema>;
 
 export type InsightsOverviewDto = Static<typeof InsightsOverviewSchema>;
+
+export type CampaignInsightDto = Static<typeof CampaignInsightsSchema>;
