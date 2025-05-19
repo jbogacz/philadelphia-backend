@@ -5,9 +5,15 @@ import { ErrorDto } from '../../../common/errors';
 import { CampaignContactInfoDto, CampaignDateProposalDto, CampaignDto, CampaignQueryDto } from '../marketplace.types';
 import { startOfDay } from 'date-fns/startOfDay';
 import { CampaignService } from './campaign.service';
+import { ConversationDto, MessageDto } from '../../conversation/conversation.types';
+import { ConversationService } from '../../conversation/conversation.service';
 
 export class CampaignController {
-  constructor(private readonly campaignService: CampaignService, private readonly config: AppConfig) {}
+  constructor(
+    private readonly campaignService: CampaignService,
+    private readonly conversationService: ConversationService,
+    private readonly config: AppConfig
+  ) {}
 
   async update(
     request: FastifyRequest<{ Params: { id: string }; Body: CampaignDto }>,
@@ -121,5 +127,37 @@ export class CampaignController {
     const contactInfo = await this.campaignService.updateContactInfo(campaignId, request.body, userId as string);
 
     return reply.code(200).send(contactInfo);
+  }
+
+  async appendMessage(
+    request: FastifyRequest<{ Params: { campaignId: string }; Body: MessageDto }>,
+    reply: FastifyReply
+  ): Promise<
+    FastifyReply<{
+      Reply: ConversationDto | ErrorDto;
+    }>
+  > {
+    const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized', code: 401 });
+    }
+    const conversation = await this.conversationService.appendCampaignMessage(request.params.campaignId, userId as string, request.body);
+    return reply.code(200).send(conversation);
+  }
+
+  async findConversation(
+    request: FastifyRequest<{ Params: { campaignId: string } }>,
+    reply: FastifyReply
+  ): Promise<
+    FastifyReply<{
+      Reply: ConversationDto | ErrorDto;
+    }>
+  > {
+    const userId = this.config.isDevelopment() ? request.headers['x-user-id'] : getAuth(request).userId;
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized', code: 401 });
+    }
+    const conversations = await this.conversationService.findCampaignConversation(request.params.campaignId, userId as string);
+    return reply.code(200).send(conversations);
   }
 }

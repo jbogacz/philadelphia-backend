@@ -1,0 +1,72 @@
+import { ObjectId } from '@fastify/mongodb';
+import { ForbiddenError, NotFoundError } from '../../common/errors';
+import { CampaignRepository } from '../marketplace/campaign/campaign.repository';
+import { Campaign } from '../marketplace/marketplace.types';
+import { ConversationRepository } from './conversation.repository';
+import { Conversation, ConversationDto, MessageDto } from './conversation.types';
+import { LoggerService } from '../../common';
+
+export class ConversationService {
+  private logger = LoggerService.getLogger('feature.conversation.ConversationService');
+
+  constructor(private readonly conversationRepository: ConversationRepository, private readonly campaignRepository: CampaignRepository) {}
+
+  async appendCampaignMessage(campaignId: string, userId: string, message: MessageDto): Promise<ConversationDto> {
+    const campaign = await this.campaignRepository.findById(campaignId);
+    if (!campaign) {
+      throw new NotFoundError(`Campaign with id ${campaignId} not found`);
+    }
+    if (campaign.seekerId !== userId && campaign.providerId !== userId) {
+      throw new NotFoundError(`User with id ${userId} is not part of the campaign`);
+    }
+
+    let conversation: Conversation | null = await this.conversationRepository.findByCampaignId(campaign._id);
+    if (!conversation) {
+      conversation = await this.conversationRepository.create(this.initCampaignConversation(campaign));
+      this.logger.info('Created new conversation:', conversation);
+    }
+
+    const senderRole = campaign.seekerId === userId ? 'seeker' : 'provider';
+    const receiverRole = senderRole === 'seeker' ? 'provider' : 'seeker';
+
+    const result = await this.conversationRepository.appendMessage(campaign._id, {
+      senderRole: senderRole,
+      receiverRole: receiverRole,
+      content: message.content,
+    });
+    return result as ConversationDto;
+  }
+
+  async findCampaignConversation(campaignId: string, userId: string): Promise<ConversationDto> {
+    const conversation = await this.conversationRepository.findByCampaignId(new ObjectId(campaignId));
+    if (!conversation) {
+      throw new NotFoundError(`Conversation with campaignId ${campaignId} not found`);
+    }
+    if (conversation.participants.seeker.userId !== userId && conversation.participants.provider.userId !== userId) {
+      throw new ForbiddenError(`User with id ${userId} is not part of the conversation`);
+    }
+    return conversation;
+  }
+
+  private initCampaignConversation(campaign: Campaign): Conversation {
+    return {
+      type: 'campaign',
+      campaignId: new ObjectId(campaign._id),
+      participants: {
+        seeker: {
+          userId: campaign.seekerId,
+          lastReadAt: new Date(),
+        },
+        provider: {
+          userId: campaign.providerId,
+          lastReadAt: new Date(),
+        },
+      },
+      messages: [],
+      unreadCount: {
+        seeker: 0,
+        provider: 0,
+      },
+    };
+  }
+}

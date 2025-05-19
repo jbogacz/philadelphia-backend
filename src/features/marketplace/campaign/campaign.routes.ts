@@ -3,6 +3,7 @@ import { ErrorDtoSchema } from '../../../common/errors';
 import { CampaignContactInfoSchema, CampaignDateProposalSchema, CampaignQuerySchema, CampaignSchema } from '../marketplace.types';
 import { Type } from '@sinclair/typebox';
 import { DateTimeType } from '../../base.repository';
+import { ConversationSchema, MessageDtoSchema } from '../../conversation/conversation.types';
 
 export const campaignRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get(
@@ -143,5 +144,50 @@ export const campaignRoutes: FastifyPluginAsync = async (fastify) => {
       },
     },
     fastify.controller.campaign.updateContactInfo.bind(fastify.controller.campaign)
+  );
+
+  fastify.post(
+    '/campaigns/:campaignId/conversations/messages',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            campaignId: { type: 'string' },
+          },
+        },
+        body: MessageDtoSchema,
+        tags: ['campaigns'],
+        response: {
+          200: ConversationSchema,
+          400: ErrorDtoSchema,
+          401: ErrorDtoSchema,
+          404: ErrorDtoSchema,
+        },
+      },
+    },
+    fastify.controller.campaign.appendMessage.bind(fastify.controller.campaign)
+  );
+
+  fastify.get(
+    'campaigns/:campaignId/conversations',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            campaignId: { type: 'string' },
+          },
+        },
+        tags: ['campaigns'],
+        response: {
+          200: ConversationSchema,
+          400: ErrorDtoSchema,
+          401: ErrorDtoSchema,
+          404: ErrorDtoSchema,
+        },
+      },
+    },
+    fastify.controller.campaign.findConversation.bind(fastify.controller.campaign)
   );
 };
