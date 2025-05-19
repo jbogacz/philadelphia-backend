@@ -1,15 +1,20 @@
-import { ObjectId } from '@fastify/mongodb';
+import { FastifyMongoObject, ObjectId } from '@fastify/mongodb';
 import { ForbiddenError, NotFoundError } from '../../common/errors';
 import { CampaignRepository } from '../marketplace/campaign/campaign.repository';
 import { Campaign } from '../marketplace/marketplace.types';
 import { ConversationRepository } from './conversation.repository';
 import { Conversation, ConversationDto, MessageDto } from './conversation.types';
 import { LoggerService } from '../../common';
+import { txTemplate } from '../base.repository';
 
 export class ConversationService {
   private logger = LoggerService.getLogger('feature.conversation.ConversationService');
 
-  constructor(private readonly conversationRepository: ConversationRepository, private readonly campaignRepository: CampaignRepository) {}
+  constructor(
+    private readonly conversationRepository: ConversationRepository,
+    private readonly campaignRepository: CampaignRepository,
+    private readonly mongo: FastifyMongoObject
+  ) {}
 
   async appendCampaignMessage(campaignId: string, userId: string, message: MessageDto): Promise<ConversationDto> {
     const campaign = await this.campaignRepository.findById(campaignId);
@@ -20,11 +25,15 @@ export class ConversationService {
       throw new NotFoundError(`User with id ${userId} is not part of the campaign`);
     }
 
-    let conversation: Conversation | null = await this.conversationRepository.findByCampaignId(campaign._id);
-    if (!conversation) {
-      conversation = await this.conversationRepository.create(this.initCampaignConversation(campaign));
-      this.logger.info('Created new conversation:', conversation);
-    }
+    // Check if the conversation already exists and create it if not.
+    // This is done in a transaction to ensure atomicity if multiple users are trying to create the conversation at the same time.
+    await txTemplate.withTransaction(this.mongo.client)(async (session) => {
+      let conversation: Conversation | null = await this.conversationRepository.queryOne({ campaignId: campaign._id }, { session });
+      if (!conversation) {
+        conversation = await this.conversationRepository.create(this.initCampaignConversation(campaign), { session });
+        this.logger.info('Created new conversation:', conversation);
+      }
+    });
 
     const senderRole = campaign.seekerId === userId ? 'seeker' : 'provider';
     const receiverRole = senderRole === 'seeker' ? 'provider' : 'seeker';

@@ -76,7 +76,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     demand: new DemandService(fastify.repository.demand),
     campaign: campaignService,
     offer: new OfferService(campaignService, fastify.repository.offer, fastify.repository.demand),
-    conversation: new ConversationService(fastify.repository.conversation, fastify.repository.campaign),
+    conversation: new ConversationService(fastify.repository.conversation, fastify.repository.campaign, fastify.mongo),
   });
 
   fastify.decorate('controller', {
