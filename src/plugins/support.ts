@@ -33,6 +33,8 @@ import { WidgetComponentService } from '../features/widget/widget.component.serv
 import { WidgetController } from '../features/widget/widget.controller';
 import { WidgetRepository } from '../features/widget/widget.repository';
 import { WidgetService } from '../features/widget/widget.service';
+import { ConversationService } from '../features/conversation/conversation.service';
+import { ConversationRepository } from '../features/conversation/conversation.repository';
 
 export default fp<AppOptions>(async (fastify, opts) => {
   const { config } = opts;
@@ -48,6 +50,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     demand: new DemandRepository(db.collection('demands')),
     offer: new OfferRepository(db.collection('offers')),
     campaign: new CampaignRepository(db.collection('campaigns')),
+    conversation: new ConversationRepository(db.collection('conversations')),
   });
 
   const publisherService = new PublisherService(fastify.repository.publisher);
@@ -73,6 +76,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     demand: new DemandService(fastify.repository.demand),
     campaign: campaignService,
     offer: new OfferService(campaignService, fastify.repository.offer, fastify.repository.demand),
+    conversation: new ConversationService(fastify.repository.conversation, fastify.repository.campaign, fastify.mongo),
   });
 
   fastify.decorate('controller', {
@@ -85,7 +89,7 @@ export default fp<AppOptions>(async (fastify, opts) => {
     partner: new PartnerController(fastify.service.partner),
     demand: new DemandController(fastify.service.demand, config),
     offer: new OfferController(fastify.service.offer, config),
-    campaign: new CampaignController(fastify.service.campaign, config),
+    campaign: new CampaignController(fastify.service.campaign, fastify.service.conversation, config),
   });
 });
 
@@ -101,6 +105,7 @@ declare module 'fastify' {
       demand: DemandRepository;
       offer: OfferRepository;
       campaign: CampaignRepository;
+      conversation: ConversationRepository;
     };
     service: {
       trace: TraceService;
@@ -115,6 +120,7 @@ declare module 'fastify' {
       demand: DemandService;
       offer: OfferService;
       campaign: CampaignService;
+      conversation: ConversationService;
     };
     controller: {
       trace: TraceController;
