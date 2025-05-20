@@ -1,6 +1,7 @@
 import { Collection, ObjectId } from 'mongodb';
 import { BaseRepository } from '../base.repository';
 import { Conversation, Message } from './conversation.types';
+import { send } from 'process';
 
 export class ConversationRepository extends BaseRepository<Conversation> {
   constructor(collection: Collection<Conversation>) {
@@ -19,8 +20,9 @@ export class ConversationRepository extends BaseRepository<Conversation> {
       $push: {
         messages: {
           _id: new ObjectId(),
-          content: message.content,
+          senderId: message.senderId,
           senderRole: message.senderRole,
+          content: message.content,
           createdAt: new Date(),
         },
       },

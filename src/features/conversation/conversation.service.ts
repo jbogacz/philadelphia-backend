@@ -39,6 +39,7 @@ export class ConversationService {
     const receiverRole = senderRole === 'seeker' ? 'provider' : 'seeker';
 
     const result = await this.conversationRepository.appendMessage(campaign._id, {
+      senderId: userId,
       senderRole: senderRole,
       receiverRole: receiverRole,
       content: message.content,
@@ -46,10 +47,11 @@ export class ConversationService {
     return result as ConversationDto;
   }
 
-  async findCampaignConversation(campaignId: string, userId: string): Promise<ConversationDto> {
+  async findCampaignConversation(campaignId: string, userId: string): Promise<ConversationDto | null> {
     const conversation = await this.conversationRepository.findByCampaignId(new ObjectId(campaignId));
     if (!conversation) {
-      throw new NotFoundError(`Conversation with campaignId ${campaignId} not found`);
+      this.logger.info(`Conversation with campaignId ${campaignId} not found`);
+      return null;
     }
     if (conversation.participants.seeker.userId !== userId && conversation.participants.provider.userId !== userId) {
       throw new ForbiddenError(`User with id ${userId} is not part of the conversation`);

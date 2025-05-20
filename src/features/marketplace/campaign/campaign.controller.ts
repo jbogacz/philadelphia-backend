@@ -158,6 +158,9 @@ export class CampaignController {
       return reply.code(401).send({ error: 'Unauthorized', code: 401 });
     }
     const conversations = await this.conversationService.findCampaignConversation(request.params.campaignId, userId as string);
+    if (!conversations) {
+      return reply.code(404).send({ error: 'Conversation not found', code: 404 });
+    }
     return reply.code(200).send(conversations);
   }
 }
