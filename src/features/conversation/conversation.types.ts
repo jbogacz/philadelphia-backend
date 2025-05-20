@@ -14,17 +14,18 @@ export const ConversationSchema = Type.Intersect([
     participants: Type.Object({
       seeker: Type.Object({
         userId: Type.String(),
-        lastReadAt: DateTimeType,
+        lastReadAt: Type.Optional(DateTimeType),
       }),
       provider: Type.Object({
         userId: Type.String(),
-        lastReadAt: DateTimeType,
+        lastReadAt: Type.Optional(DateTimeType),
       }),
     }),
 
     messages: Type.Array(
       Type.Object({
         _id: ObjectIdType,
+        senderId: Type.String(),
         senderRole: Type.Union([Type.Literal('seeker'), Type.Literal('provider')]),
         content: Type.String(),
         createdAt: DateTimeType,
@@ -48,10 +49,11 @@ export const MessageDtoSchema = Type.Object({
 export type Conversation = Static<typeof ConversationSchema> & IEntityV2;
 
 export type Message = {
+  senderId: string;
   senderRole: 'seeker' | 'provider';
   receiverRole: 'seeker' | 'provider';
   content: string;
-}
+};
 
 /**
  * DTO

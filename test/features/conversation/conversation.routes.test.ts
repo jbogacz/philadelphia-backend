@@ -46,6 +46,7 @@ test('conversation:routes', async (t) => {
     assert.ok(conversation.messages.length === 1);
     assert.equal(conversation.messages[0].content, 'Hello World!');
     assert.equal(conversation.messages[0].senderRole, 'seeker');
+    assert.equal(conversation.messages[0].senderId, campaign.seekerId);
     assert.equal(conversation.unreadCount.seeker, 0);
     assert.equal(conversation.unreadCount.provider, 1);
     assert.equal(conversation.participants.seeker.userId, campaign.seekerId);
@@ -68,6 +69,8 @@ test('conversation:routes', async (t) => {
     const updatedConversation = (await conversationRepository.findByCampaignId(campaign._id!))!;
     assert.ok(updatedConversation.messages.length === 2);
     assert.equal(updatedConversation.messages[1].content, 'Hello Space!');
+    assert.equal(updatedConversation.messages[1].senderRole, 'provider');
+    assert.equal(updatedConversation.messages[1].senderId, campaign.providerId);
   });
 
   await t.test('should find a conversation by campaignId and seekerId', async () => {
