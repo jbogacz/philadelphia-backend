@@ -62,7 +62,7 @@ test('demand.routes', async (t) => {
 
     assert.equal(createResponse.statusCode, 201);
 
-    const document = await db.collection('demands').findOne({ _id: ObjectId.createFromHexString(demand._id!) });
+    const document = await db.collection('demands').findOne({ _id: new ObjectId(demand._id!) });
     assert.ok(document);
     assert.equal(document.hookId.toString(), payload.hookId.toString());
     assert.equal(document.userId, payload.userId);
@@ -115,7 +115,7 @@ test('demand.routes', async (t) => {
 
     assert.equal(response.statusCode, 200);
 
-    const updated = await db.collection('demands').findOne({ _id: ObjectId.createFromHexString(demand._id!) });
+    const updated = await db.collection('demands').findOne({ _id: new ObjectId(demand._id!) });
     assert.equal(updated?.title, 'updated title');
     assert.equal(updated?.description, 'updated description');
   });

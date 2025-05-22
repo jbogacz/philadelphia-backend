@@ -102,7 +102,28 @@ export class OfferService {
   }
 
   async findById(id: string): Promise<OfferDto | null> {
-    return this.offerRepository.findById(id);
+    const pipeline = [
+      {
+        $match: {
+          _id: new ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: 'demands',
+          localField: 'demandId',
+          foreignField: '_id',
+          as: 'demand',
+        },
+      },
+      {
+        $unwind: {
+          path: '$demand',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ];
+    return this.offerRepository.aggregateOne(pipeline);
   }
 
   async delete(id: string, providerId: string): Promise<void> {

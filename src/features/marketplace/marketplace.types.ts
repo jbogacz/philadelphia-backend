@@ -34,7 +34,7 @@ export enum CampaignRole {
  * SCHEMA
  */
 export const DemandSchema = Type.Intersect([
-  BaseSchema,
+  BaseSchemaV2,
   Type.Object({
     hookId: ObjectIdType,
     userId: Type.String(),
@@ -98,6 +98,7 @@ export const OfferSchema = Type.Intersect([
     trafficSources: Type.String(),
     pitch: Type.String(),
     audience: Type.String(),
+    demand: Type.Optional(DemandSchema),
 
     status: Type.Enum(OfferStatus, { default: OfferStatus.PENDING }), // Offer status
   }),
@@ -221,7 +222,7 @@ export const ProfileSchema = Type.Intersect([
 /**
  * MODEL
  */
-export type Demand = Static<typeof DemandSchema> & IEntity;
+export type Demand = Static<typeof DemandSchema> & IEntityV2;
 
 export type Offer = Static<typeof OfferSchema> & IEntityV2;
 
