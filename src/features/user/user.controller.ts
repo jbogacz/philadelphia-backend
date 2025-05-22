@@ -14,7 +14,10 @@ export class UserController {
     }>
   > {
     const user = await this.userService.findByUserId(request.params.id);
-    return user ? reply.code(200).send(user as UserDto) : reply.code(404).send();
+    if (!user) {
+      return reply.code(404).send({ error: 'User not found', code: 404 });
+    }
+    return reply.code(200).send(user as UserDto);
   }
 
   async register(
