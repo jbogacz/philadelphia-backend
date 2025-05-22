@@ -36,7 +36,6 @@ test('offer.routes', async (t) => {
     const payload: Partial<OfferDto> = {
       demandId: new ObjectId(demand._id),
       hookId: new ObjectId(demand.hookId),
-      providerId: 'unknown',
       seekerId: demand.userId,
       trafficVolume: 1000,
       price: 900,
@@ -80,7 +79,6 @@ test('offer.routes', async (t) => {
     const payload: Partial<OfferDto> = {
       demandId: new ObjectId(demand._id),
       hookId: new ObjectId(demand.hookId),
-      providerId: 'offer_user',
       seekerId: demand.userId,
       trafficVolume: 1200,
       price: 1100,

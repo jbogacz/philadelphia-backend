@@ -6,7 +6,8 @@ import { Filter } from 'mongodb';
 import { AppConfig } from '../../../app.types';
 import { LoggerService } from '../../../common';
 import { BadRequestError, ForbiddenError, NotFoundError } from '../../../common/errors';
-import { CampaignRepository } from './campaign.repository';
+import { HookRepository } from '../../hook/hook.repository';
+import { UserRepository } from '../../user/user.repository';
 import { DemandRepository } from '../demand/demand.repository';
 import {
   Campaign,
@@ -16,10 +17,9 @@ import {
   CampaignQueryDto,
   CampaignRole,
   CampaignStatus,
-  OfferDto,
+  Offer
 } from '../marketplace.types';
-import { UserRepository } from '../../user/user.repository';
-import { HookRepository } from '../../hook/hook.repository';
+import { CampaignRepository } from './campaign.repository';
 
 export class CampaignService {
   private logger = LoggerService.getLogger('feature.marketplace.campaign.CampaignService');
@@ -41,7 +41,7 @@ export class CampaignService {
    * @param offer
    * @returns
    */
-  async createFromOffer(offer: OfferDto): Promise<Campaign | null> {
+  async createFromOffer(offer: Offer): Promise<Campaign | null> {
     if (!offer.hookId) {
       this.logger.error('Offer does not have a hookId:', offer);
       throw new BadRequestError('Offer does not have a hookId');

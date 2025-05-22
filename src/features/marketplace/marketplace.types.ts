@@ -104,7 +104,7 @@ export const OfferSchema = Type.Intersect([
 ]);
 
 export const OfferDtoSchema = Type.Composite([
-  Type.Omit(OfferSchema, ['hookId', 'seekerId']),
+  Type.Omit(OfferSchema, ['hookId', 'seekerId', 'providerId']),
   Type.Object({
     hookId: Type.Optional(ObjectIdType),
     seekerId: Type.Optional(Type.String()),

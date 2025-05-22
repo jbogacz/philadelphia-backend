@@ -21,7 +21,7 @@ export class OfferController {
       return reply.code(401).send({ error: 'Unauthorized', code: 401 });
     }
 
-    const created = await this.offerService.create({ ...request.body, providerId: userId as string });
+    const created = await this.offerService.create(userId as string, { ...request.body });
     return reply.code(201).send(created);
   }
 

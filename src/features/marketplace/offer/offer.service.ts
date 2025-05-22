@@ -16,7 +16,7 @@ export class OfferService {
     private readonly demandRepository: DemandRepository
   ) {}
 
-  async create(dto: OfferDto): Promise<OfferDto> {
+  async create(userId: string, dto: OfferDto): Promise<OfferDto> {
     this.logger.info('Creating offer:', dto);
 
     const demand = await this.demandRepository.findById(dto.demandId);
@@ -31,6 +31,7 @@ export class OfferService {
       demandId: new ObjectId(dto.demandId),
       hookId: new ObjectId(demand.hookId),
       seekerId: demand.userId,
+      providerId: userId,
     } as Offer;
     const created = await this.offerRepository.createV2(offer);
 
