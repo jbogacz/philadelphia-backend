@@ -26,19 +26,19 @@ function generateTraces() {
   const traces = [];
 
   // Fixed values (as requested)
-  const CAMPAIGN_ID = "6808e66587b87a6199c1e70e";
-  const HOOK_ID = "67c54a431a17eacc9f0cc74b";
-  const WIDGET_ID = "67c54a3c1a17eacc9f0cc74a";
-  const WIDGET_KEY = "c3eb59f1-3802-41ba-b0f1-709e13999967";
-  const UTM_CAMPAIGN = "aecdc7da-1c08-4a36-b5c4-316505c646d8";
+  const CAMPAIGN_ID = "CAMPAIGN_ID";
+  const HOOK_ID = "HOOK_ID";
+  const WIDGET_ID = "WIDGET_ID";
+  const WIDGET_KEY = "WIDGET_KEY";
+  const UTM_CAMPAIGN = "UTM_CAMPAIGN";
 
   // Date range: Last 7 days
   const now = new Date();
-  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const oneWeekAgo = new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
 
   // Generate unique fingerprints (representing unique visitors)
   const fingerprints = [];
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 450; i++) {
     fingerprints.push(generateFingerprintId());
   }
 
