@@ -29,7 +29,7 @@ test('flow:routes', async (t) => {
 
     const response = await fastify.inject({
       method: 'GET',
-      url: `/api/flows?utm_campaign=${campaign?.utmCampaign}`,
+      url: `/api/public/flows?utm_campaign=${campaign?.utmCampaign}`,
     });
 
     assert.equal(response.statusCode, 200);
@@ -39,7 +39,7 @@ test('flow:routes', async (t) => {
   await t.test('Should return 404 if campaign not found', async () => {
     const response = await fastify.inject({
       method: 'GET',
-      url: `/api/flows?utm_campaign=unknown-campaign`,
+      url: `/api/public/flows?utm_campaign=unknown-campaign`,
     });
 
     assert.equal(response.statusCode, 404);
@@ -58,7 +58,7 @@ test('flow:routes', async (t) => {
 
     const response = await fastify.inject({
       method: 'GET',
-      url: `/api/flows?utm_campaign=${campaign?.utmCampaign}`,
+      url: `/api/public/flows?utm_campaign=${campaign?.utmCampaign}`,
     });
 
     assert.equal(response.statusCode, 400);

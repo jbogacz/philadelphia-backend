@@ -73,7 +73,7 @@ export class CampaignService {
       title: demand?.title || 'Missing title',
       utmCampaign: utmCampaign,
       destinationUrl: hook?.domain || 'Missing URL',
-      trackingUrl: this.config.apiUrl + '/flows?utm_campaign=' + utmCampaign,
+      trackingUrl: this.config.apiUrl + '/public/flows?utm_campaign=' + utmCampaign,
       providerId: offer.providerId,
       seekerId: demand?.userId,
       status: CampaignStatus.PENDING,

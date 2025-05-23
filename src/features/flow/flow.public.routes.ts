@@ -2,7 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 
 export const flowRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get(
-    '/flows',
+    '/public/flows',
     {
       schema: {
         querystring: {
@@ -14,7 +14,7 @@ export const flowRoutes: FastifyPluginAsync = async (fastify) => {
             utm_content: { type: 'string', default: 'publisher-1' },
           },
         },
-        tags: ['flow'],
+        tags: ['public'],
       },
     },
     fastify.controller.flow.serveCode.bind(fastify.controller.flow)
